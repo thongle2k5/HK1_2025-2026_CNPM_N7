@@ -14,20 +14,35 @@ Dự án gồm 2 phần chính:
 ```
 HK1_2025-2026_CNPM_N7/
 │
-├── diagrams/                  # Sơ đồ hệ thống, use case, sequence,...
-├── Docs/                      # Tài liệu thiết kế & báo cáo
+├── diagrams/
+├── Docs/
 ├── src/
-│   ├── Backend/               # Mã nguồn backend (Node.js + Express)
-│   │   ├── server.js
+│   ├── Backend/               # Mã nguồn backend (Node.js + Express) - SỬ DỤNG N-LAYERED
+│   │   ├── controllers/       # Xử lý HTTP Request/Response
+│   │   ├── services/          # Logic Nghiệp vụ chính (Business Logic)
+│   │   ├── models/            # Tương tác với Cơ sở Dữ liệu (MySQL)
+│   │   ├── routes/            # Định nghĩa các API Endpoint (GET/POST/...)
+│   │   ├── tests/             # Kiểm thử Backend (Unit Test, Integration Test)
+│   │   ├── server.js          # File khởi động server
 │   │   ├── package.json
-│   │   └── .env
+│   │   └── .env               # CHỨA KEY API SERVER (NHẠY CẢM)
 │   │
 │   └── frontend/              # Mã nguồn frontend (React + Vite + Tailwind)
-│       ├── src/
+│       ├── src/               # Code chính của React App
+│       │   ├── api/           # Logic gọi API Backend
+│       │   ├── components/    # Các UI Components (Button, Card,...)
+│       │   ├── hooks/         # Custom Hooks (Logic tái sử dụng)
+│       │   ├── pages/         # CÁC TRANG CHÍNH (Đã chia theo vai trò)
+│       │   │   ├── admin/     # Trang dành cho vai trò ADMIN
+│       │   │   ├── driver/    # Trang dành cho vai trò DRIVER
+│       │   │   ├── parent/    # Trang dành cho vai trò PARENT
+│       │   │   └── common/    # Trang chung (Login, 404,...)
+│       │   ├── App.jsx
+│       │   └── main.jsx
 │       ├── public/
-│       ├── vite.config.js
-│       ├── tailwind.config.js
-│       └── package.json
+│       ├── package.json
+│       ├── .env               # CHỨA KEY API CLIENT (CÔNG KHAI)
+│       └── ... (các file cấu hình Vite/Tailwind)
 │
 └── README.md
 ```
@@ -41,6 +56,7 @@ Cần cài đặt trước:
 - [Node.js](https://nodejs.org/) (phiên bản ≥ 18)
 - npm (cài cùng Node)
 - VSCode hoặc IDE tương tự
+- MySQL/XAMPP
 
 ---
 

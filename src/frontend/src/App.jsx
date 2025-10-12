@@ -2,14 +2,14 @@ function App() {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 text-white p-4">
+      <aside className="w-64 bg-blue-600 text-white p-4">
         <h1 className="text-2xl font-bold mb-8">Bus Admin</h1>
         <nav className="space-y-4">
-          <a href="#" className="block hover:text-yellow-400">Dashboard</a>
-          <a href="#" className="block hover:text-yellow-400">Routes</a>
-          <a href="#" className="block hover:text-yellow-400">Drivers</a>
-          <a href="#" className="block hover:text-yellow-400">Buses</a>
-          <a href="#" className="block hover:text-yellow-400">Reports</a>
+          <a href="#" className="block hover:text-blue-400">Dashboard</a>
+          <a href="#" className="block hover:text-blue-400">Routes</a>
+          <a href="#" className="block hover:text-blue-400">Drivers</a>
+          <a href="#" className="block hover:text-blue-400">Buses</a>
+          <a href="#" className="block hover:text-blue-400">Reports</a>
         </nav>
       </aside>
 
