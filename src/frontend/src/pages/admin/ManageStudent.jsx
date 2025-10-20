@@ -1,7 +1,7 @@
 // src/pages/admin/DriversPage.jsx
 
-import React from 'react';
-import { FaBus, FaPlus, FaPen, FaTrash } from 'react-icons/fa'; // Giả sử dùng React Icons
+import React from "react";
+import { FaBus, FaPlus, FaPen, FaTrash } from "react-icons/fa"; // Giả sử dùng React Icons
 import { FcNext } from "react-icons/fc";
 import { FcPrevious } from "react-icons/fc";
 
@@ -9,7 +9,6 @@ function ManageStudent() {
   return (
     // Component này chỉ tập trung vào nội dung trang Học sinh
     <div className="p-8">
-
       {/* Tiêu đề Trang */}
       <h1 className="text-3xl font-extrabold text-gray-800 mb-6 flex items-center">
         <FaBus className="mr-3 text-blue-600" />
@@ -30,17 +29,27 @@ function ManageStudent() {
           <table className="border-collapse border border-gray-300 w-full">
             <thead className="bg-gray-100">
               <tr>
-                <th className="border border-gray-300 px-4 py-2 text-left">STT</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Họ tên</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Lớp</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Ngày sinh</th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  STT
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Họ tên
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Lớp
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Ngày sinh
+                </th>
                 <th className="border border-gray-300 px-4 py-2 text-left"></th>
               </tr>
             </thead>
             <tbody>
-              <tr className="hover:bg-gray-50 " >
+              <tr className="hover:bg-gray-50 ">
                 <td className="border border-gray-300 px-4 py-2">1</td>
-                <td className="border border-gray-300 px-4 py-2">Nguyễn Văn A</td>
+                <td className="border border-gray-300 px-4 py-2">
+                  Nguyễn Văn A
+                </td>
                 <td className="border border-gray-300 px-4 py-2">1A1</td>
                 <td className="border border-gray-300 px-4 py-2">01/01/2010</td>
                 <td className="border border-gray-300 py-2 w-20">
@@ -67,17 +76,14 @@ function ManageStudent() {
         </div>
 
         <div className="flex justify-center items-center space-x-10 text-gray-600 mt-3 text-lg ">
-          <FcPrevious className='cursor-pointer' />
-          <p className='cursor-pointer'>1</p>
-          <p className='cursor-pointer'>2</p>
-          <p className='cursor-pointer'>3</p>
-          <FcNext className='cursor-pointer' />
+          <FcPrevious className="cursor-pointer" />
+          <p className="cursor-pointer">1</p>
+          <p className="cursor-pointer">2</p>
+          <p className="cursor-pointer">3</p>
+          <FcNext className="cursor-pointer" />
         </div>
       </div>
-
-
-
-    </div >
+    </div>
   );
 }
 
