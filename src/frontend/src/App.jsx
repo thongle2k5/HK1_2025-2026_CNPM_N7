@@ -1,11 +1,12 @@
-/* import AdminLayout from "./pages/admin/AdminLayout.jsx";
+import AdminLayout from "./pages/admin/AdminLayout.jsx";
 import Dashboard from "./pages/admin/Dashboard.jsx";
 import MapDisplay from "./components/specific/MapDisplay.jsx";
+import Test from "./pages/admin/test.jsx";
 export default function App() {
   return <AdminLayout />;
 }
-*/
-import Header from "./components/specific/parentpage/Header.jsx";
+
+/*import Header from "./components/specific/parentpage/Header.jsx";
 import ChildTracking from "./pages/parent/ChildTracking.jsx";
 
 function parentApp() {
@@ -17,3 +18,4 @@ function parentApp() {
   );
 }
 export default parentApp;
+*/

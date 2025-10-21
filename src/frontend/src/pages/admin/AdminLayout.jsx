@@ -1,17 +1,24 @@
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaBus } from "react-icons/fa";
 import DriversPage from "./DriversPage";
 import { Link, Routes, Route, useLocation } from "react-router-dom";
 import ManageStudent from "./ManageStudent";
 import ManageBus from "./ManageBus";
 import ManageParent from "./ManageParent";
 import Dashboard from "./Dashboard";
-
+import BusSchedule from "./BusSchedule";
+import React, { useState } from "react";
 function App() {
   const location = useLocation();
+  const [isOpen, setIsOpnen] = useState(false);
+  const toggleDropdown = () => {
+    setIsOpnen(!isOpen);
+  };
+
   return (
     <div className=" flex h-screen ">
       <div className="w-64 bg-white flex-shrink-0 shadow-lg">
         <div className="flex justify-center items-center h-16 font-bold text-blue text-xl border-b border-r">
+          <FaBus className="mr-2 text-2xl text-blue-600" />
           Quản lý Xe Buýt
         </div>
         <div className="h-[calc(100vh-4rem)] overflow-y-auto text-black border-r">
@@ -30,7 +37,17 @@ function App() {
               </Link>
             </li>
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
-              📋Lịch xe buýt
+              <Link
+                to="/BusSchedule"
+                className={`w-full  flex items-center 
+        ${
+          location.pathname === "/BusSchedule"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
+              >
+                📋Lịch xe buýt
+              </Link>
             </li>
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
               <Link
@@ -112,10 +129,38 @@ function App() {
               className="p-2 px-6 border outline-none text-black"
             />
           </div>
-          <div className="px-6 ">
-            <button>
+          <div className="relative">
+            <button
+              onClick={toggleDropdown}
+              className="focus:outline-none px-6"
+            >
               <FaUserCircle className="text-3xl" />
             </button>
+            {isOpen && (
+              <div className=" mr-12 absolute right-0  w-52 bg-white rounded-md shadow-lg py-1 z-50 trainsform origin-top-right ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <ul className="text-gray-700 cursor-pointer ">
+                  <li className="px-4 py-2">
+                    <img src="/ipad.jpg" alt="dfs" />
+                    Nguyen van a
+                  </li>
+                  <li>vai tro: {"quan tri vien"}</li>
+                </ul>
+                <Link
+                  to="/profile"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Cài đặt tài khoản
+                </Link>
+
+                <hr className="my-1" />
+                <button
+                  onClick={() => alert("Đăng xuất!")}
+                  className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                >
+                  Đăng xuất
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -123,7 +168,7 @@ function App() {
           <Routes>
             {/* Route cho Trang chủ */}
             <Route path="/Dashboard" element={<Dashboard />} />
-
+            <Route path="/BusSchedule" element={<BusSchedule />} />
             <Route path="/drivers" element={<DriversPage />} />
             <Route path="/students" element={<ManageStudent />} />
             <Route path="/buses" element={<ManageBus />} />
