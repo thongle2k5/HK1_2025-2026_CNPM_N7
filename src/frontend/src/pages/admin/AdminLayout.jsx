@@ -5,7 +5,7 @@ import ManageStudent from "./ManageStudent";
 import ManageBus from "./ManageBus";
 import ManageParent from "./ManageParent";
 import Dashboard from "./Dashboard";
-import BusSchedule from "./BusSchedule";
+import BusSchedule from "./Schedule/BusSchedule";
 import React, { useState } from "react";
 function App() {
   const location = useLocation();
