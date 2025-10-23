@@ -7,6 +7,7 @@ import ManageParent from "./ManageParent";
 import Dashboard from "./Dashboard";
 import BusSchedule from "./Schedule/BusSchedule";
 import React, { useState } from "react";
+import DriverManager from "./driver/DriverManager";
 function App() {
   const location = useLocation();
   const [isOpen, setIsOpnen] = useState(false);
@@ -51,10 +52,10 @@ function App() {
             </li>
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
               <Link
-                to="/drivers"
+                to="/DriverManager"
                 className={`w-full  flex items-center 
         ${
-          location.pathname === "/drivers"
+          location.pathname === "/DriverManager"
             ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
             : ""
         }`}
@@ -169,7 +170,7 @@ function App() {
             {/* Route cho Trang chủ */}
             <Route path="/Dashboard" element={<Dashboard />} />
             <Route path="/BusSchedule" element={<BusSchedule />} />
-            <Route path="/drivers" element={<DriversPage />} />
+            <Route path="/DriverManager" element={<DriverManager />} />
             <Route path="/students" element={<ManageStudent />} />
             <Route path="/buses" element={<ManageBus />} />
             <Route path="/parents" element={<ManageParent />} />
