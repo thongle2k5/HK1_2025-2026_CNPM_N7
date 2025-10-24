@@ -5,7 +5,7 @@ src/Backend/node_modules/
 
 # Ignore environment variables
 .env
-
+docker-compose.yml
 # Ignore build and dist folders
 dist/
 build/
