@@ -1,6 +1,7 @@
 import React from "react";
 import DriverStats from "./DriverStats";
 import DriverTable from "./DriverTable";
+import DriverCharts from "./DriverCharts";
 function DriverManager() {
   return (
     <div>
@@ -24,7 +25,9 @@ function DriverManager() {
       <div>
         <DriverTable />
       </div>
-      <div></div>
+      <div>
+        <DriverCharts />
+      </div>
     </div>
   );
 }

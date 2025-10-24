@@ -1,36 +1,24 @@
-// backend/server.js (Dùng ES Modules - import)
-import 'dotenv/config';
+// Backend/server.js
+import 'dotenv/config'; 
 import express from 'express';
-import cors from 'cors'; // Cần thiết để frontend truy cập
+import cors from 'cors';
+// ... (các import khác như userRouter...)
+import busRouter from './routes/bus.route.js'; 
 
 const app = express();
-const PORT = 5000;
 
-// ==========================================================
-// 1. MIDDLEWARE CHUNG: Cần được định nghĩa TRƯỚC CÁC ROUTES
-// ==========================================================
-app.use(express.json()); // Đảm bảo dòng này nằm ĐẦU TIÊN trong số các middleware
-app.use(cors({
-    origin: 'http://localhost:5173' // Cho phép Frontend truy cập
-})); 
-// ==========================================================
-// 2. ĐỊNH NGHĨA CÁC API ENDPOINTS
-// (Cần nằm SAU middleware và TRƯỚC bất kỳ catch-all/error handler nào)
-// ==========================================================
-app.get('/api/map/key', (req, res) => {
-    // 1. Lấy Key từ biến môi trường mới
-    const apiKey = process.env.OPENROUTESERVICE_API_KEY; 
-    
-    if (!apiKey) {
-        return res.status(500).json({ error: "OpenRouteService API Key chưa được cấu hình trên server." });
-    }
+// ... (các app.use khác...)
 
-    // 2. Trả về Key dưới dạng JSON cho Frontend
-    res.json({ key: apiKey });
-});
-// ==========================================================
-// 3. KHỞI ĐỘNG SERVER (LUÔN Ở CUỐI CÙNG)
-// ==========================================================
+// --- THÊM DÒNG NÀY ---
+app.use(cors()); 
+app.use(express.json());
+// Báo cho server: Bất cứ request nào đến /api/buses
+// thì hãy đưa cho busRouter xử lý
+app.use('/api/buses', busRouter);
+// ----------------------
+
+// Lấy cổng từ file .env (của bạn là 5000)
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Backend Server is running on http://localhost:${PORT}`);
+  console.log(`Server đang chạy tại http://localhost:${PORT}`);
 });

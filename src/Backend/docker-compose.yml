@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  # Tên dịch vụ
+  mysql_db:
+    image: mysql:8.0 # Yêu cầu Docker dùng ảnh (image) MySQL 8.0
+    container_name: mysql_bus_tracking # Tên container để bạn dễ nhận ra
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root # Đặt mật khẩu cho user 'root' là 'root'
+      MYSQL_DATABASE: ssb # Tự động tạo một database rỗng tên 'ssb'
+    ports:
+      # Ánh xạ Cổng_máy_bạn:Cổng_trong_container
+      # Ta dùng 3307 để TRÁNH xung đột với cổng 3306 của XAMPP (nếu có)
+      - "3306:3306"
+    volumes:
+      # Giúp lưu data (database) kể cả khi bạn tắt/xóa container
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

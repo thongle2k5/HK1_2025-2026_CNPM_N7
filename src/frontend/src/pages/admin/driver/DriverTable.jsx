@@ -1,4 +1,7 @@
 import React from "react";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { FaMessage } from "react-icons/fa6";
+import { PiNotePencilBold } from "react-icons/pi";
 function DriverTable() {
   return (
     <div className="bg-white rounded-lg shadow-lg my-4 ">
@@ -26,7 +29,27 @@ function DriverTable() {
               <td>Hành động</td>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+            <tr>
+              <td>ada</td>
+              <td>đấ</td>
+              <td>sadasd</td>
+              <td>adada</td>
+              <td>đấ</td>
+              <td>đá</td>
+              <td>
+                <button className="text-red-600">
+                  <RiDeleteBin6Line />
+                </button>
+                <button className="p-4">
+                  <FaMessage className="text-green-600 " />
+                </button>
+                <button>
+                  <PiNotePencilBold />
+                </button>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
