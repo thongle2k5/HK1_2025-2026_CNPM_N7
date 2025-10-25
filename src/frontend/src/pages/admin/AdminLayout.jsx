@@ -7,6 +7,9 @@ import Dashboard from "./Dashboard";
 import BusSchedule from "./Schedule/BusSchedule";
 import React, { useState } from "react";
 import DriverManager from "./driver/DriverManager";
+import ManageRoute from "./ManageRoute";
+import ManageLocation from "./ManageLocation";
+import ManageAssignment from "./ManageAssignment";
 function App() {
   const location = useLocation();
   const [isOpen, setIsOpnen] = useState(false);
@@ -78,7 +81,17 @@ function App() {
             </li>
 
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
-              🗺️Tuyến đường
+              <Link
+                to="/ManageRoute"
+                className={`w-full  flex items-center 
+        ${
+          location.pathname === "/ManageRoute"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
+              >
+                🗺️Tuyến đường{" "}
+              </Link>
             </li>
 
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
@@ -112,10 +125,30 @@ function App() {
               🔔Thông báo
             </li>
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
-              🔄Phân công
+              <Link
+                to="/ManageAssignment"
+                className={`w-full  flex items-center 
+        ${
+          location.pathname === "/ManageAssignment"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
+              >
+                🔄Phân công
+              </Link>
             </li>
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
-              📍Cập nhật vị trí
+              <Link
+                to="/ManageLocation"
+                className={`w-full  flex items-center 
+        ${
+          location.pathname === "/ManageLocation"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
+              >
+                📍Cập nhật vị trí
+              </Link>
             </li>
           </ul>
         </div>
@@ -173,6 +206,9 @@ function App() {
             <Route path="/students" element={<ManageStudent />} />
             <Route path="/buses" element={<ManageBus />} />
             <Route path="/parents" element={<ManageParent />} />
+            <Route path="/ManageRoute" element={<ManageRoute />} />
+            <Route path="/ManageLocation" element={<ManageLocation />} />
+            <Route path="/ManageAssignment" element={<ManageAssignment />} />
           </Routes>
         </div>
       </div>
