@@ -15,6 +15,11 @@ const statusColor = {
 };
 
 function StudentInfo() {
+  const [selectedStudent, setSelectedStudent] = React.useState(null);
+
+  const handleStudentClick = (student) => {
+    setSelectedStudent(student);
+  };
   return (
     <aside className="w-full h-full border-l border-gray-400 flex flex-col">
       <h2 className="text-3xl font-bold text-blue-800 p-4">Student Info</h2>
@@ -39,7 +44,10 @@ function StudentInfo() {
                 </div>
               </td>
               <td>
-                <button className="flex justify-center items-center">
+                <button className="flex justify-center items-center"
+                  onClick={() => {
+                    handleStudentClick(s);
+                  }}>
                   <MoreHorizontal className="text-gray-600 hover:text-gray-900 size-8" />
                 </button>
               </td>
@@ -48,6 +56,14 @@ function StudentInfo() {
           ))}
         </tbody>
       </table>
+      {
+        selectedStudent != null && (
+          <DetailInfo
+            name={selectedStudent.name}
+            status={selectedStudent.status} />
+        )
+      }
+
     </aside>
   );
 };
