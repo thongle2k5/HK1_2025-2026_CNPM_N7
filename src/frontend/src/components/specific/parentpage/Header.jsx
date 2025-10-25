@@ -1,10 +1,10 @@
 import React from "react";
 import { Bell } from "lucide-react";
 
-const Header = () => {
+const Header = ({title}) => {
   return (
     <header className="bg-blue-600 text-white px-6 py-3 flex justify-between items-center">
-      <h1 className="text-lg font-semibold">My Child's Bus</h1>
+      <h1 className="text-2xl font-semibold">{title}</h1>
 
       <div className="flex items-center gap-4">
         <div className="relative">
