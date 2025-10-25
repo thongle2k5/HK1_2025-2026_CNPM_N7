@@ -22,7 +22,7 @@ export default function Schedule() {
         bus: "SG-1234",
         start: "16:00",
         end: "17:30",
-        status: "Chưa bắt đầu",
+        status: "Hoàn thành",
       },
     ],
     "Thứ 3": [
