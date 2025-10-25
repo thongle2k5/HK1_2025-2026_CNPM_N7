@@ -224,6 +224,8 @@ CREATE TABLE `schedule` (
   `date` date DEFAULT NULL,
   `start_time` time DEFAULT NULL,
   `manager_id` int DEFAULT NULL,
+  `end_time` time DEFAULT NULL,
+  `status` enum('pending','in progress','completed') DEFAULT NULL,
   PRIMARY KEY (`schedule_id`),
   KEY `route_id` (`route_id`),
   KEY `bus_id` (`bus_id`),
@@ -254,14 +256,10 @@ DROP TABLE IF EXISTS `stop`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `stop` (
   `stop_id` int NOT NULL AUTO_INCREMENT,
-  `route_id` int DEFAULT NULL,
   `latitude` float DEFAULT NULL,
   `longitude` float DEFAULT NULL,
   `address` text,
-  `order` int DEFAULT NULL,
-  PRIMARY KEY (`stop_id`),
-  KEY `route_id` (`route_id`),
-  CONSTRAINT `stop_ibfk_1` FOREIGN KEY (`route_id`) REFERENCES `route` (`route_id`)
+  PRIMARY KEY (`stop_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -275,6 +273,34 @@ LOCK TABLES `stop` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `stop_route`
+--
+
+DROP TABLE IF EXISTS `stop_route`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `stop_route` (
+  `route_id` int NOT NULL,
+  `stop_id` int NOT NULL,
+  `order` int DEFAULT NULL,
+  `expected_arrive_time` time DEFAULT NULL,
+  PRIMARY KEY (`route_id`,`stop_id`),
+  KEY `stop_id` (`stop_id`),
+  CONSTRAINT `stop_route_ibfk_1` FOREIGN KEY (`stop_id`) REFERENCES `stop` (`stop_id`),
+  CONSTRAINT `stop_route_ibfk_2` FOREIGN KEY (`route_id`) REFERENCES `route` (`route_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `stop_route`
+--
+
+LOCK TABLES `stop_route` WRITE;
+/*!40000 ALTER TABLE `stop_route` DISABLE KEYS */;
+/*!40000 ALTER TABLE `stop_route` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `student`
 --
 
@@ -285,7 +311,10 @@ CREATE TABLE `student` (
   `student_id` int NOT NULL AUTO_INCREMENT,
   `student_name` varchar(50) DEFAULT NULL,
   `class` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`student_id`)
+  `stop_id` int DEFAULT NULL,
+  PRIMARY KEY (`student_id`),
+  KEY `stop_id` (`stop_id`),
+  CONSTRAINT `student_ibfk_1` FOREIGN KEY (`stop_id`) REFERENCES `stop` (`stop_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -295,7 +324,7 @@ CREATE TABLE `student` (
 
 LOCK TABLES `student` WRITE;
 /*!40000 ALTER TABLE `student` DISABLE KEYS */;
-INSERT INTO `student` VALUES (1,'Nguyễn Minh Anh','1A'),(2,'Trần Gia Bảo','1A'),(3,'Lê Thảo Nhi','1A'),(4,'Phạm Anh Duy','1A'),(5,'Hoàng Thu Trang','1A'),(6,'Đặng Minh Khang','1A'),(7,'Võ Hữu Phát','1A'),(8,'Ngô Nhật Linh','1A'),(9,'Bùi Khánh Vy','1A'),(10,'Tô Anh Quân','1A'),(11,'Đinh Phương Thảo','1B'),(12,'Huỳnh Đức Huy','1B'),(13,'Phan Hồng Nhung','1B'),(14,'Trương Ngọc Long','1B'),(15,'Mai Anh Thư','1B'),(16,'Vũ Đức Minh','1B'),(17,'Nguyễn Hoài Nam','1B'),(18,'Trần Bảo Trân','1B'),(19,'Lý Khánh Dương','1B'),(20,'Phạm Gia Hân','1B');
+INSERT INTO `student` VALUES (1,'Nguyễn Minh Anh','1A',NULL),(2,'Trần Gia Bảo','1A',NULL),(3,'Lê Thảo Nhi','1A',NULL),(4,'Phạm Anh Duy','1A',NULL),(5,'Hoàng Thu Trang','1A',NULL),(6,'Đặng Minh Khang','1A',NULL),(7,'Võ Hữu Phát','1A',NULL),(8,'Ngô Nhật Linh','1A',NULL),(9,'Bùi Khánh Vy','1A',NULL),(10,'Tô Anh Quân','1A',NULL),(11,'Đinh Phương Thảo','1B',NULL),(12,'Huỳnh Đức Huy','1B',NULL),(13,'Phan Hồng Nhung','1B',NULL),(14,'Trương Ngọc Long','1B',NULL),(15,'Mai Anh Thư','1B',NULL),(16,'Vũ Đức Minh','1B',NULL),(17,'Nguyễn Hoài Nam','1B',NULL),(18,'Trần Bảo Trân','1B',NULL),(19,'Lý Khánh Dương','1B',NULL),(20,'Phạm Gia Hân','1B',NULL);
 /*!40000 ALTER TABLE `student` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -324,37 +353,6 @@ LOCK TABLES `student_parent` WRITE;
 /*!40000 ALTER TABLE `student_parent` DISABLE KEYS */;
 INSERT INTO `student_parent` VALUES (1,1),(1,2),(2,3),(2,4),(3,5),(3,6),(4,7),(4,8),(5,9),(5,10),(6,11),(7,12),(8,13),(9,14),(10,15),(11,16),(12,17),(13,18),(14,19),(15,20),(16,21),(17,22),(18,23),(19,24),(20,25);
 /*!40000 ALTER TABLE `student_parent` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `student_route_assignment`
---
-
-DROP TABLE IF EXISTS `student_route_assignment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `student_route_assignment` (
-  `assignment_id` int NOT NULL AUTO_INCREMENT,
-  `pickup_stop_id` int DEFAULT NULL,
-  `student_id` int DEFAULT NULL,
-  `dropoff_stop_id` int DEFAULT NULL,
-  PRIMARY KEY (`assignment_id`),
-  KEY `pickup_stop_id` (`pickup_stop_id`),
-  KEY `dropoff_stop_id` (`dropoff_stop_id`),
-  KEY `student_id` (`student_id`),
-  CONSTRAINT `student_route_assignment_ibfk_1` FOREIGN KEY (`pickup_stop_id`) REFERENCES `stop` (`stop_id`),
-  CONSTRAINT `student_route_assignment_ibfk_2` FOREIGN KEY (`dropoff_stop_id`) REFERENCES `stop` (`stop_id`),
-  CONSTRAINT `student_route_assignment_ibfk_3` FOREIGN KEY (`student_id`) REFERENCES `student` (`student_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `student_route_assignment`
---
-
-LOCK TABLES `student_route_assignment` WRITE;
-/*!40000 ALTER TABLE `student_route_assignment` DISABLE KEYS */;
-/*!40000 ALTER TABLE `student_route_assignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -394,4 +392,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-12 14:41:08
+-- Dump completed on 2025-10-25  9:11:22
