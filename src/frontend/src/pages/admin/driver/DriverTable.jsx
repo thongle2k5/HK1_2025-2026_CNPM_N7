@@ -1,54 +1,93 @@
 import React from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import StatusBadge from "./statusPage";
 import { FaMessage } from "react-icons/fa6";
 import { PiNotePencilBold } from "react-icons/pi";
-function DriverTable() {
+function DriverTable({ data }) {
   return (
-    <div className="bg-white rounded-lg shadow-lg my-4 ">
-      <div className="flex items-center justify-between py-3 ">
-        <div className="flex text-gray-900">
-          Lọc trạng thái:
-          <div className="bg-gray-400 px-20 py-2 rounded-lg mx-2"></div>
-        </div>
-        <input
-          type="text"
-          placeholder="Tìm kiếm tài xế trong bảng..."
-          className="outline-none border mx-4 rounded-3xl p-2"
-        />
-      </div>
-      <div className="">
-        <table className="w-full rounded-lg">
-          <thead>
-            <tr className="bg-blue-500 text-white rounded-lg">
-              <td>Mã tài xế</td>
-              <td>Họ và tên</td>
-              <td>Số điện thoại</td>
-              <td>Tuyến đường phụ trách</td>
-              <td>Trạng thái</td>
-              <td>Vị trí hiện tại</td>
-              <td>Hành động</td>
+    <div>
+      <div className="overflow-x-auto rounded-lg overflow-hidden shadow-md border border-gray-200">
+        <table className="min-w-full divide-y divide-gray-200 rounded-lg">
+          <thead className="bg-blue-500 ">
+            <tr>
+              <th
+                scope="col"
+                className="px-4 py-3 text-left text-sm font-semibold text-white"
+              >
+                Mã tài xế
+              </th>
+              <th
+                scope="col"
+                className="px-4 py-3 text-left text-sm font-semibold text-white"
+              >
+                Họ và tên
+              </th>
+              <th
+                scope="col"
+                className="px-4 py-3 text-left text-sm font-semibold text-white"
+              >
+                Số điện thoại
+              </th>
+              <th
+                scope="col"
+                className="px-4 py-3 text-left text-sm font-semibold text-white"
+              >
+                Tuyến đường phụ trách
+              </th>
+              <th
+                scope="col"
+                className="px-4 py-3 text-left text-sm font-semibold text-white"
+              >
+                Trạng thái
+              </th>
+              <th
+                scope="col"
+                className="px-4 py-3 text-left text-sm font-semibold text-white"
+              >
+                Vị trí hiện tại
+              </th>
+              <th
+                scope="col"
+                className="px-4 py-3 text-left text-sm font-semibold text-white"
+              >
+                Hành động
+              </th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>ada</td>
-              <td>đấ</td>
-              <td>sadasd</td>
-              <td>adada</td>
-              <td>đấ</td>
-              <td>đá</td>
-              <td>
-                <button className="text-red-600">
-                  <RiDeleteBin6Line />
-                </button>
-                <button className="p-4">
-                  <FaMessage className="text-green-600 " />
-                </button>
-                <button>
-                  <PiNotePencilBold />
-                </button>
-              </td>
-            </tr>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {data.map((driver) => (
+              <tr>
+                <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
+                  {driver.id}
+                </td>
+                <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
+                  {driver.hoTen}
+                </td>
+                <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
+                  {driver.soDienThoai}
+                </td>
+                <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
+                  {driver.tuyenPhuTrach}
+                </td>
+                <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
+                  <StatusBadge status={driver.trangThai} />
+                </td>
+                <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
+                  {driver.viTriHienTai}
+                </td>
+                <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
+                  <button className="text-red-600">
+                    <RiDeleteBin6Line />
+                  </button>
+                  <button className="p-4">
+                    <FaMessage className="text-green-600 " />
+                  </button>
+                  <button>
+                    <PiNotePencilBold />
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

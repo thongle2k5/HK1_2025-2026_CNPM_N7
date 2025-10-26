@@ -1,5 +1,5 @@
 import { FaUserCircle, FaBus } from "react-icons/fa";
-import { Link, Routes, Route, useLocation } from "react-router-dom";
+import { Link, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import ManageStudent from "./ManageStudent";
 import ManageBus from "./ManageBus";
 import ManageParent from "./ManageParent";
@@ -10,6 +10,8 @@ import DriverManager from "./driver/DriverManager";
 import ManageRoute from "./ManageRoute";
 import ManageLocation from "./ManageLocation";
 import ManageAssignment from "./ManageAssignment";
+import ProFile from "./profile";
+import index from "./ManageBus/index";
 function App() {
   const location = useLocation();
   const [isOpen, setIsOpnen] = useState(false);
@@ -19,6 +21,7 @@ function App() {
 
   return (
     <div className=" flex h-screen ">
+      {/*------------------------------------------sidebar------------------------------------------------------------------*/}
       <div className="w-64 bg-white flex-shrink-0 shadow-lg">
         <div className="flex justify-center items-center h-16 font-bold text-blue text-xl border-b border-r">
           <FaBus className="mr-2 text-2xl text-blue-600" />
@@ -68,10 +71,10 @@ function App() {
 
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
               <Link
-                to="/buses"
+                to="/index"
                 className={`w-full  flex items-center 
         ${
-          location.pathname === "/buses"
+          location.pathname === "/index"
             ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
             : ""
         }`}
@@ -153,15 +156,10 @@ function App() {
           </ul>
         </div>
       </div>
+      {/*------------------------------------------------------------------------------------------------- */}
       <div className="flex flex-col flex-1 overflow-hidden">
         <div className="flex items-center justify-between h-16 bg-white border-b flex-shrink-0">
-          <div className="px-6">
-            <input
-              type="text"
-              placeholder="Tìm kiếm..."
-              className="p-2 px-6 border outline-none text-black"
-            />
-          </div>
+          <div className="px-6">{"chua xac dinh"}</div>
           <div className="relative">
             <button
               onClick={toggleDropdown}
@@ -169,17 +167,15 @@ function App() {
             >
               <FaUserCircle className="text-3xl" />
             </button>
+            {/*-----------------------dropdown---------------------------- */}
             {isOpen && (
               <div className=" mr-12 absolute right-0  w-52 bg-white rounded-md shadow-lg py-1 z-50 trainsform origin-top-right ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <ul className="text-gray-700 cursor-pointer ">
-                  <li className="px-4 py-2">
-                    <img src="/ipad.jpg" alt="dfs" />
-                    Nguyen van a
-                  </li>
-                  <li>vai tro: {"quan tri vien"}</li>
+                  <li className="px-4 py-2">Nguyen van a</li>
+                  <li className="px-4 py-2">vai tro: {"quan tri vien"}</li>
                 </ul>
                 <Link
-                  to="/profile"
+                  to="/Profile"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Cài đặt tài khoản
@@ -194,17 +190,19 @@ function App() {
                 </button>
               </div>
             )}
+            {/*----------------------------------------------------------- */}
           </div>
         </div>
-
+        {/*-------------------------------------------------- Route cho Trang chủ ------------------------------------------------*/}
         <div className="flex-1 overflow-y-auto bg-gray-100 p-4">
           <Routes>
-            {/* Route cho Trang chủ */}
+            <Route path="/" element={<Navigate to="/Dashboard" replace />} />
+            <Route path="/profile" element={<ProFile />} />
             <Route path="/Dashboard" element={<Dashboard />} />
             <Route path="/BusSchedule" element={<BusSchedule />} />
             <Route path="/DriverManager" element={<DriverManager />} />
             <Route path="/students" element={<ManageStudent />} />
-            <Route path="/buses" element={<ManageBus />} />
+            <Route path="/index" element={<ManageBus />} />
             <Route path="/parents" element={<ManageParent />} />
             <Route path="/ManageRoute" element={<ManageRoute />} />
             <Route path="/ManageLocation" element={<ManageLocation />} />
