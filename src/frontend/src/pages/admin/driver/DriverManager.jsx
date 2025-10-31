@@ -1,55 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DriverStats from "./DriverStats";
 import DriverTable from "./DriverTable";
 import DriverCharts from "./DriverCharts";
+import DriverForm from "./DriverForm";
 function DriverManager() {
-  const data = [
-    {
-      id: "TX001",
-      maTX: "TX001",
-      hoTen: "Nguyễn Văn A",
-      soDienThoai: "0901234567",
-      tuyenPhuTrach: "Tuyến 1",
-      trangThai: "Hoạt động", // Dùng cho Lọc và Badge màu xanh
-      viTriHienTai: "Trường Tiểu học A",
-      // Dữ liệu phụ cho biểu đồ nếu cần
-      soChuyenHoanThanh: 35,
-      tyLeLamViec: 95,
-    },
-    {
-      id: "TX002",
-      maTX: "TX002",
-      hoTen: "Trần Thị B",
-      soDienThoai: "0912345678",
-      tuyenPhuTrach: "Tuyến 2",
-      trangThai: "Nghỉ phép", // Dùng cho Lọc và Badge màu vàng
-      viTriHienTai: "Nhà riêng",
-      soChuyenHoanThanh: 28,
-      tyLeLamViec: 70,
-    },
-    {
-      id: "TX003",
-      maTX: "TX003",
-      hoTen: "Lê Văn C",
-      soDienThoai: "0987654321",
-      tuyenPhuTrach: "Tuyến 3",
-      trangThai: "Vi phạm", // Dùng cho Lọc và Badge màu đỏ
-      viTriHienTai: "Trạm dừng xe",
-      soChuyenHoanThanh: 10,
-      tyLeLamViec: 50,
-    },
-    {
-      id: "TX004",
-      maTX: "TX004",
-      hoTen: "Phạm Văn D",
-      soDienThoai: "0976543210",
-      tuyenPhuTrach: "Tuyến 1",
-      trangThai: "Hoạt động",
-      viTriHienTai: "Kho ngoại thành",
-      soChuyenHoanThanh: 42,
-      tyLeLamViec: 100,
-    },
-  ];
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    const fetchDrivers = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/drivers");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data1 = await response.json();
+        setData(data1);
+      } catch (err) {
+        setError(err.message);
+        console.error("Lỗi khi fetch data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDrivers();
+  }, []);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [drivers, setDrivers] = useState(data);
   const [statusFilter, setStatusFilter] = useState("Tất cả");
@@ -81,22 +57,15 @@ function DriverManager() {
   const filteredDriver = getFilteredDriver();
   return (
     <div>
-      <div className="flex items-center justify-between border p-6 m-4 rounded-lg shadow-md bg-white">
-        <div className="font-bold text-xl">Quản lý tài xế</div>
-        <div>
-          <input
-            type="text"
-            placeholder="Tìm kiếm tài xế...."
-            className="rounded-3xl border p-2 mx-4 outline-none"
-          />
-          <button className="text-white bg-blue-500 py-1 px-4 rounded-3xl hover:bg-blue-600">
-            Thêm tài xế mới
-          </button>
-        </div>
+      <div className="flex items-center justify-between text-left py-6 mx-4  font-bold text-2xl text-black">
+        Quản lý tài xế
       </div>
 
       <div className="mx-4 my-6 ">
         <DriverStats />
+      </div>
+      <div className="mx-4 my-6 bg-white rounded-lg shadow-lg">
+        <DriverForm />
       </div>
       <div className="bg-white rounded-lg shadow-lg my-4 mx-4">
         <div className="flex items-center justify-between py-3 ">
@@ -121,7 +90,7 @@ function DriverManager() {
             onChange={handleSearchChange}
           />
         </div>
-        <DriverTable data={filteredDriver} />
+        <DriverTable data={data} />
       </div>
       <div>
         <DriverCharts data={filteredDriver} />

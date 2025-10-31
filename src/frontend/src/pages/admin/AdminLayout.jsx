@@ -1,5 +1,13 @@
 import { FaUserCircle, FaBus } from "react-icons/fa";
-import { Link, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { CiLogout } from "react-icons/ci";
+import {
+  Link,
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 import ManageStudent from "./ManageStudent";
 import ManageBus from "./ManageBus";
 import ManageParent from "./ManageParent";
@@ -11,14 +19,18 @@ import ManageRoute from "./ManageRoute";
 import ManageLocation from "./ManageLocation";
 import ManageAssignment from "./ManageAssignment";
 import ProFile from "./profile";
-import index from "./ManageBus/index";
-function App() {
+import ManageNotification from "./ManageNotification/index";
+function AdminLayout() {
   const location = useLocation();
   const [isOpen, setIsOpnen] = useState(false);
   const toggleDropdown = () => {
     setIsOpnen(!isOpen);
   };
-
+  const navigate = useNavigate();
+  const hanldeLogout = () => {
+    localStorage.removeItem("authToken");
+    navigate("/login", { replace: true });
+  };
   return (
     <div className=" flex h-screen ">
       {/*------------------------------------------sidebar------------------------------------------------------------------*/}
@@ -31,10 +43,10 @@ function App() {
           <ul className=" py-2 ">
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer ">
               <Link
-                to="/Dashboard"
+                to="/admin/AdminLayout/Dashboard"
                 className={`w-full flex items-center 
         ${
-          location.pathname === "/Dashboard"
+          location.pathname === "/admin/AdminLayout/Dashboard"
             ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
             : ""
         }`}
@@ -44,10 +56,10 @@ function App() {
             </li>
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
               <Link
-                to="/BusSchedule"
+                to="/admin/AdminLayout/BusSchedule"
                 className={`w-full  flex items-center 
         ${
-          location.pathname === "/BusSchedule"
+          location.pathname === "/admin/AdminLayout/BusSchedule"
             ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
             : ""
         }`}
@@ -57,10 +69,10 @@ function App() {
             </li>
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
               <Link
-                to="/DriverManager"
+                to="/admin/AdminLayout/DriverManager"
                 className={`w-full  flex items-center 
         ${
-          location.pathname === "/DriverManager"
+          location.pathname === "/admin/AdminLayout/DriverManager"
             ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
             : ""
         }`}
@@ -71,10 +83,10 @@ function App() {
 
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
               <Link
-                to="/index"
+                to="/admin/AdminLayout/index"
                 className={`w-full  flex items-center 
         ${
-          location.pathname === "/index"
+          location.pathname === "/admin/AdminLayout/index"
             ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
             : ""
         }`}
@@ -85,10 +97,10 @@ function App() {
 
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
               <Link
-                to="/ManageRoute"
+                to="/admin/AdminLayout/ManageRoute"
                 className={`w-full  flex items-center 
         ${
-          location.pathname === "/ManageRoute"
+          location.pathname === "/admin/AdminLayout/ManageRoute"
             ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
             : ""
         }`}
@@ -99,10 +111,10 @@ function App() {
 
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
               <Link
-                to="/students"
+                to="/admin/AdminLayout/students"
                 className={`w-full  flex items-center 
         ${
-          location.pathname === "/students"
+          location.pathname === "/admin/AdminLayout/students"
             ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
             : ""
         }`}
@@ -113,10 +125,10 @@ function App() {
 
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
               <Link
-                to="/parents"
+                to="/admin/AdminLayout/parents"
                 className={`w-full  flex items-center 
         ${
-          location.pathname === "/parents"
+          location.pathname === "/admin/AdminLayout/parents"
             ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
             : ""
         }`}
@@ -125,14 +137,24 @@ function App() {
               </Link>
             </li>
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
-              🔔Thông báo
+              <Link
+                to="/admin/AdminLayout/ManageNotification"
+                className={`w-full  flex items-center 
+        ${
+          location.pathname === "/admin/AdminLayout/ManageNotification"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
+              >
+                🔔Thông báo
+              </Link>
             </li>
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
               <Link
-                to="/ManageAssignment"
+                to="/admin/AdminLayout/ManageAssignment"
                 className={`w-full  flex items-center 
         ${
-          location.pathname === "/ManageAssignment"
+          location.pathname === "/admin/AdminLayout/ManageAssignment"
             ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
             : ""
         }`}
@@ -142,16 +164,22 @@ function App() {
             </li>
             <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
               <Link
-                to="/ManageLocation"
+                to="/admin/AdminLayout/ManageLocation"
                 className={`w-full  flex items-center 
         ${
-          location.pathname === "/ManageLocation"
+          location.pathname === "/admin/AdminLayout/ManageLocation"
             ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
             : ""
         }`}
               >
                 📍Cập nhật vị trí
               </Link>
+            </li>
+            <li className="p-3 flex hover:bg-blue-500 hover:text-white items-center cursor-pointer">
+              <button onClick={hanldeLogout} className="flex items-center">
+                <CiLogout className="mr-1" />
+                Đăng xuất
+              </button>
             </li>
           </ul>
         </div>
@@ -175,19 +203,13 @@ function App() {
                   <li className="px-4 py-2">vai tro: {"quan tri vien"}</li>
                 </ul>
                 <Link
-                  to="/Profile"
+                  to="Profile"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Cài đặt tài khoản
                 </Link>
 
                 <hr className="my-1" />
-                <button
-                  onClick={() => alert("Đăng xuất!")}
-                  className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                >
-                  Đăng xuất
-                </button>
               </div>
             )}
             {/*----------------------------------------------------------- */}
@@ -196,17 +218,18 @@ function App() {
         {/*-------------------------------------------------- Route cho Trang chủ ------------------------------------------------*/}
         <div className="flex-1 overflow-y-auto bg-gray-100 p-4">
           <Routes>
-            <Route path="/" element={<Navigate to="/Dashboard" replace />} />
-            <Route path="/profile" element={<ProFile />} />
-            <Route path="/Dashboard" element={<Dashboard />} />
-            <Route path="/BusSchedule" element={<BusSchedule />} />
-            <Route path="/DriverManager" element={<DriverManager />} />
-            <Route path="/students" element={<ManageStudent />} />
-            <Route path="/index" element={<ManageBus />} />
-            <Route path="/parents" element={<ManageParent />} />
-            <Route path="/ManageRoute" element={<ManageRoute />} />
-            <Route path="/ManageLocation" element={<ManageLocation />} />
-            <Route path="/ManageAssignment" element={<ManageAssignment />} />
+            <Route path="/" element={<Navigate to="Dashboard" replace />} />
+            <Route path="profile" element={<ProFile />} />
+            <Route path="Dashboard" element={<Dashboard />} />
+            <Route path="BusSchedule" element={<BusSchedule />} />
+            <Route path="DriverManager" element={<DriverManager />} />
+            <Route path="students" element={<ManageStudent />} />
+            <Route path="index" element={<ManageBus />} />
+            <Route path="parents" element={<ManageParent />} />
+            <Route path="ManageRoute" element={<ManageRoute />} />
+            <Route path="ManageLocation" element={<ManageLocation />} />
+            <Route path="ManageAssignment" element={<ManageAssignment />} />
+            <Route path="ManageNotification" element={<ManageNotification />} />
           </Routes>
         </div>
       </div>
@@ -214,4 +237,4 @@ function App() {
   );
 }
 
-export default App;
+export default AdminLayout;

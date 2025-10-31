@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import path from 'path'; // path là thư viện có sẵn của Node
 import { fileURLToPath } from 'url';
 
-import mysql from 'mysql2';
+import mysql from 'mysql2/promise';
 
 
 // Lấy đường dẫn thư mục hiện tại (ví dụ: .../Backend/db)
@@ -23,4 +23,4 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-export default pool.promise();
+export default pool;

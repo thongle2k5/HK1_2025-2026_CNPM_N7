@@ -11,9 +11,9 @@ function DriverCharts({ data }) {
   }
   return (
     <div className="flex justify-between bg-white rounded-lg shadow-lg">
-      <div className=" m-4">
+      <div className="border m-4">
         {" "}
-        Số chuyến xe hoàn thành theo tài xế
+        Số chuyến xe hoàn thành theo tài xế{" "}
         <BaseBarChart
           data={data}
           dataKeyX="hoTen"

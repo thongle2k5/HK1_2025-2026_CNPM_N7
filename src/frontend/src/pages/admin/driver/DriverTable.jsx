@@ -58,22 +58,20 @@ function DriverTable({ data }) {
             {data.map((driver) => (
               <tr>
                 <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
-                  {driver.id}
+                  {driver.driver_id}
                 </td>
                 <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
-                  {driver.hoTen}
+                  {driver.name}
                 </td>
                 <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
-                  {driver.soDienThoai}
+                  {driver.phone}
                 </td>
                 <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
-                  {driver.tuyenPhuTrach}
+                  {}
                 </td>
+                <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900"></td>
                 <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
-                  <StatusBadge status={driver.trangThai} />
-                </td>
-                <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
-                  {driver.viTriHienTai}
+                  {}
                 </td>
                 <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
                   <button className="text-red-600">

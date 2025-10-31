@@ -1,7 +1,15 @@
 import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Login from "./pages/common/Login.jsx";
 import AdminLayout from "./pages/admin/AdminLayout";
 export default function App() {
-  return <AdminLayout />;
+  return (
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/admin/AdminLayout/*" element={<AdminLayout />} />
+    </Routes>
+  );
 }
 
 // import Header from "./components/specific/parentpage/Header.jsx";
