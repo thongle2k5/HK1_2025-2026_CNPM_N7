@@ -4,7 +4,9 @@ import express from 'express';
 import cors from 'cors';
 // ... (các import khác như userRouter...)
 import busRouter from './routes/bus.route.js'; 
-
+import userRoute from './routes/user.route.js';
+import studentRoute from './routes/student.route.js';
+import stopRoute from './routes/stop.route.js';
 const app = express();
 
 // ... (các app.use khác...)
@@ -16,7 +18,9 @@ app.use(express.json());
 // thì hãy đưa cho busRouter xử lý
 app.use('/api/buses', busRouter);
 // ----------------------
-
+app.use('/api/users', userRoute);
+app.use('/api/students', studentRoute);
+app.use('/api/stops', stopRoute);
 // Lấy cổng từ file .env (của bạn là 5000)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
