@@ -33,21 +33,21 @@ function BusScheduleForm({ formdata, onDeleteAssignment }) {
         </thead>
         <tbody className="">
           {formdata.map((item) => (
-            <tr key={item.td} className="hover:bg-gray-50 border-b">
+            <tr key={item.bus_id} className="hover:bg-gray-50 border-b">
               <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {item.td}
+                {item.bus_id}
               </td>
               <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {item.xe}
+                {item.license_plate}
               </td>
               <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {item.tx}
+                {}
               </td>
               <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {item.ngay}
+                {}
               </td>
               <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {item.gio}
+                {}
               </td>
               <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 <div className="rounded-lg bg-blue-200 text-blue-800 w-fit px-2">

@@ -1,4 +1,4 @@
-import pool from '../db/Connect_dtb.js';
+import pool from '../models/Connect_dtb.js';
 import jwt from 'jsonwebtoken';
 import express from 'express';
 import bcrypt from 'bcryptjs';
@@ -11,14 +11,14 @@ router.post('/',async(req,res)=>{
         const user=rows[0];
        const cleanPassword=password.trim()
         if(!user){
-            return res.status(401).json({message:'Ten dang nhap khong dung'})
+            return res.status(401).json({message:'Sai tài khoản hoặc mật khẩu'})
         }
         const isMatch=await bcrypt.compare(cleanPassword,user.password)
         if(!isMatch){
-            return res.status(401).json({message:'mat khau khong dung!'})
+            return res.status(401).json({message:'Sai tài khoản hoặc mật khẩu'})
         }
         if(user.role!='manager'){
-            return res.status(401).json({message:'ban khong co quyen truy cap nay!'})
+            return res.status(401).json({message:'Bạn không có quyền truy cập!'})
         }
         const payload = {
     userId: user.user_id,

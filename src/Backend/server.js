@@ -5,7 +5,8 @@ import cors from 'cors';
 // ... (các import khác như userRouter...)
 import busRouter from './routes/bus.route.js'; 
 import driverRouter from './routes/driver.route.js';
-import login from './services/login.service.js'
+import login from './services/login.service.js';
+import dashboardRouter from './routes/dashboard.router.js';
 const app = express();
 // ... (các app.use khác...)
 // --- THÊM DÒNG NÀY ---
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use('/api/buses', busRouter);
 app.use('/api/drivers',driverRouter);
 app.use('/api/login',login)
+app.use('/api/dashboardata',dashboardRouter)
 // ----------------------
 
 // Lấy cổng từ file .env (của bạn là 5000)
