@@ -2,16 +2,19 @@ import pool from '../db/Connect_dtb.js';
 import jwt from 'jsonwebtoken';
 import express from 'express';
 import bcrypt from 'bcryptjs';
+import { register } from 'module';
 const router = express.Router();
 router.post('/',async(req,res)=>{
     try{
         const {username,password}=req.body;
         const [rows]= await pool.query('select * from user where username=?',[username])
         const user=rows[0];
+       const cleanPassword=password.trim()
         if(!user){
             return res.status(401).json({message:'Ten dang nhap khong dung'})
         }
-        if(user.password!=password){
+        const isMatch=await bcrypt.compare(cleanPassword,user.password)
+        if(!isMatch){
             return res.status(401).json({message:'mat khau khong dung!'})
         }
         if(user.role!='manager'){
@@ -20,7 +23,9 @@ router.post('/',async(req,res)=>{
         const payload = {
     userId: user.user_id,
     username: user.username,
-    role: user.role
+    role: user.role,
+     name: user.name
+    
 };
         const token=jwt.sign(
             payload,'you_secret_key',

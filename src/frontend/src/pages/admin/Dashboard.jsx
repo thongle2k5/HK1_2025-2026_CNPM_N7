@@ -40,7 +40,9 @@ function Dashboard() {
       </ul>
       <div className="h-[600px] m-4 grid grid-cols-2 grid-rows-2 gap-4">
         <div className="border shadow-lg bg-white rounded-lg">
-          <h1 className="px-4 py-2 text-blue-600 font-bold">biểu đồ cột</h1>
+          <h1 className="px-4 py-2 text-blue-600 font-bold">
+            Số chuyến xe hoàn thành theo tuần
+          </h1>
           <BaseBarChart
             data={data1}
             dataKeyX="name"
@@ -52,7 +54,7 @@ function Dashboard() {
         </div>
         <div className=" border shadow-lg bg-white rounded-lg col-start-1 row-start-2">
           <h1 className="px-4 py-2 text-blue-600 font-bold">
-            biểu đồ hình tròn
+            Tỉ lệ phân bố sinh viên theo tuyến đường
           </h1>
           <BasePieChart
             data={data}
@@ -63,7 +65,7 @@ function Dashboard() {
         </div>
         <div className=" border shadow-lg  bg-white rounded-lg col-start-2 row-start-1">
           <h1 className="px-4 py-2 text-blue-600 font-bold">
-            biểu đồ đường line
+            Số xe hoạt động theo thời gian thực
           </h1>
           <BaseLineChart
             data={data1}
@@ -76,7 +78,7 @@ function Dashboard() {
         </div>
         <div className="border shadow-lg bg-white rounded-lg row-start-2">
           <h1 className="px-4 py-2 text-blue-600 font-bold">
-            biểu đồ cột ngang
+            Tình trạng tài xế (đang hoạt động/nghỉ phép)
           </h1>
           <BaseHorizontalBarChart
             data={data1}

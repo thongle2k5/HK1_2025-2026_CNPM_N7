@@ -8,12 +8,13 @@ import {
   Navigate,
   useNavigate,
 } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import ManageStudent from "./ManageStudent";
 import ManageBus from "./ManageBus";
 import ManageParent from "./ManageParent";
 import Dashboard from "./Dashboard";
 import BusSchedule from "./Schedule/BusSchedule";
-import React, { useState } from "react";
+import React from "react";
 import DriverManager from "./driver/DriverManager";
 import ManageRoute from "./ManageRoute";
 import ManageLocation from "./ManageLocation";
@@ -22,11 +23,22 @@ import ProFile from "./profile";
 import ManageNotification from "./ManageNotification/index";
 function AdminLayout() {
   const location = useLocation();
-  const [isOpen, setIsOpnen] = useState(false);
-  const toggleDropdown = () => {
-    setIsOpnen(!isOpen);
-  };
   const navigate = useNavigate();
+  let userData = null;
+  const tokenData = localStorage.getItem("authToken");
+  if (tokenData) {
+    try {
+      userData = jwtDecode(tokenData);
+    } catch (err) {
+      console.error("token không hợp lệ!", err);
+      <Navigate to="/login" replace />;
+    }
+  } else {
+    <Navigate to="/login" replace />;
+  }
+  const fullName = userData.name.trim();
+  const nameParts = fullName.split(" ");
+  const lastName = nameParts[nameParts.length - 1];
   const hanldeLogout = () => {
     localStorage.removeItem("authToken");
     navigate("/login", { replace: true });
@@ -187,32 +199,14 @@ function AdminLayout() {
       {/*------------------------------------------------------------------------------------------------- */}
       <div className="flex flex-col flex-1 overflow-hidden">
         <div className="flex items-center justify-between h-16 bg-white border-b flex-shrink-0">
-          <div className="px-6">{"chua xac dinh"}</div>
-          <div className="relative">
-            <button
-              onClick={toggleDropdown}
-              className="focus:outline-none px-6"
-            >
-              <FaUserCircle className="text-3xl" />
-            </button>
-            {/*-----------------------dropdown---------------------------- */}
-            {isOpen && (
-              <div className=" mr-12 absolute right-0  w-52 bg-white rounded-md shadow-lg py-1 z-50 trainsform origin-top-right ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <ul className="text-gray-700 cursor-pointer ">
-                  <li className="px-4 py-2">Nguyen van a</li>
-                  <li className="px-4 py-2">vai tro: {"quan tri vien"}</li>
-                </ul>
-                <Link
-                  to="Profile"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Cài đặt tài khoản
-                </Link>
-
-                <hr className="my-1" />
+          <div className="px-6"></div>
+          <div className=" px-6 flex items-center">
+            <Link to="/admin/AdminLayout/profile" className="flex items-center">
+              <div className="px-2 text-black hover:border-b">
+                Xin chào {userData ? lastName : "Đang tải..."}
               </div>
-            )}
-            {/*----------------------------------------------------------- */}
+              <FaUserCircle className="text-3xl" />
+            </Link>
           </div>
         </div>
         {/*-------------------------------------------------- Route cho Trang chủ ------------------------------------------------*/}
