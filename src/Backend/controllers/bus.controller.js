@@ -10,6 +10,8 @@ const getAllBuses =async (req,res)=>{
     };
     
 }
+
 export const busController={
-getAllBuses
+getAllBuses,
+
 };

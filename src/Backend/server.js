@@ -4,6 +4,9 @@ import express from 'express';
 import cors from 'cors';
 // ... (các import khác như userRouter...)
 import busRouter from './routes/bus.route.js'; 
+import userRoute from './routes/user.route.js';
+import studentRoute from './routes/student.route.js';
+import stopRoute from './routes/stop.route.js';
 import driverRouter from './routes/driver.route.js';
 import login from './services/login.service.js';
 import dashboardRouter from './routes/dashboard.router.js';
@@ -20,7 +23,9 @@ app.use('/api/drivers',driverRouter);
 app.use('/api/login',login)
 app.use('/api/dashboardata',dashboardRouter)
 // ----------------------
-
+app.use('/api/users', userRoute);
+app.use('/api/students', studentRoute);
+app.use('/api/stops', stopRoute);
 // Lấy cổng từ file .env (của bạn là 5000)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
