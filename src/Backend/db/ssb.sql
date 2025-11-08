@@ -229,3 +229,10 @@ INSERT INTO notification (user_id, message, `timestamp`, type) VALUES
 -- (Ghi nhận trạng thái cho lịch trình 1, học sinh 1 tại trạm 1)
 INSERT INTO pickup_status (stop_id, student_id, schedule_id, `time`, status) VALUES
 (1, 1, 1, NOW(), 'boarded'); -- Học sinh 1 đã lên xe
+
+ALTER TABLE `user`
+ADD COLUMN `email` VARCHAR(100) DEFAULT NULL AFTER `phone`;
+
+UPDATE `user`
+SET email = CONCAT('abc', user_id, '@gmail.com')
+WHERE user_id BETWEEN 1 AND 31;
