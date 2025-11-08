@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FaBus } from "react-icons/fa";
 import ReusableBarChart from "../../components/Chart/BaseBarChart";
 import BaseHorizontalBarChart from "../../components/Chart/BaseHorizontalBarChart";
@@ -6,84 +6,124 @@ import BaseBarChart from "../../components/Chart/BaseBarChart";
 import BaseLineChart from "../../components/Chart/BaseLineChart";
 import BasePieChart from "../../components/Chart/BasePieChart";
 function Dashboard() {
-  const data = [
-    { name: "Chrome", value: 400 },
-    { name: "Firefox", value: 300 },
-    { name: "Edge", value: 300 },
-    { name: "Safari", value: 200 },
-  ];
-  const data1 = [
-    { name: "Tháng 1", DoanhThu: 4000, ChiPhi: 2400 },
-    { name: "Tháng 2", DoanhThu: 3000, ChiPhi: 1398 },
-    { name: "Tháng 3", DoanhThu: 2000, ChiPhi: 9800 },
-    { name: "Tháng 4", DoanhThu: 2780, ChiPhi: 3908 },
-    { name: "Tháng 5", DoanhThu: 1890, ChiPhi: 4800 },
-    { name: "Tháng 6", DoanhThu: 2390, ChiPhi: 3800 },
-  ];
+  //trích dữ liệu từ server
+  const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState({
+    total: null,
+    charts: null,
+  });
+  useEffect(() => {
+    const fetchData = async () => {
+      //lấy dữ liệu start
+      try {
+        const [startResponse, chartResponse] = await Promise.all([
+          fetch("http://localhost:5000/api/dashboardata/start"),
+          fetch("http://localhost:5000/api/dashboardata/chart"),
+        ]);
+        if (!startResponse.ok) throw new Error("Lỗi API /start");
+        if (!chartResponse.ok) throw new Error("Lỗi API /chart");
+        const dataTotal = await startResponse.json();
+        const chartData = await chartResponse.json();
+        const transformedTripData = Object.values(
+          chartData.tripStatus.reduce((acc, item) => {
+            const { month, status, totalTrips } = item;
+            if (!acc[month]) {
+              acc[month] = { name: `Tháng ${month}` };
+            }
+            acc[month][status] = totalTrips;
+            return acc;
+          }, {})
+        );
+        const transformedBusesData = chartData.activeBuses.map((item) => ({
+          name: `Tháng ${item.month}`,
+          "số xe": item.totalActiveBuses,
+        }));
+        setStats({
+          total: dataTotal,
+          charts: {
+            tripStatus: transformedTripData,
+            activeBuses: transformedBusesData,
+            studentByRoute: chartData.studentByRoute,
+            driverStatus: chartData.driverStatus,
+          },
+        });
+      } catch (err) {
+        console.log("không lấy được dữ liệu start", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+  if (isLoading || !stats.charts) {
+    return (
+      <div className="text-black font-bold flex items-center justify-center">
+        Đang tải dữ liệu dashboard...
+      </div>
+    );
+  }
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
   return (
     <div>
       <h1 className="px-4 text-xl font-bold">Tổng quan hệ thống</h1>
       <ul className="flex justify-between  h-[120px] m-4 ">
         <li className="flex items-center p-4 bg-blue-100 text-center text-xl rounded-lg shadow-lg w-[250px] ">
-          🚍 tổng số xe bus {/*số xe bus*/}
+          🚍 tổng số xe bus {stats.total.totalBuses}
         </li>
         <li className="flex items-center text-xl p-4 bg-blue-100 text-center rounded-lg shadow-lg w-[250px] ">
-          👨‍✈️ Tổng số tài xế {/*số tài xế*/}
+          👨‍✈️ Tổng số tài xế {stats.total.totalActiveDrivers}
         </li>
         <li className="flex items-center text-xl  p-4 bg-blue-100 text-center rounded-lg shadow-lg w-[250px] ">
-          🎓 Tổng số sinh viên {/*số sinh viên*/}
+          🎓 Tổng số sinh viên {stats.total.totalStudents}
         </li>
         <li className="flex items-center text-xl  p-4 bg-blue-100 text-center rounded-lg shadow-lg w-[250px] ">
-          🗺️ Tổng số tuyến đường {/*số Tuyến đường*/}
+          🗺️ Tổng số tuyến đường {stats.total.totalSchedulesToday}
         </li>
       </ul>
       <div className="h-[600px] m-4 grid grid-cols-2 grid-rows-2 gap-4">
         <div className="border shadow-lg bg-white rounded-lg">
-          <h1 className="px-4 py-2 text-blue-600 font-bold">biểu đồ cột</h1>
+          <h1 className="px-4 py-2 text-blue-600 font-bold">
+            Số chuyến xe hoàn thành theo tháng
+          </h1>
           <BaseBarChart
-            data={data1}
+            data={stats.charts.tripStatus}
             dataKeyX="name"
             barKeys={[
-              { key: "DoanhThu", color: "#0088FE", name: "Doanh Thu" },
-              { key: "ChiPhi", color: "#FF8042", name: "Chi Phí" },
+              { key: "completed", color: "#0088FE", name: "Hoan thành" },
+              { key: "pending", color: "#FF8042", name: "Đang chờ" },
             ]}
           />
         </div>
         <div className=" border shadow-lg bg-white rounded-lg col-start-1 row-start-2">
           <h1 className="px-4 py-2 text-blue-600 font-bold">
-            biểu đồ hình tròn
+            Tỉ lệ phân bố sinh viên theo tuyến đường
           </h1>
           <BasePieChart
-            data={data}
-            nameKey="name"
-            valueKey="value"
+            data={stats.charts.studentByRoute}
+            nameKey="routeName"
+            valueKey="studentCount"
             colors={COLORS}
           />
         </div>
         <div className=" border shadow-lg  bg-white rounded-lg col-start-2 row-start-1">
           <h1 className="px-4 py-2 text-blue-600 font-bold">
-            biểu đồ đường line
+            Tổng hợp xe hoạt động
           </h1>
           <BaseLineChart
-            data={data1}
+            data={stats.charts.activeBuses}
             dataKeyX="name"
-            linesKeys={[
-              { key: "DoanhThu", name: "Doanh thu", color: "#8884d8" },
-              { key: "ChiPhi", name: "Chi phí", color: "#82ca9d" },
-            ]}
+            linesKeys={[{ key: "số xe", name: "Số xe", color: "#82ca9d" }]}
           />
         </div>
         <div className="border shadow-lg bg-white rounded-lg row-start-2">
           <h1 className="px-4 py-2 text-blue-600 font-bold">
-            biểu đồ cột ngang
+            Tình trạng tài xế (đang hoạt động/nghỉ phép)
           </h1>
           <BaseHorizontalBarChart
-            data={data1}
-            dataKeyY="name"
+            data={stats.charts.driverStatus}
+            dataKeyY="status"
             barKeys={[
-              { key: "DoanhThu", name: "Doanh Thu", color: "#8884d8" },
-              { key: "ChiPhi", name: "Chi Phí", color: "#82ca9d" },
+              { key: "driver_count", name: "Trạng thái", color: "#8884d8" },
             ]}
           />
         </div>

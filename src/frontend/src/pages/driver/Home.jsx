@@ -1,8 +1,32 @@
-// src/pages/driver/Home.jsx
-import { BusFront, Users, CalendarDays, MapPin, AlertTriangle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CalendarDays, Users, MapPin, AlertTriangle } from "lucide-react";
+import MapView from "../../components/specific/driver/MapView";
+import DriverHeader from "./components/Header";
 
 export default function Home() {
-  // Dữ liệu mẫu
+  const [currentPos, setCurrentPos] = useState(null);
+
+  // Lấy vị trí hiện tại
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setCurrentPos({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          });
+        },
+        (err) => {
+          console.error("Không thể lấy vị trí GPS:", err);
+          setCurrentPos({ lat: 10.762622, lng: 106.660172 }); // vị trí mặc định
+        }
+      );
+    } else {
+      console.error("Trình duyệt không hỗ trợ Geolocation");
+      setCurrentPos({ lat: 10.762622, lng: 106.660172 });
+    }
+  }, []);
+
   const driverInfo = {
     name: "Nguyễn Văn T",
     route: "Tuyến 12A",
@@ -11,30 +35,17 @@ export default function Home() {
     pickedUp: 10,
     remaining: 5,
     alerts: [
-      {
-        id: 1,
-        type: "Kẹt xe nhẹ",
-        time: "06:50",
-        location: "Nguyễn Văn Cừ, Q.5",
-      },
+      { id: 1, type: "Kẹt xe nhẹ", time: "06:50", location: "Nguyễn Văn Cừ, Q.5" },
     ],
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-blue-700 flex items-center gap-2">
-          <BusFront className="w-6 h-6 text-blue-600" />
-          Bảng điều khiển tài xế
-        </h1>
-        <p className="text-gray-600 text-sm">
-          Xin chào, <strong>{driverInfo.name}</strong> | Ngày: {driverInfo.date}
-        </p>
-      </div>
+    <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
+      {/* Header chung */}
+      <DriverHeader driverName={driverInfo.name} />
 
       {/* Thống kê nhanh */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-3 gap-4">
         <div className="bg-blue-100 p-4 rounded-lg flex items-center gap-3">
           <CalendarDays className="w-8 h-8 text-blue-600" />
           <div>
@@ -60,14 +71,12 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Bản đồ giả lập */}
-      <div className="bg-white p-5 rounded-lg shadow mb-6">
+      {/* Bản đồ */}
+      <div className="bg-white p-5 rounded-lg shadow">
         <h2 className="text-lg font-semibold mb-2 flex items-center gap-2">
           <MapPin className="w-5 h-5 text-blue-500" /> Vị trí xe hiện tại
         </h2>
-        <div className="h-64 bg-gray-100 flex items-center justify-center text-gray-500">
-          (Google Map - mô phỏng vị trí xe)
-        </div>
+        {currentPos ? <MapView position={currentPos} /> : <p>Đang xác định vị trí...</p>}
       </div>
 
       {/* Cảnh báo gần nhất */}

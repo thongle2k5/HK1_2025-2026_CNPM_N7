@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BusScheduleForm from "./BusScheduleForm";
 import BusScheduleTable from "./BusScheduleTable";
 import ActivityLog from "./ActivityLog";
 function BusSchedule() {
+  const [getDataBus, setGetDataBus] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [assignments, setAssignments] = useState([
     {
       td: "1",
@@ -63,6 +66,23 @@ function BusSchedule() {
     // Chỉ giữ 5 hoạt động gần nhất
     setActivityLog((prevLog) => [newActivity, ...prevLog].slice(0, 5));
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetch("http://localhost:5000/api/buses");
+        if (!data.ok) {
+          throw new Error("lỗi http");
+        }
+        const get = await data.json();
+        setGetDataBus(get);
+      } catch (err) {
+        console.log("không lấy được dữ liệu busSchedule", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div>
@@ -91,7 +111,7 @@ function BusSchedule() {
             <div className="text-gray-600 text-xs px-4">Tổng:{"6"}</div>
           </div>
           <BusScheduleTable
-            formdata={assignments}
+            formdata={getDataBus}
             onDeleteAssignment={handleDeleteAssignment}
           />
         </div>
