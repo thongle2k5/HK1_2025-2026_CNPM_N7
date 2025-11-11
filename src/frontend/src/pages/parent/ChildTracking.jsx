@@ -11,7 +11,11 @@ function ChildTracking({ user }) {
 
   useEffect(() => {
     if (!user || !user.user_id)
+    {
+      console.log("No user found");
       return;
+
+    }
     const fetchStudentData = async () => {
       try {
         const response = await fetch(`${baseURL}/students/parent/${user.user_id}`);
@@ -23,6 +27,7 @@ function ChildTracking({ user }) {
     };
     fetchStudentData();
   }, [user]);
+  
   useEffect(() => {
     if (!students || students.length === 0)
       return;
@@ -52,9 +57,9 @@ function ChildTracking({ user }) {
     fetchSchedules();
   }, [students])
   return (
-    <div className="flex flex-row h-screen">
-      <div className="flex flex-col shrink-0 h-full w-3/4">
-        <div className="w-full h-3/4 flex items-center justify-center shrink-0">
+    <div className="flex flex-row h-full w-full relative">
+      <div className="flex flex-col shrink-0 h-full w-3/4 relative">
+        <div className="w-full h-3/4 relative">
           <MapComponent schedules={schedules} />
         </div>
         <NotificationHistory />

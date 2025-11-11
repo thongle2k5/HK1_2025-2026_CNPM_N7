@@ -1,9 +1,9 @@
 import { BusTrackingService } from "../services/bus.tracking.service.js";
 
 export const BusTrackingController = {
-    getLocationByBusId: async (req, res) => {
+    getCurrentLocationByBusId: async (req, res) => {
         try {
-            const location = await BusTrackingService.getBusLocationByBusId(req.params.busId);
+            const location = await BusTrackingService.getCurrentBusLocationByBusId(req.params.busId);
             res.json(location);
         } catch (error) {
             res.status(404).json({ message: error.message });
@@ -11,7 +11,13 @@ export const BusTrackingController = {
     },
     addLocation: async (req, res) => {
         try {
-            const result = await BusTrackingService.addBusLocation(req.body.busId, req.body.longitude, req.body.latitude);
+            const {bus_id,latitude,longitude} = req.body;
+            const result = await BusTrackingService.addBusLocation(bus_id,latitude,longitude);
+            io.to(`bus_${bus_id}`).emit('bus_location_update',{
+                bus_id,
+                latitude,
+                longitude,
+            })
             res.json(result);
         } catch (error) {
             res.status(404).json({ message: error.message });

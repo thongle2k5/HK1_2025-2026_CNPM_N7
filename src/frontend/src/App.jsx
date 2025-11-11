@@ -20,22 +20,23 @@
 
 
 
-// import Header from "./components/specific/parentpage/Header.jsx";
-// import ChildTracking from "./pages/parent/ChildTracking.jsx";
+import Header from "./components/specific/parentpage/Header.jsx";
+import ChildTracking from "./pages/parent/ChildTracking.jsx";
 
-// function parentApp() {
-//   return (
-//     <div className="h-screen flex flex-col">
-//       <Header />
-//       <ChildTracking />
-//     </div>
-//   );
-// }
-// export default parentApp;
-
-
-import AppRoutes from "./routes/index.jsx"; // Đảm bảo AppRoutes được export default từ index.jsx
-export default function App() {
-  // Chỉ render component chứa Routes
-  return <AppRoutes />;
+const user = {user_id :1};
+function parentApp() {
+  return (
+    <div className="w-screen h-screen flex flex-col relative">
+      <Header />
+      <ChildTracking user = {user}/>
+    </div>
+  );
 }
+export default parentApp;
+
+
+// import AppRoutes from "./routes/index.jsx"; // Đảm bảo AppRoutes được export default từ index.jsx
+// export default function App() {
+//   // Chỉ render component chứa Routes
+//   return <AppRoutes />;
+// }

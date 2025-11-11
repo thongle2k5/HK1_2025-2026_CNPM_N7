@@ -3,9 +3,9 @@ import { MoreHorizontal } from "lucide-react";
 import DetailInfo from "./DetailInfo";
 
 const statusColor = {
-  "Boarded": "bg-green-400",
-  "Waiting": "bg-yellow-400",
-  "Missed": "bg-red-500",
+  "boarded": "bg-green-400",
+  "waiting": "bg-yellow-400",
+  "missed": "bg-red-500",
   "N/A": "bg-gray-400",
 };
 
@@ -25,6 +25,9 @@ function StudentInfo({ students }) {
   // Gọi khi click chuột để xem thông tin chi tiết 1 học sinh 
   // Cập nhật state selectedStudent
   const handleStudentClick = (student) => {
+    if (selectedStudent && selectedStudent.student_id === student.student_id)
+      setSelectedStudent(null);
+    else
     setSelectedStudent(student);
   };
 
@@ -114,9 +117,8 @@ function StudentInfo({ students }) {
       {
         selectedStudent != null && (
           <DetailInfo
-            name={selectedStudent.student_name || "N/A"}
+            student_name={selectedStudent.student_name || "N/A"}
             status={selectedStudent.status.status || "N/A"}
-            stop={detailInfo[selectedStudent.student_id]?.stop_name || "N/A"}
             address={detailInfo[selectedStudent.student_id]?.address || "N/A"}
             driver_name={detailInfo[selectedStudent.student_id]?.name || "N/A"}
             phone={detailInfo[selectedStudent.student_id]?.phone || "N/A"}
