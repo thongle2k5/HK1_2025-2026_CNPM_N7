@@ -1,0 +1,109 @@
+.notification-container {
+  display: flex;
+  gap: 30px;
+  padding: 40px;
+  width: 100%;
+  position: relative;;
+  font-size: 18px;
+}
+
+.box-title{
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Cột trái */
+.notify-list {
+  width: 30%;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.notify-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-top: 10px;
+  background: #f5f7ff;
+  border-radius: 10px;
+}
+
+.green-text { color: #0f8f2f; }
+
+.icon {
+  font-size: 20px;
+}
+
+.green { color: #0f8f2f; }
+.blue { color: #4a6cf7; }
+.purple { color: #a855f7; }
+.red { color: #ff0000; }
+
+.purple-bg {
+  background: #f9f0ff !important;
+}
+
+.time {
+  font-size: 15px;
+  opacity: 0.6;
+}
+
+/* Cột giữa */
+.pickup-box {
+  width: 30%;
+  background: #e9f2ff;
+  padding: 20px 25px;
+  border-radius: 12px;
+  border: 1px solid #d0e3ff;
+  height: fit-content;
+}
+
+.pickup-box h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Cột phải */
+.trip-detail {
+  width: 30%;
+  background: white;
+  padding: 20px 25px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  height: fit-content;
+}
+
+.trip-detail a {
+  color: #4a6cf7;
+  text-decoration: none;
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 30px;
+  height: 30px;
+  background: #f5f7ff;
+  display: flex;
+  border-radius: 20px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  background: #e0e4ff;
+  cursor: pointer;
+}
+
+.red-text {
+  color: #2813c5;
+  font-size: 30px;
+  font-weight: bold;
+}
