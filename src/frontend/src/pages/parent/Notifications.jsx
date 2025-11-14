@@ -72,14 +72,14 @@ const Notifications = ({title, onTracking}) => {
       <div className="trip-detail">
         <div className="box-title">Chi tiết chuyến xe</div>
 
-        <p><strong>Điểm đón:</strong> Nhà riêng</p>
-        <p><strong>Điểm trả:</strong> Trường tiểu học ABC</p>
-        <p><strong>Tài xế:</strong> Nguyễn Văn An</p>
+        <p>Điểm đón: <strong>Nhà riêng </strong> </p>
+        <p>Điểm trả: <strong>Trường tiểu học ABC</strong> </p>
+        <p>Tài xế: <strong>Nguyễn Văn An</strong> </p>
         <p>
-          <strong>SĐT tài xế:</strong>
-          <a href="tel:+84901234567"> +84 901 234 567</a>
+          SĐT tài xế:
+          <strong> <a href="tel:+84901234567"> +84 901 234 567</a> </strong>
         </p>
-        <p><strong>Biển số xe:</strong> 123-12345</p>
+        <p>Biển số xe: <strong>123-12345</strong> </p>
       </div>
 
       <div className="close-btn">

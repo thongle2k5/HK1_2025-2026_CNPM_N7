@@ -19,6 +19,10 @@
     margin-bottom: 20px;
 }
 
+.title{
+    font-size: 20px;
+    font-weight: bold;
+}
 /* Cột trái */
 .notify-list {
   width: 30%;
@@ -57,8 +61,8 @@
 }
 
 .time {
-  font-size: 15px;
-  opacity: 0.6;
+  font-size: 17px;
+  opacity: 0.9;
 }
 
 /* Cột giữa */
@@ -88,6 +92,17 @@
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   height: fit-content;
+  color: black;
+}
+
+.trip-detail p{
+    margin: 13px;
+    padding-right: 20px;
+    justify-content: space-between;
+}
+
+.trip-detail strong {
+    margin-left: 20px;
 }
 
 .trip-detail a {
