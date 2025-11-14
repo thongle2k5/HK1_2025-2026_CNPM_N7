@@ -6,9 +6,11 @@ const Notifications = ({title, onTracking}) => {
   return (
     <div className="notification-container">
 
+      <div className="general-notic">Thông báo xe buýt</div>
+
       {/* Cột trái: Danh sách thông báo */}
       <div className="notify-list">
-        <div className="box-title">Thông báo xe buýt</div>
+        <div className="box-title text-black">Các thông báo mới</div>
 
         <div className="notify-card">
           <div className="icon green"><FaMapMarkerAlt /></div>

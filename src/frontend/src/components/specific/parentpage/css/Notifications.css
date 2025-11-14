@@ -1,10 +1,16 @@
 .notification-container {
-  display: flex;
   gap: 30px;
-  padding: 40px;
+  padding: 20px;
   width: 100%;
   position: relative;;
   font-size: 18px;
+}
+
+.general-notic {
+    width: 100%;
+    font-size: 30px;
+    font-weight: bold;
+    margin: 20px 0 20px 20px;
 }
 
 .box-title{
@@ -16,10 +22,13 @@
 /* Cột trái */
 .notify-list {
   width: 30%;
+  float: left;
   background: white;
   padding: 20px;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
+  margin-right: 40px;
+  margin-left: 40px;
 }
 
 .notify-card {
@@ -56,10 +65,12 @@
 .pickup-box {
   width: 30%;
   background: #e9f2ff;
+  float: left;
   padding: 20px 25px;
   border-radius: 12px;
   border: 1px solid #d0e3ff;
   height: fit-content;
+  margin-right: 40px;
 }
 
 .pickup-box h3 {
@@ -71,6 +82,7 @@
 /* Cột phải */
 .trip-detail {
   width: 30%;
+  float: left;
   background: white;
   padding: 20px 25px;
   border-radius: 12px;
