@@ -22,10 +22,6 @@ const Header = ({ title, onBellClick }) => {
               group-hover:scale-110
             " 
           />
-          
-          <span className="absolute -top-1 -right-1 bg-green-400 text-xs text-white rounded-full px-1">
-            3
-          </span>
         </div>
 
         {/* User Letter */}

@@ -26,7 +26,7 @@ import Notifications from "./pages/parent/Notifications.jsx";
 
 
 const user = {user_id :1};
-function parentApp() {
+function ParentApp() {
   const [screen, setScreen] = useState("tracking"); 
   // tracking = ChildTracking
   // notification = Notifications
@@ -45,7 +45,7 @@ function parentApp() {
     </div>
   );
 }
-export default parentApp;
+export default ParentApp;
 
 
 // import AppRoutes from "./routes/index.jsx"; // Đảm bảo AppRoutes được export default từ index.jsx
