@@ -1,4 +1,4 @@
-function NotificationList({ data }) {
+function NotificationList() {
   return (
     <div>
       <table className="w-full rounded-lg">

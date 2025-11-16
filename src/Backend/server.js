@@ -1,9 +1,9 @@
 // Backend/server.js
-import 'dotenv/config'; 
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 // ... (các import khác như userRouter...)
-import busRouter from './routes/bus.route.js'; 
+import busRouter from './routes/bus.route.js';
 import userRoute from './routes/user.route.js';
 import studentRoute from './routes/student.route.js';
 import stopRoute from './routes/stop.route.js';
@@ -12,19 +12,25 @@ import login from './services/login.service.js';
 import dashboardRouter from './routes/dashboard.router.js';
 import ScheduleRouter from './routes/schedule.route.js';
 import route from './routes/route.route.js'
+import studentRoutes from "./routes/StudentList.route.js";
+
 const app = express();
 // ... (các app.use khác...)
 // --- THÊM DÒNG NÀY ---
 
-app.use(cors()); 
+app.use(cors());
 app.use(express.json());
 // Báo cho server: Bất cứ request nào đến /api/buses
 // thì hãy đưa cho busRouter xử lý
 app.use('/api/buses', busRouter);
-app.use('/api/drivers',driverRouter);
-app.use('/api/login',login)
 app.use('/api/dashboardata',dashboardRouter);
 app.use('/api/route',route)
+
+app.use('/api/drivers', driverRouter);
+app.use('/api/login', login)
+app.use('/api/dashboardata', dashboardRouter)
+// app.use('/api/students', studentRoutes); xem lại dữ liệu
+
 // ----------------------
 app.use('/api/schedules',ScheduleRouter)
 app.use('/api/users', userRoute);
@@ -35,3 +41,6 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server đang chạy tại http://localhost:${PORT}`);
 });
+
+
+

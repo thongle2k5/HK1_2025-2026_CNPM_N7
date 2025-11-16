@@ -200,7 +200,7 @@ INSERT INTO stop_route (route_id, stop_id, `order`, expected_arrive_time) VALUES
 (2, 5, 2, '06:45:00');
 
 -- 5. CẬP NHẬT QUAN TRỌNG: Gán trạm đón cho học sinh
--- (File .sql của bạn đã tạo học sinh nhưng chưa gán trạm (stop_id = NULL))
+
 UPDATE student SET stop_id = 1 WHERE student_id BETWEEN 1 AND 4;
 UPDATE student SET stop_id = 2 WHERE student_id BETWEEN 5 AND 8;
 UPDATE student SET stop_id = 3 WHERE student_id BETWEEN 9 AND 12;
@@ -208,7 +208,6 @@ UPDATE student SET stop_id = 4 WHERE student_id BETWEEN 13 AND 16;
 UPDATE student SET stop_id = 5 WHERE student_id BETWEEN 17 AND 20;
 
 -- 6. Tạo Lịch trình (Schedule) cho ngày hôm nay
--- (Giả sử manager_id = 29 (manager01), bus_id = 1, driver_id = 1 (từ bảng driver), route_id = 1)
 INSERT INTO schedule (schedule_id, route_id, bus_id, driver_id, `date`, start_time, manager_id, end_time, status) VALUES
 (1, 1, 1, 1, CURDATE(), '06:00:00', 29, '08:00:00', 'in progress'),
 (2, 2, 2, 2, CURDATE(), '06:00:00', 29, '08:00:00', 'pending');
@@ -223,6 +222,9 @@ INSERT INTO location_track (bus_id, `timestamp`, latitude, longitude) VALUES
 -- (Ghi nhận trạng thái cho lịch trình 1, học sinh 1 tại trạm 1)
 INSERT INTO pickup_status (stop_id, student_id, schedule_id, `time`, status) VALUES
 (1, 1, 1, NOW(), 'boarded'); -- Học sinh 1 đã lên xe
+UPDATE `user`
+SET email = CONCAT('abc', user_id, '@gmail.com')
+WHERE user_id BETWEEN 1 AND 31;
 -------thêm cột bảng bus---------------------------
 ALTER TABLE bus
 ADD COLUMN status ENUM('active', 'idle', 'maintenance', 'retired') DEFAULT 'idle',
@@ -353,3 +355,8 @@ VALUES
   NULL
 ); --lưu ý nếu không thêm dữ liệu được thì xem lại bảng notification coi có trùng notif_id với dữ liệu trong bảng không.
 --ví dụ nếu thông báo trong notification là 1 mà trong notification_read_status là 3 thì sẽ bị lỗi khoá ngoại.
+ALTER TABLE `user`
+ADD COLUMN `email` VARCHAR(100) DEFAULT NULL AFTER `phone`;
+
+
+

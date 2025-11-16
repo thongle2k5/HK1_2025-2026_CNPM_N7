@@ -1,13 +1,11 @@
-// src/components/SidebarDriver.jsx
 import { Home, Calendar, Users, AlertTriangle, LogOut } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 export default function SidebarDriver() {
   const linkClass = ({ isActive }) =>
-    `flex items-center gap-2 p-2 rounded transition-colors duration-200 ${
-      isActive
-        ? "bg-blue-100 text-blue-700 font-medium"
-        : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+    `flex items-center gap-2 p-2 rounded transition-colors duration-200 ${isActive
+      ? "bg-blue-100 text-blue-700 font-medium"
+      : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
     }`;
 
   return (
