@@ -43,6 +43,17 @@ export const StudentService = {
             return { student, pickup_status: pickupStatus, stop: stop, schedule: schedule };
         }));
         return studentsData;
-    }
+    },
+    getStudentByParentId: async (parentId) => {
+        const students = await StudentModel.getStudentsByParentId(parentId);
+        return students;
+    },
+    getStudentDetailInfoByStudentId: async (studentId) => {
+        const studentDetailInfo = await StudentModel.getStudentDetailInfoByStudentId(studentId);
+        return studentDetailInfo;
+
+
+    },
+
 
 }
