@@ -2,187 +2,116 @@
 import React from 'react';
 import { MapContainer, TileLayer, Marker, Polyline, useMap, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { fetchRoutePath } from '../../../api/map.path.js';
 import { io } from 'socket.io-client';
 import BusMarker from './BusMarker.jsx';
 import StopMarker from './StopMarker.jsx';
+import BusInfo from './BusInfo.jsx';
+import { fetchRoutePath } from '../../../api/map.path.js';
 
-export const socket = io("http://localhost:5000", { autoConnect: false });
-export function getPassedPath(fullPath, currentPos) {
-    // Tìm điểm trên path gần với vị trí hiện tại nhất
-    let minDist = Infinity;
-    let idx = 0;
+export const socket = io("http://localhost:5000", {
+    autoConnect: false,
+});
 
-    fullPath.forEach((point, i) => {
-        const dist = Math.hypot(point[0] - currentPos[0], point[1] - currentPos[1]);
-        if (dist < minDist) {
-            minDist = dist;
-            idx = i;
-        }
-    });
-
-    // Trả về quãng đường đã đi: từ đầu đến index gần nhất
-    return fullPath.slice(0, idx + 1);
-}
-
-function MapComponent(props) {
-    const baseURL = "http://localhost:5000";
-    const { schedules } = props;
-    const [routes, setRoutes] = React.useState([]);
+function MapComponent({ busData }) {
     const uniqueStops = React.useRef(new Map());
-    const [busTracking, setBusTracking] = React.useState([]);
-    const [nextStopInfo, setNextStopInfo] = React.useState([]);
+    const [busPos, setBusPos] = React.useState([]);
+    const [selectedBus, setSelectedBus] = React.useState(null);
+    const [paths, setPaths] = React.useState([]);
+
+    const handleSelectBus = (bus_id,map) => {
+        const info = busData.find(bus => bus.bus_id === bus_id);
+        const data = busPos.find(b => b.bus_id === bus_id);
+        const nextStop = data.next_stop;
+        const eta = data.eta;
+
+        setSelectedBus({ bus: info, next_stop: nextStop, eta: eta });
+        if(!map || map ===undefined)
+        {
+            console.log("map is not ready");
+            return;
+        }
+
+        map.flyTo(data.pos, 17, { duration: 1 })
+    }
 
     React.useEffect(() => {
-        if (!nextStopInfo || nextStopInfo.length === 0)
+        if (!paths || paths.length === 0)
             return;
-        console.log(nextStopInfo);
-    }, [nextStopInfo])
-
-    React.useEffect(() => {// Update trạng thái trạm (Đã đến/Chưa đến) trong mỗi route sau mỗi lần cập nhật vị trí xe
-        if (!busTracking || busTracking.length === 0)
-            return;
-        if (!routes || routes.length === 0)
-            return;
-
-        const updatedRoutes = routes.map(route => {
-            const busPos = busTracking.find(bus => bus.bus_id === route.bus_id);
-            if (!busPos)
-                return route;
-            const passedPath = getPassedPath(route.path, [busPos.latitude, busPos.longitude]);
-            const updatedStops = route.stops.map(stop => {
-                if (!stop.isPassed) {
-                    const nextStopPath = getPassedPath(route.path, [stop.latitude, stop.longitude]);
-                    if (passedPath.length >= nextStopPath.length) {
-                        return { ...stop, isPassed: true };
-                    }
-                }
-                return stop;
-            });
-            const hasChanged = updatedStops.some((s, i) => s !== route.stops[i]);
-            if (!hasChanged)
-                return route;
-            return { ...route, stops: updatedStops };
-        });
-        const routeHasChanged = updatedRoutes.some((r, i) => r !== routes[i]);
-        if (!routeHasChanged)
-            return;
-        setRoutes(updatedRoutes);
-
-    }, [busTracking])
-
-    React.useEffect(() => {// Update thông tin trạm tiếp theo xe sẽ đến 
-        if (!busTracking || busTracking.length === 0)
-            return;
-        if (!routes || routes.length === 0)
-            return;
-        const nextStopInfo = routes.map(route => {
-            const nextStops = route.stops.filter(stop => !stop.isPassed);
-            if (nextStops.length === 0)
-                return { bus_id: route.bus_id, stop: null, eta: null }
-
-            return { bus_id: route.bus_id, stop: nextStops[0] };
-        })
-        setNextStopInfo(nextStopInfo);
-    }, [routes])
-
-    React.useEffect(() => {
-        if (!schedules || schedules.length === 0)
-            return;
-
-        if (!socket.connected) // Kết nối 1 lần vào server socket
+        if (!socket.connected)
             socket.connect();
 
-        const uniqueSchedules = Array.from(
-            new Map(schedules.map((schedule) => [schedule.schedule.bus_id, schedule])).values()
-        )
-
+        // Join room tương ứng với bus_id trên socket và gửi data về tuyến đường
         socket.on("connect", () => {
-            console.log("✅ Connected to server");
-        });
-
-        // Tham gia room trong socket
-        uniqueSchedules.forEach((schedule) => {
-            socket.emit("join_bus", schedule.schedule.bus_id);
+            for (const path of paths) {
+                const stops = busData.find(bus => bus.bus_id === path.bus_id).stops;
+                socket.emit("parent:join_bus", {
+                    bus_id: path.bus_id,
+                    path: path.path,
+                    stops: stops,
+                })
+            }
         })
 
-        // Lấy Data Location của xe và gán vào useState busTracking
-        socket.on("bus_location_update", (data) => {
-            const dataArray = Array.isArray(data) ? data : [data];
-            setBusTracking(prev => {
-                const updated = [...prev];
-                dataArray.forEach(d => {
-                    const idx = updated.findIndex(b => b.bus_id === d.bus_id);
-                    if (idx !== -1) updated[idx] = d;
-                    else updated.push(d);
-                });
-                return updated;
+        // Bắt event khi server gửi data cho client (pos, pased_path)
+        socket.on("parent:bus_data", (data) => {
+            const { bus_id, pos, passed_path, next_stop, eta } = data;
+            setBusPos(prev => {
+                const idx = prev.findIndex(b => b.bus_id === bus_id);
+                if (idx >= 0) {
+                    prev[idx] = { ...prev[idx], pos: pos, passed_path: passed_path, next_stop: next_stop, eta: eta };
+                    return [...prev];
+                } else {
+                    return [...prev, { bus_id: bus_id, pos: pos, passed_path: passed_path, next_stop: next_stop, eta: eta }];
+                }
             });
+
         });
 
         return () => {
-            socket.off("bus_location_update");
-            //     socket.disconnect();
-        };
+            socket.off("parent:bus_data");
+        }
+    }, [paths])
 
-    }, [schedules])
+    // React.useEffect(() => {
+    //     if (!busPos || busPos.length === 0)
+    //         return;
+    // }, [busPos])
 
     React.useEffect(() => {
-        if (!schedules || schedules.length === 0) {
-            console.log("No schedules found");
+        if (!busData || busData.length === 0)
             return;
-        }
-        const fetchStopsByRoutes = async () => {
-            try {
-                const res = await Promise.allSettled(
-                    schedules.map(async (s) => {
-                        const stopsRes = await fetch(`${baseURL}/api/stops/route/${s.schedule.route_id}`);
-                        if (!stopsRes)
-                            console.log(`No stops from route ${s.schedule.route_id}`);
-                        const stops = await stopsRes.json();
-                        return { route_id: s.schedule.route_id, stops, bus_id: s.schedule.bus_id };
-                    })
-                );
-                const fulfilled = res.map((r) => {
-                    if (r.status === "fulfilled") {
-                        r.value.stops.forEach((stop) => {
-                            uniqueStops.current.set(stop.stop_id, stop);
-                        });
-                        return r.value;
+        console.log("bus data: ", busData);
+
+        const getPathsStops = async () => {
+            for (const bus of busData) {
+
+                // Lấy [lat,lng] các tuyến đường qua các trạm dừng 
+                const path = await fetchRoutePath(bus.stops);
+                setPaths(prev => {
+                    const idx = prev.findIndex(b => b.bus_id === bus.bus_id)
+                    if (idx >= 0) {
+                        return prev;
+                    } else {
+                        return [...prev, { bus_id: bus.bus_id, path: path }];
                     }
-                    else
-                        return { ...r, stops: "N/A" };
                 });
-                const uniqueRoutes = Array.from(
-                    new Map(
-                        fulfilled
-                            .filter((r) => r.stops !== "N/A")
-                            .map((r) => [r.route_id, r])
-                    ).values()
-                );
-                const sortedStopsRoutes = uniqueRoutes.map((route) => {
-                    const sortedStops = [...route.stops].sort((a, b) => a.order - b.order);
-                    const stops = sortedStops.map((stop) => {
-                        return { ...stop, isPassed: false }
-                    })
-                    return { ...route, stops: stops }
-                })
 
-                const routesData = await Promise.all(sortedStopsRoutes.map(async (route) => {
-                    const pathRes = await fetchRoutePath(route.stops);
-                    return { ...route, path: pathRes };
-                }))
-
-
-                setRoutes(routesData);
-            } catch (error) {
-                console.log(error);
+                // Lấy data trạm dừng để hiện lên map
+                for (const stop of bus.stops) {
+                    uniqueStops.current.set(stop.stop_id, stop);
+                }
             }
         }
-        fetchStopsByRoutes();
-    }, [schedules])
+        getPathsStops();
+
+    }, [busData])
+
     return <div className="w-full h-full relative">
-        <MapContainer center={[10.77, 106.7]} zoom={13} className="h-full w-full z-40">
+        <MapContainer
+            center={[10.77, 106.7]}
+            zoom={13}
+            className="h-full w-full z-40">
+
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution="© OpenStreetMap"
@@ -196,14 +125,14 @@ function MapComponent(props) {
                 )
             }
             {
-                routes.length > 0 && (
+                paths.length > 0 && (
 
-                    routes.map((route) => (
-                        route.path && (
+                    paths.map((path) => (
+                        path.path && (
                             <Polyline
-                                key={route.route_id}
+                                key={path.bus_id}
                                 pathOptions={{ color: 'grey', weight: 6 }}
-                                positions={route.path}
+                                positions={path.path}
                             />
                         )
 
@@ -211,51 +140,35 @@ function MapComponent(props) {
                 )
             }
             {
-                busTracking.length > 0 && (
-                    busTracking.map((bus) => {
-                        return <BusMarker
-                            key={bus.bus_id}
-                            bus_id={bus.bus_id}
-                            latitude={bus.latitude}
-                            longitude={bus.longitude}
-                        ></BusMarker>
-                    })
-                )
-            }
-            {
-                routes.length > 0 && busTracking.length > 0 && (
-
-                    routes.map(route => {
-                        // Tìm vị trí xe tương ứng với route
-                        const busPos = busTracking.find(bus => bus.bus_id === route.bus_id);
-                        if (!busPos || !route.path)
-                            return null;
-
-                        return (
+                busPos.length > 0 && (
+                    busPos.map((bus) => {
+                        return <React.Fragment key={bus.bus_id}>
+                            <BusMarker
+                                bus_id={bus.bus_id}
+                                latitude={bus.pos[0]}
+                                longitude={bus.pos[1]}
+                                onClick={ handleSelectBus }
+                            ></BusMarker>
                             <Polyline
-                                key={`${route.route_id}-${busPos.bus_id}`}
-                                positions={getPassedPath(route.path, [busPos.latitude, busPos.longitude])}
+                                positions={bus.passed_path}
                                 pathOptions={{ color: 'blue', weight: 5 }}
                             />
-                        );
+                        </React.Fragment>
                     })
-
                 )
             }
-
-
         </MapContainer>
-        <div className="bg-white rounded-xl m-4 absolute bottom-4 left-4 z-50 w-1/4 h-1/3 p-4 flex flex-col border border-gray-500">
-            <span className="text-2xl font-semibold pb-2">Thông tin xe</span>
-            <div className="text-lg flex flex-col">
-                <span>Biển số xe: </span>
-                <span>Tài xế: </span>
-                <span>Trạm dừng tiếp theo: </span>
-                <span>Thời gian dự kiến:</span>
-                <span>Trạng thái: </span>
-            </div>
+        {
+            selectedBus && (
+                <BusInfo license_plate={selectedBus.bus.license_plate}
+                    driver_name={selectedBus.bus.driver_name}
+                    phone={selectedBus.bus.driver_phone}
+                    next_stop={selectedBus.next_stop.address}
+                    eta={selectedBus.eta}
+                ></BusInfo>
+            )
+        }
 
-        </div>
     </div>
 
 }

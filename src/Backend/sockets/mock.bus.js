@@ -1,10 +1,8 @@
-import {io} from 'socket.io-client';
-import axios from 'axios';
-
-
 
 // File này để giả lập xe buýt chạy trên tuyến đường 
 export async function runBusAlongPath(path, speedKmH = 30, stepsPerSegment = 5, emitFunc) {
+  console.log("Bắt đầu đi");
+
   if (!path || path.length < 2) return;
 
   // Hàm tính khoảng cách km giữa 2 tọa độ
@@ -56,3 +54,6 @@ export async function runBusAlongPath(path, speedKmH = 30, stepsPerSegment = 5, 
 
   console.log("✅ Bus đã hoàn thành lộ trình");
 }
+
+
+

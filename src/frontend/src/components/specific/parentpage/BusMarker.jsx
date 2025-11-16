@@ -13,7 +13,7 @@ const busIcon = L.ExtraMarkers.icon({
     innerHTML: '',            // thêm HTML nếu muốn
 });
 
-const BusMarker = ({ bus_id, latitude, longitude }) => {
+const BusMarker = ({ bus_id, latitude, longitude,onClick}) => {
     const markerRef = React.useRef(null);
     const map = useMap();
 
@@ -23,15 +23,20 @@ const BusMarker = ({ bus_id, latitude, longitude }) => {
             const marker = L.marker([latitude, longitude], {
                 icon: busIcon,
                 zIndexOffset: 2000,
+            
             }).addTo(map);
 
             marker.bindTooltip(`🚌 BUS ${bus_id}`, { 
                 permanent: true, 
                 direction: 'top', 
                 offset: [0, -36],
+                
             });
 
-
+            marker.on('click', () =>{
+                if(onClick)
+                onClick(bus_id,map);
+            })
             markerRef.current = marker;
         } else {
             // 🔹 Cập nhật vị trí marker (popup vẫn giữ nguyên)

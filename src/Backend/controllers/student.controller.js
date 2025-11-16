@@ -10,23 +10,16 @@ export const StudentController ={
             res.status(404).json({message: error.message});
         }
     },
-    getStudentsByParentId: async (req,res) =>{
+
+
+    getStudentsDataByUserId: async (req,res) =>{
         try{
-            const students = await StudentService.getStudentByParentId(req.params.parentId);
-            res.json(students);
+            const studentsData = await StudentService.getStudentsDataByUserId(req.params.userId);
+            res.json(studentsData);
         }catch(error){
             res.status(404).json({message: error.message});
         }
     },
-    getStudentDetailInfoByStudentId: async (req,res) =>{
-        try{
-            const studentDetailInfo = await StudentService.getStudentDetailInfoByStudentId(req.params.studentId);
-            res.json(studentDetailInfo);
-        }catch(error){
-            res.status(404).json({message: error.message});
-        }
-    }
-
 
 
 }

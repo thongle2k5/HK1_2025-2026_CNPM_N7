@@ -10,8 +10,20 @@ const getAllBuses =async (req,res)=>{
     };
     
 }
+const getBusDataByScheduleIds =async (req,res)=>{
+    try{
+        const {scheduleIds} = req.body;
+        const data = await busService.getBusDataByScheduleIds(scheduleIds);
+        res.json(data)
+    }catch(error){
+        console.error('Lỗi khi lấy danh sách bus:',error);
+        res.status(500).json({message:'Lỗi server'});
+    }
+}
+
 
 export const busController={
 getAllBuses,
+getBusDataByScheduleIds,
 
 };

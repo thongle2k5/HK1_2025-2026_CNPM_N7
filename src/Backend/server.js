@@ -17,8 +17,8 @@ import studentRoutes from "./routes/StudentList.route.js";
 import http from 'http';
 import { Server } from 'socket.io';
 
-import { fetchRoutePath } from '../frontend/src/api/map.path.js';
-import { runBusAlongPath } from '../frontend/src/api/mock.bus.js';
+import driverSocket from './sockets/driver.socket.js';
+import parentSocket from './sockets/parent.socket.js';
 
 const app = express();
 // ... (các app.use khác...)
@@ -47,41 +47,25 @@ export const io = new Server(server, {
   },
 });
 
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
   console.log("Client connected:", socket.id);
 
-  socket.on("join_bus", (busId) => {
-    socket.join(`bus_${busId}`);
-    console.log(`Client joined bus_${busId}`);
+  parentSocket(io, socket);
+
+  driverSocket(io, socket);
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
   });
+
 });
 
 
 // Lấy cổng từ file .env (của bạn là 5000)
 const PORT = process.env.PORT || 5000;
+
 server.listen(PORT, async () => {
   console.log(`Server đang chạy tại http://localhost:${PORT}`);
-
-  //Giả lập xe buýt chạy trên tuyến đường
-  try {
-    const stopsRes = await fetch(`http://localhost:5000/api/stops/route/1`);
-    const stops = await stopsRes.json();// Data về các Trạm dừng(Stop) trong một Tuyến đường(Route)
-    const busPath = await fetchRoutePath(stops);//Lấy về mảng tọa độ của đường đi 
-
-    //Chạy hàm giả lập và gửi Object(bus_location) vào room Socket
-      runBusAlongPath(busPath, 60, 10, (lat, lng) => {
-      io.to("bus_1").emit("bus_location_update", {
-        bus_id: 1,
-        latitude: lat,
-        longitude: lng,
-      });
-    });
-    
-
-  } catch (err) {
-    console.error("❌ Error fetching stops:", err);
-
-  }
 
 });
 

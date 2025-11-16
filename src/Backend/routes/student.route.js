@@ -5,11 +5,8 @@ import express from "express";
 
 const router = express.Router();
 
-router.get("/:id",StudentController.getStudentById);
-router.get("/parent/:parentId",StudentController.getStudentsByParentId);
 
-router.get("/:studentId/status",PickupStatusController.getStatusByStudentId);
-router.get("/:studentId/detail",StudentController.getStudentDetailInfoByStudentId);
-router.get('/:studentId/schedule',ScheduleController.getScheduleByStudentId);
+router.get('/user/:userId/detail',StudentController.getStudentsDataByUserId);
+router.get("/:id",StudentController.getStudentById);
 
 export default router;

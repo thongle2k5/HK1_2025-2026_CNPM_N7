@@ -5,4 +5,9 @@ export const ScheduleModel = {
         const data = await db.query('select * from pickup_status left join schedule  on pickup_status.schedule_id = schedule.schedule_id where pickup_status.student_id =?', [studentId]);
         return data[0];
     },
+    getScheduleById: async (scheduleId) => {
+        const [rows] = await db.query('select * from schedule where schedule_id = ?', [scheduleId]);
+        return rows[0];
+    },
+
 }

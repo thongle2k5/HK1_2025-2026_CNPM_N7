@@ -6,4 +6,5 @@ const router = express.Router();
 router.get('/', busController.getAllBuses);
 router.get('/:busId/location', BusTrackingController.getCurrentLocationByBusId);
 router.post('/location',BusTrackingController.addLocation);
+router.post('/schedule/detail',busController.getBusDataByScheduleIds);
 export default router;
