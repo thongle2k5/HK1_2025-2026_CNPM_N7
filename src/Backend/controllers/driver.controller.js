@@ -9,6 +9,17 @@ const getAlldrivers = async (req,res)=>{
         res.status(500).json({message:'loi server'});
     };
 }
+const getTotalDrivers = async (req,res)=>{
+    try{
+   const drivers=await driverService.getTotalDrivers();
+   res.status(200).json(drivers)
+    }
+    catch(error){
+        console.error('Loi khi lay danh sach driver',error);
+        res.status(500).json({message:'loi server'});
+    };
+}
 export const driverController={
-    getAlldrivers
+    getAlldrivers,
+    getTotalDrivers
 }

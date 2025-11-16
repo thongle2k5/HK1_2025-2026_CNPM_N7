@@ -219,13 +219,137 @@ INSERT INTO location_track (bus_id, `timestamp`, latitude, longitude) VALUES
 (1, NOW() - INTERVAL 10 MINUTE, 10.7760, 106.7000),
 (1, NOW() - INTERVAL 5 MINUTE, 10.7765, 106.7005),
 (1, NOW(), 10.7769, 106.7009); -- Vị trí hiện tại ở trạm 1
-
--- 8. Tạo Thông báo (Notification)
--- (Gửi thông báo cho phụ huynh 1 (user_id = 1))
-INSERT INTO notification (user_id, message, `timestamp`, type) VALUES
-(1, 'Xe buýt tuyến 1 sắp đến trạm của bạn trong 5 phút.', NOW() - INTERVAL 1 MINUTE, 'alert');
-
 -- 9. Tạo Trạng thái đón (Pickup_Status)
 -- (Ghi nhận trạng thái cho lịch trình 1, học sinh 1 tại trạm 1)
 INSERT INTO pickup_status (stop_id, student_id, schedule_id, `time`, status) VALUES
 (1, 1, 1, NOW(), 'boarded'); -- Học sinh 1 đã lên xe
+-------thêm cột bảng bus---------------------------
+ALTER TABLE bus
+ADD COLUMN status ENUM('active', 'idle', 'maintenance', 'retired') DEFAULT 'idle',
+ADD COLUMN current_latitude FLOAT,
+ADD COLUMN current_longitude FLOAT,
+ADD COLUMN last_update DATETIME;
+------------cập nhật lại trạng thái trong bus-------------------
+UPDATE bus
+SET 
+    current_latitude = 10.7769,
+    current_longitude = 106.7009,
+    last_update = NOW(),
+    status = 'active' 
+WHERE 
+    bus_id = 1;
+  -- ----- PHẦN 1: CHỈNH SỬA BẢNG "notification" HIỆN TẠI -----
+-- Mục tiêu: Biến bảng "notification" (ảnh 1) thành bảng "NOTIFICATION" (ảnh 2)
+-- Bảng cũ: (notif_id, user_id, message, timestamp, type)
+-- Bảng mới: (notif_id, admin_id, title, message, created_at)
+
+-- LƯU Ý QUAN TRỌNG:
+-- Như bạn đã hỏi, cột 'user_id' CÓ THỂ đang dính Khóa Phụ.
+-- Bạn phải chạy lệnh SHOW CREATE TABLE notification; để tìm tên khóa phụ
+-- và gỡ nó ra TRƯỚC KHI chạy các lệnh bên dưới.
+
+
+ALTER TABLE notification
+DROP FOREIGN KEY notification_ibfk_1;
+
+-- BƯỚC 1: Xóa các cột không còn dùng trong mô hình mới
+ALTER TABLE notification
+  DROP COLUMN user_id,
+  DROP COLUMN timestamp,
+  DROP COLUMN type;
+
+-- BƯỚC 2: Thêm các cột mới cho bảng thông báo gốc
+ALTER TABLE notification
+  ADD COLUMN title VARCHAR(255) NOT NULL AFTER notif_id,
+  ADD COLUMN admin_id INT NULL AFTER title, -- ID của người gửi
+  ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+
+-- ----- PHẦN 2: TẠO BẢNG "notification_read_status" MỚI -----
+-- Mục tiêu: Tạo bảng theo dõi trạng thái "đã đọc" cho từng người dùng.
+
+CREATE TABLE notification_read_status (
+    status_id INT AUTO_INCREMENT PRIMARY KEY,
+    
+    -- Khóa ngoại trỏ đến thông báo gốc (Bảng chúng ta vừa sửa)
+    notif_id INT NOT NULL, 
+    
+    -- Khóa ngoại trỏ đến người nhận (Giả sử bạn có bảng 'users')
+    user_id INT NOT NULL, 
+    
+    -- Cột quan trọng nhất: Mặc định là 'chưa đọc' (false)
+    is_read BOOLEAN DEFAULT FALSE, 
+    
+    -- (Tùy chọn) Lưu lại thời gian họ đọc
+    read_at DATETIME NULL, 
+
+    -- ---- Ràng buộc & Tăng tốc ----
+    
+    -- Ràng buộc 1: Kết nối tới bảng thông báo
+    -- (Nếu bạn CHƯA đổi tên bảng ở Bước 3, hãy dùng 'notification(notif_id)')
+    FOREIGN KEY (notif_id) 
+        REFERENCES notification(notif_id) 
+        ON DELETE CASCADE, -- Xóa thông báo gốc thì xóa luôn trạng thái
+
+    -- Ràng buộc 2: Kết nối tới bảng người dùng
+    FOREIGN KEY (user_id) 
+        REFERENCES user(user_id) 
+        ON DELETE CASCADE, -- Xóa user thì xóa luôn trạng thái
+        
+    -- Đảm bảo một người chỉ nhận 1 thông báo 1 lần
+    UNIQUE KEY uk_notification_user (notif_id, user_id),
+    
+    -- Tăng tốc tìm kiếm 'chưa đọc'
+    INDEX idx_is_read (is_read)
+);
+----------------------------Tạo lại dữ liệu ảo cho 2 bảng-------------------------
+INSERT INTO notification (admin_id, title, message, created_at)
+VALUES
+(
+  1, -- admin_id
+  'Thông báo nghỉ lễ 30/4', 
+  'Toàn trường sẽ được nghỉ lễ 2 ngày 30/4 và 1/5.',
+  '2025-04-28 08:00:00'
+),
+(
+  1, -- admin_id
+  'Thông báo họp phụ huynh khẩn', 
+  'Nhà trường tổ chức họp phụ huynh khẩn vào 10:00 sáng Chủ Nhật tuần này.',
+  '2025-11-20 09:00:00'
+);
+INSERT INTO notification_read_status  (notif_id, user_id, is_read, read_at)
+VALUES
+-- Kịch bản 1: Thông báo 'Nghỉ lễ' (ID: 1) gửi cho 3 người
+(
+  4,  -- 'Nghỉ lễ'
+  10, -- Phụ huynh A
+  TRUE, -- Đã đọc
+  '2025-04-28 08:30:15'
+),
+(
+  4,  -- 'Nghỉ lễ'
+  11, -- Phụ huynh B
+  TRUE, -- Đã đọc
+  '2025-04-28 09:15:00'
+),
+(
+  4,  -- 'Nghỉ lễ'
+  12, -- Phụ huynh C
+  FALSE, -- CHƯA ĐỌC
+  NULL
+),
+
+-- Kịch bản 2: Thông báo 'Họp khẩn' (ID: 2) gửi cho 2 người
+(
+  5,  -- 'Họp khẩn'
+  10, -- Phụ huynh A
+  FALSE, -- CHƯA ĐỌC
+  NULL
+),
+(
+  5,  -- 'Họp khẩn'
+  11, -- Phụ huynh B
+  FALSE, -- CHƯA ĐỌC
+  NULL
+); --lưu ý nếu không thêm dữ liệu được thì xem lại bảng notification coi có trùng notif_id với dữ liệu trong bảng không.
+--ví dụ nếu thông báo trong notification là 1 mà trong notification_read_status là 3 thì sẽ bị lỗi khoá ngoại.

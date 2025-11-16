@@ -10,6 +10,8 @@ import stopRoute from './routes/stop.route.js';
 import driverRouter from './routes/driver.route.js';
 import login from './services/login.service.js';
 import dashboardRouter from './routes/dashboard.router.js';
+import ScheduleRouter from './routes/schedule.route.js';
+import route from './routes/route.route.js'
 const app = express();
 // ... (các app.use khác...)
 // --- THÊM DÒNG NÀY ---
@@ -21,8 +23,10 @@ app.use(express.json());
 app.use('/api/buses', busRouter);
 app.use('/api/drivers',driverRouter);
 app.use('/api/login',login)
-app.use('/api/dashboardata',dashboardRouter)
+app.use('/api/dashboardata',dashboardRouter);
+app.use('/api/route',route)
 // ----------------------
+app.use('/api/schedules',ScheduleRouter)
 app.use('/api/users', userRoute);
 app.use('/api/students', studentRoute);
 app.use('/api/stops', stopRoute);

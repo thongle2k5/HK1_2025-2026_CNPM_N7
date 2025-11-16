@@ -1,8 +1,28 @@
 import React from "react";
-function BusScheduleForm({ formdata, onDeleteAssignment }) {
+function BusScheduleTable({ formdata, onDeleteAssignment }) {
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "pending":
+        return (
+          <span className="bg-blue-500 px-2 py-1 rounded-xl">Đã lên lịch</span>
+        );
+      case "ongoing":
+        return (
+          <span className="bg-orange-500 px-2 py-1 rounded-xl">Đang chạy</span>
+        );
+      case "completed":
+        return (
+          <span className="bg-green-500 px-2 py-1 rounded-xl">Hoàn thành</span>
+        );
+      default:
+        return (
+          <span className="bg-gray-500 px-2 py-1 rounded-xl">{status}</span>
+        );
+    }
+  };
   return (
     <div>
-      <table className="table-auto text-gray-900 m-6">
+      <table className="w-full table-fixed  text-gray-900 m-6">
         <thead className="p-4 text-xs border-b text-gray-600">
           <tr>
             <th
@@ -33,28 +53,29 @@ function BusScheduleForm({ formdata, onDeleteAssignment }) {
         </thead>
         <tbody className="">
           {formdata.map((item) => (
-            <tr key={item.bus_id} className="hover:bg-gray-50 border-b">
-              <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {item.bus_id}
+            <tr key={item.schedule_id} className="hover:bg-gray-50 border-b">
+              <td
+                className="w-4/12 px-4 truncate py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                title={item.tuyen_duong}
+              >
+                {item.tuyen_duong}
               </td>
-              <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {item.license_plate}
+              <td className="w-2/12 px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {item.xe_buyt}
               </td>
-              <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {}
+              <td className="w-2/12 px-4 py-4  text-sm font-medium text-gray-900">
+                {item.tai_xe}
               </td>
-              <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {}
+              <td className="w-1/12 px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {new Date(item.date).toLocaleDateString("vi-VN")}
               </td>
-              <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {}
+              <td className="w-1/12 px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {item.start_time.substring(0, 5)}
               </td>
-              <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                <div className="rounded-lg bg-blue-200 text-blue-800 w-fit px-2">
-                  Đã lên lịch
-                </div>
+              <td className="w-1/12 px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {getStatusBadge(item.status)}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              <td className="w-1/12 px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 <button
                   onClick={() => console.log("Sửa item", item.id)}
                   className="text-indigo-600 hover:text-indigo-900 mr-3"
@@ -75,4 +96,4 @@ function BusScheduleForm({ formdata, onDeleteAssignment }) {
     </div>
   );
 }
-export default BusScheduleForm;
+export default BusScheduleTable;

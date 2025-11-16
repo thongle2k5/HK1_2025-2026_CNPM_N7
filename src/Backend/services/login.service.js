@@ -33,7 +33,8 @@ router.post('/',async(req,res)=>{
         )
         res.json({
             message:'dang nhap thanh cong',
-            token:token
+            token:token,
+            user: payload
         })
     }
     catch (error) {

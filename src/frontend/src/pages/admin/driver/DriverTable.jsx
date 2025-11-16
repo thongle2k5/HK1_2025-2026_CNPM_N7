@@ -3,6 +3,24 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import StatusBadge from "./statusPage";
 import { FaMessage } from "react-icons/fa6";
 import { PiNotePencilBold } from "react-icons/pi";
+const getStatusBadge = (status) => {
+  switch (status) {
+    case "Active":
+      return (
+        <span className="bg-blue-500 px-2 py-1 rounded-xl">Hoạt động</span>
+      );
+    case "On-Leave":
+      return (
+        <span className="bg-orange-500 px-2 py-1 rounded-xl">Nghỉ phép</span>
+      );
+    case "violation":
+      return (
+        <span className="bg-green-500 px-2 py-1 rounded-xl">Vi phạm </span>
+      );
+    default:
+      return <span className="bg-gray-500 px-2 py-1 rounded-xl">{status}</span>;
+  }
+};
 function DriverTable({ data }) {
   return (
     <div>
@@ -32,19 +50,19 @@ function DriverTable({ data }) {
                 scope="col"
                 className="px-4 py-3 text-left text-sm font-semibold text-white"
               >
-                Tuyến đường phụ trách
+                Email
               </th>
               <th
                 scope="col"
                 className="px-4 py-3 text-left text-sm font-semibold text-white"
               >
-                Trạng thái
+                Mã số bằng lái
               </th>
               <th
                 scope="col"
                 className="px-4 py-3 text-left text-sm font-semibold text-white"
               >
-                Vị trí hiện tại
+                Trạng thái tài khoản
               </th>
               <th
                 scope="col"
@@ -67,11 +85,13 @@ function DriverTable({ data }) {
                   {driver.phone}
                 </td>
                 <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
-                  {}
+                  {driver.email}
                 </td>
-                <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900"></td>
                 <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
-                  {}
+                  {driver.license_number}
+                </td>
+                <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
+                  {getStatusBadge(driver.status)}
                 </td>
                 <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
                   <button className="text-red-600">

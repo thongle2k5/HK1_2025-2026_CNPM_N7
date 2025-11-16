@@ -1,8 +1,11 @@
-import pool from '../models/Connect_dtb.js';
-const getAllDrivers = async ()=>{
-const [rows]=await pool.query("select d.driver_id , u.name , u.phone from driver d join user u on d.user_id = u.user_id ");
-return rows
-}
-export const driverService = {
- getAllDrivers
+import {driverModel} from '../models/driver.model.js'
+export const driverService ={
+    getAllDrivers: async () =>{
+        const status = await driverModel.getAllDrivers();
+        return status;
+    },
+    getTotalDrivers : async () =>{
+        const data= await driverModel.getTotalDrivers();
+        return data;
+    }
 }
