@@ -1,0 +1,316 @@
+.notification-container {
+  gap: 30px;
+  padding: 20px;
+  width: 100%;
+  position: relative;;
+  font-size: 19px;
+}
+
+.general-notic {
+    width: 100%;
+    font-size: 30px;
+    font-weight: bold;
+    margin: 20px 0 20px 20px;
+}
+
+.box-title{
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.title{
+    font-size: 20px;
+    font-weight: bold;
+}
+/* Cột trái */
+.student-list {
+  width: 30%;
+  float: left;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  margin-right: 40px;
+  margin-left: 40px;
+}
+
+.notify-card {
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  margin-top: 15px;
+  background: #f5f7ff;
+  border-radius: 10px;
+}
+
+.notify-card p{
+  width: 100%;
+}
+
+.status {
+  font-size: 18px;
+  float: right;
+  font-weight: bold;
+}
+
+.green-text { color: #0f8f2f; }
+
+.icon {
+  font-size: 20px;
+  float: left;
+  margin-right: 20px;
+}
+
+.green { color: #0f8f2f; }
+.blue { color: #4a6cf7; }
+.purple { color: #a855f7; }
+.red { color: #ff0000; }
+
+.purple-bg {
+  background: #f3e9f9 !important;
+}
+
+.class {
+  font-size: 18px;
+  font-weight: bold;
+  margin-left: 20px;
+}
+
+/* Cột giữa */
+
+
+.pickup-box h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Cột phải */
+.trip-detail {
+  width: 30%;
+  float: left;
+  background: white;
+  padding: 20px 25px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  height: fit-content;
+  color: black;
+}
+
+.trip-detail p{
+    margin: 13px;
+    padding-right: 20px;
+    justify-content: space-between;
+}
+
+.trip-detail strong {
+    margin-left: 20px;
+}
+
+.trip-detail a {
+  color: #4a6cf7;
+  text-decoration: none;
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  background: #f8f0f0d4;
+  display: flex;
+  border-radius: 20px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+    cursor: pointer;
+    transform: translateY(-2px) translateX(2px) scale(1.1);
+}
+
+.red-text {
+    margin-bottom: px;
+    margin-right: 1px;
+    color: #2813c5;
+    font-size: 38px;
+    font-weight: bold;
+}
+
+.red-text:hover {
+    color: #ed0e0e;
+}
+
+/* Tablet (768px - 1024px) */
+@media screen and (max-width: 1324px) {
+  .notification-container {
+    padding: 15px;
+    font-size: 18px;
+  }
+  
+  .general-notic {
+    font-size: 26px;
+    margin: 15px 0 15px 15px;
+  }
+  
+  .box-title {
+    font-size: 21px;
+  }
+  
+  .student-list,
+  .trip-detail {
+    width: 45%;
+    margin-right: 20px;
+    margin-left: 20px;
+    padding: 15px;
+  }
+  
+  .title {
+    font-size: 18px;
+  }
+  
+  .status {
+    font-size: 18px;
+  }
+  
+  .class {
+    font-size: 18px;
+  }
+  
+  .trip-detail p {
+    margin: 10px;
+    padding-right: 15px;
+  }
+}
+
+/* Small Tablet (600px - 768px) */
+@media screen and (max-width: 960px) {
+  .notification-container {
+    padding: 12px;
+    font-size: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .general-notic {
+    font-size: 24px;
+    margin: 12px 0;
+    text-align: center;
+  }
+  
+  .student-list,
+  .trip-detail {
+    width: 100%;
+    float: none;
+    margin: 0 0 20px 0;
+    padding: 15px;
+  }
+  
+  .box-title {
+    font-size: 20px;
+    text-align: center;
+  }
+  
+  .notify-card {
+    padding: 12px;
+    margin-top: 12px;
+  }
+  
+  .icon {
+    font-size: 18px;
+    margin-right: 15px;
+  }
+  
+  .title {
+    font-size: 18px;
+  }
+  
+  .class {
+    font-size: 18px;
+    margin-left: 15px;
+  }
+  
+  .status {
+    font-size: 18px;
+  }
+  
+  .trip-detail {
+    padding: 15px 20px;
+  }
+  
+  .trip-detail p {
+    margin: 8px;
+    padding-right: 10px;
+  }
+  
+  .trip-detail strong {
+    margin-left: 10px;
+  }
+  
+  .close-btn {
+    top: 15px;
+    right: 15px;
+    width: 28px;
+    height: 28px;
+  }
+  
+  .red-text {
+    font-size: 32px;
+  }
+}
+
+/* Mobile (480px - 600px) */
+@media screen and (max-width: 600px) {
+  .notification-container {
+    padding: 8px;
+    font-size: 18px;
+  }
+  
+  .general-notic {
+    font-size: 20px;
+  }
+  
+  .box-title {
+    font-size: 20px;
+  }
+  
+  .student-list,
+  .trip-detail {
+    padding: 10px;
+  }
+  
+  .title {
+    font-size: 18px;
+  }
+  
+  .class {
+    font-size: 18px;
+  }
+  
+  .status {
+    font-size: 18px;
+  }
+  
+  .notify-card {
+    padding: 8px;
+  }
+  
+  .trip-detail p {
+    margin: 4px;
+    font-size: 18px;
+  }
+  
+  .close-btn {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .red-text {
+    font-size: 24px;
+  }
+}
+

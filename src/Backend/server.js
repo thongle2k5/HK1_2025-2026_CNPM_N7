@@ -12,6 +12,7 @@ import driverRouter from './routes/driver.route.js';
 import login from './services/login.service.js';
 import dashboardRouter from './routes/dashboard.router.js';
 import studentRoutes from "./routes/StudentList.route.js";
+import notificationRoute from './routes/notification.route.js';
 
 //WebSocket Server 
 import http from 'http';
@@ -37,6 +38,7 @@ app.use('/api/students', studentRoutes);
 app.use('/api/users', userRoute);
 app.use('/api/students', studentRoute);
 app.use('/api/stops', stopRoute);
+app.use('/api/notifications', notificationRoute);
 
 
 // Server WebSocket 

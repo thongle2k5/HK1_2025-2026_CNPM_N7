@@ -19,20 +19,33 @@
 
 
 
-
+import { useState } from "react";
 import Header from "./components/specific/parentpage/Header.jsx";
 import ChildTracking from "./pages/parent/ChildTracking.jsx";
+import Notifications from "./pages/parent/Notifications.jsx"; 
+
 
 const user = {user_id :1};
-function parentApp() {
+function ParentApp() {
+  const [screen, setScreen] = useState("tracking"); 
+  // tracking = ChildTracking
+  // notification = Notifications
+
   return (
     <div className="w-screen h-screen flex flex-col relative">
-      <Header />
-      <ChildTracking user = {user}/>
+      <Header onBellClick={() => setScreen("notification")} />
+
+      {screen === "tracking" && <ChildTracking user={user} />}
+      {screen === "notification" && (
+        <Notifications 
+          user={user} 
+          onTracking={() => setScreen("tracking")} 
+        />
+      )}
     </div>
   );
 }
-export default parentApp;
+export default ParentApp;
 
 
 // import AppRoutes from "./routes/index.jsx"; // Đảm bảo AppRoutes được export default từ index.jsx
