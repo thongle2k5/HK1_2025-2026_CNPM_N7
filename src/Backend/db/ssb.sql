@@ -367,4 +367,10 @@ ADD COLUMN target_audience VARCHAR(100) NULL
 AFTER title;
 
 
+-- thêm is_deleted các cột student, parent, route 
+
+ALTER TABLE student ADD COLUMN is_deleted TINYINT(1) DEFAULT 0;
+ALTER TABLE route ADD COLUMN is_deleted TINYINT(1) DEFAULT 0;
+ALTER TABLE parent ADD COLUMN is_deleted TINYINT(1) DEFAULT 0;
+
 
