@@ -19,6 +19,7 @@ export default function BusTable({
   onRowClick,
   dataBus,
   onEditClick,
+  ondelete,
 }) {
   // Lọc dữ liệu dựa trên searchTerm (từ component cha)
   const filteredData = useMemo(
@@ -115,19 +116,13 @@ export default function BusTable({
               <td className="p-3 text-sm">
                 <button
                   className="text-blue-600 hover:text-blue-800 mr-3"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEditClick(bus);
-                  }}
+                  onClick={() => onEditClick(bus)}
                 >
                   Sửa
                 </button>
                 <button
                   className="text-red-600 hover:text-red-800"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    console.log("Delete", bus.bus_id);
-                  }}
+                  onClick={() => ondelete(bus.bus_id)}
                 >
                   Xóa
                 </button>

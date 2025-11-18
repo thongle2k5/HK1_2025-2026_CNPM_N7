@@ -7,19 +7,19 @@ import "leaflet/dist/leaflet.css";
 export default function ManageBus() {
   const [searchTerm, setSearchTerm] = useState("");
   const [getBuses, setGetBuses] = useState([]);
-  useEffect(() => {
-    const fetchBuses = async () => {
-      try {
-        const getAllBuses = await fetch("http://localhost:5000/api/buses");
-        if (!getAllBuses.ok) {
-          throw new Error(`HTTP error! status: ${getAllBuses.status}`);
-        }
-        const getall = await getAllBuses.json();
-        setGetBuses(getall);
-      } catch (err) {
-        console.error("Lỗi khi fetch data:", err);
+  const fetchBuses = async () => {
+    try {
+      const getAllBuses = await fetch("http://localhost:5000/api/buses");
+      if (!getAllBuses.ok) {
+        throw new Error(`HTTP error! status: ${getAllBuses.status}`);
       }
-    };
+      const getall = await getAllBuses.json();
+      setGetBuses(getall);
+    } catch (err) {
+      console.error("Lỗi khi fetch data:", err);
+    }
+  };
+  useEffect(() => {
     fetchBuses();
   }, []);
   {
@@ -79,6 +79,20 @@ export default function ManageBus() {
       console.error("Lỗi khi lưu:", err);
     }
   };
+  const handleDeleteBus = async (busId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/buses/${busId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Lỗi khi xóa xe!");
+      }
+      fetchBuses();
+    } catch (err) {
+      console.error("Lỗi khi xóa:", err);
+    }
+  };
   return (
     <div className="flex flex-col gap-6">
       <BusHeader onSearch={setSearchTerm} />
@@ -87,6 +101,7 @@ export default function ManageBus() {
         onRowClick={(bus) => handleViewLocation(bus)}
         onEditClick={handleOpenEditModal}
         dataBus={getBuses}
+        ondelete={handleDeleteBus}
       />
       <BusLocationMap position={mapPosition} busInfo={busInfo} />
       <EditBus

@@ -3,38 +3,41 @@ import DriverStats from "./DriverStats";
 import DriverTable from "./DriverTable";
 import DriverCharts from "./DriverCharts";
 import DriverForm from "./DriverForm";
+import DriverEditModal from "./DriverEditModal";
 function DriverManager() {
   const [drivers, setDrivers] = useState([]);
   const [totaldriver, setTotalDriver] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  useEffect(() => {
-    const fetchDrivers = async () => {
-      try {
-        const [response, totalDrivers] = await Promise.all([
-          fetch("http://localhost:5000/api/drivers"),
-          fetch("http://localhost:5000/api/drivers/total"),
-        ]);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data1 = await response.json();
-        setDrivers(data1);
-        if (!totalDrivers.ok) {
-          throw new Error(`HTTP error! status: ${totalDrivers.status}`);
-        }
-        const total = await totalDrivers.json();
-        setTotalDriver(total);
-      } catch (err) {
-        setError(err.message);
-        console.error("Lỗi khi fetch data:", err);
-      } finally {
-        setLoading(false);
+  const fetchDrivers = async () => {
+    try {
+      const [response, totalDrivers] = await Promise.all([
+        fetch("http://localhost:5000/api/drivers"),
+        fetch("http://localhost:5000/api/drivers/total"),
+      ]);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
+      const data1 = await response.json();
+      setDrivers(data1);
+      if (!totalDrivers.ok) {
+        throw new Error(`HTTP error! status: ${totalDrivers.status}`);
+      }
+      const total = await totalDrivers.json();
+      setTotalDriver(total);
+    } catch (err) {
+      setError(err.message);
+      console.error("Lỗi khi fetch data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchDrivers();
   }, []);
-
+  {
+    ("------------------------phần dành cho lọc và tìm kiếm------------------------");
+  }
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
 
@@ -64,7 +67,54 @@ function DriverManager() {
     }
     return currentDriver;
   }, [drivers, statusFilter, searchTerm]);
+
   const filteredDriver = getFilteredDriver;
+  {
+    ("------------------------phần dành cho xử lý table------------------------");
+  }
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const handleEdit = (item) => {
+    setEditingItem(item);
+    setIsEditModalOpen(true);
+  };
+  const handleSaveEdit = async (updatedDriverData) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/drivers/${updatedDriverData.driver_id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedDriverData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Lỗi khi cập nhật tài xế");
+      }
+      alert("Cập nhật thành công!");
+      setIsEditModalOpen(false);
+      fetchDrivers();
+    } catch (err) {
+      console.error("Lỗi save edit:", err);
+      alert("Cập nhật thất bại: " + err.message);
+    }
+  };
+  const handleDelete = async (driverId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/drivers/${driverId}`,
+        { method: "DELETE" }
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      fetchDrivers();
+    } catch (error) {
+      console.error("Lỗi khi xóa tài xế:", error);
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between text-left py-6 mx-4  font-bold text-2xl text-black">
@@ -98,8 +148,19 @@ function DriverManager() {
             onChange={handleSearchChange}
           />
         </div>
-        <DriverTable data={filteredDriver} />
+        <DriverTable
+          data={filteredDriver}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
+        />
       </div>
+      <DriverEditModal
+        isOpen={isEditModalOpen}
+        onEdit={handleEdit}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleSaveEdit}
+        driverData={editingItem}
+      />
     </div>
   );
 }

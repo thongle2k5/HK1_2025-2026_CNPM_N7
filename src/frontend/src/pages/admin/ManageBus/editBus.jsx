@@ -23,8 +23,14 @@ export default function EditBus({ isOpen, onClose, busData, onSave }) {
     return null;
   }
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg shadow-xl z-50 w-full max-w-md">
+    <div
+      style={{ zIndex: 4000 }}
+      className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center"
+    >
+      <div
+        style={{ zIndex: 4000 }}
+        className="bg-white p-6 rounded-lg shadow-xl z-50 w-full max-w-md"
+      >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Chỉnh sửa thông tin xe</h2>
           <button

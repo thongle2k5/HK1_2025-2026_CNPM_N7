@@ -357,6 +357,14 @@ VALUES
 --ví dụ nếu thông báo trong notification là 1 mà trong notification_read_status là 3 thì sẽ bị lỗi khoá ngoại.
 ALTER TABLE `user`
 ADD COLUMN `email` VARCHAR(100) DEFAULT NULL AFTER `phone`;
+-----------------thêm trạng thái status cho bảng notification---------------------
+ALTER TABLE notification
+ADD COLUMN status ENUM('published', 'draft', 'archived') 
+NOT NULL 
+DEFAULT 'published'
+AFTER message
+ADD COLUMN target_audience VARCHAR(100) NULL 
+AFTER title;
 
 
 

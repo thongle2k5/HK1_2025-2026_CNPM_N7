@@ -1,9 +1,11 @@
 
 import pool from '../models/Connect_dtb.js';
 const getAllDrivers = async ()=>{
-const [rows]=await pool.query(`select d.driver_id , u.name , u.phone ,u.email,d.license_number,d.status
+const [rows]=await pool.query(`select d.driver_id , u.name , u.phone ,u.email,d.license_number,d.status,u.user_id
     from driver d 
-    join user u on d.user_id = u.user_id `);
+    join user u on d.user_id = u.user_id 
+    where d.status != 'Terminated'
+    `);
 return rows
 }
 const getTotalDrivers = async ()=>{
@@ -11,7 +13,7 @@ const [rows]=await pool.query(`
       SELECT
         COUNT(*) AS totalDrivers,
         SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS activeDrivers,
-        SUM(CASE WHEN status = 'on_leave' THEN 1 ELSE 0 END) AS onLeaveDrivers,
+        SUM(CASE WHEN status = 'On-Leave' THEN 1 ELSE 0 END) AS onLeaveDrivers,
         SUM(CASE WHEN status IN ('violation', 'needs_check') THEN 1 ELSE 0 END) AS problemDrivers
       FROM
         driver;
@@ -37,7 +39,6 @@ const getDriverDashboard = async (driverId) => {
     [driverId]
   );
 
-  // Lấy 3 cảnh báo gần nhất
   const [alerts] = await pool.query(
     `SELECT id, type, time, location 
      FROM incident_reports 
@@ -49,11 +50,44 @@ const getDriverDashboard = async (driverId) => {
 
   return { driver, students, alerts };
 };
+const deleteDriver = async (driverId) => {
+  const [result] = await pool.query('update driver set status = "Terminated" where driver_id = ?', [driverId]);
+  return result;
+}
+const update = async ( data) => {
+  const {id, name, phone, email, license_number, status, user_id } = data;
+  
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+    
+  
+    await connection.query(
+      "UPDATE user SET name = ?, phone = ?, email = ? WHERE user_id = ?",
+      [name, phone, email, user_id]
+    );
+    
 
+    await connection.query(
+      "UPDATE driver SET license_number = ?, status = ? WHERE driver_id = ?",
+      [license_number, status, id]
+    );
+    
+    await connection.commit();
+  } catch (err) {
+    await connection.rollback();
+    console.error("Lỗi transaction khi sửa tài xế:", err);
+    throw err;
+  } finally {
+    connection.release();
+  }
+};
 export const driverModel = {
  getAllDrivers,
  getTotalDrivers,
- getDriverDashboard
+ getDriverDashboard,
+ deleteDriver,
+ update
 }
 
  

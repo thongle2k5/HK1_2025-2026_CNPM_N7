@@ -14,7 +14,6 @@ import ManageBus from "./ManageBus";
 import ManageParent from "./ManageParent";
 import Dashboard from "./Dashboard";
 import BusSchedule from "./Schedule/BusSchedule";
-import React, { useState, useEffect } from "react";
 import DriverManager from "./driver/DriverManager";
 import ManageRoute from "./ManageRoute";
 import ManageLocation from "./ManageLocation";

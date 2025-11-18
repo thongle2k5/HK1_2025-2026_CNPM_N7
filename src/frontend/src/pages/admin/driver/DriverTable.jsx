@@ -21,7 +21,7 @@ const getStatusBadge = (status) => {
       return <span className="bg-gray-500 px-2 py-1 rounded-xl">{status}</span>;
   }
 };
-function DriverTable({ data }) {
+function DriverTable({ data, onEdit, onDelete }) {
   return (
     <div>
       <div className="overflow-x-auto rounded-lg overflow-hidden shadow-md border border-gray-200">
@@ -94,13 +94,16 @@ function DriverTable({ data }) {
                   {getStatusBadge(driver.status)}
                 </td>
                 <td className="px-4 py-1 whitespace-nowrap text-sm text-gray-900">
-                  <button className="text-red-600">
+                  <button
+                    onClick={() => onDelete(driver.driver_id)}
+                    className="text-red-600"
+                  >
                     <RiDeleteBin6Line />
                   </button>
                   <button className="p-4">
                     <FaMessage className="text-green-600 " />
                   </button>
-                  <button>
+                  <button onClick={() => onEdit(driver)}>
                     <PiNotePencilBold />
                   </button>
                 </td>

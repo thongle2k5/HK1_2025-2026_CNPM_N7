@@ -13,7 +13,7 @@ import dashboardRouter from './routes/dashboard.router.js';
 import ScheduleRouter from './routes/schedule.route.js';
 import route from './routes/route.route.js'
 import studentRoutes from "./routes/StudentList.route.js";
-
+import  notificationRouter from './routes/notification.route.js';
 const app = express();
 // ... (các app.use khác...)
 // --- THÊM DÒNG NÀY ---
@@ -25,7 +25,7 @@ app.use(express.json());
 app.use('/api/buses', busRouter);
 app.use('/api/dashboardata',dashboardRouter);
 app.use('/api/route',route)
-
+app.use('/api/notifications', notificationRouter);
 app.use('/api/drivers', driverRouter);
 app.use('/api/login', login)
 app.use('/api/dashboardata', dashboardRouter)

@@ -19,7 +19,29 @@ const getTotalDrivers = async (req,res)=>{
         res.status(500).json({message:'loi server'});
     };
 }
+const Delete = async(req,res)=>{
+    const driverId=req.params.id;
+    try{
+        await driverService.deleteDriver(driverId);
+        res.json({ message: "Xóa tài xế thành công" });
+    }catch(error){
+         console.error('xoac driver',error);
+        res.status(500).json({message:'loi server'});
+    }
+}
+const editDriver = async (req, res) => {
+    const driver=req.body;
+     try{
+        await driverService.editDriver(driver);
+        res.json({ message: "Sửa tài xế thành công" });
+    }catch(error){
+         console.error('xoac driver',error);
+        res.status(500).json({message:'loi server'});
+    }
+}
 export const driverController={
     getAlldrivers,
-    getTotalDrivers
+    getTotalDrivers,
+    Delete,
+    editDriver
 }

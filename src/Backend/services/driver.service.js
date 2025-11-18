@@ -7,5 +7,11 @@ export const driverService ={
     getTotalDrivers : async () =>{
         const data= await driverModel.getTotalDrivers();
         return data;
+    },
+    deleteDriver: async (driverId) => {
+        return await driverModel.deleteDriver(driverId);
+    },
+    editDriver: async (driver) => {
+        return await driverModel.update(driver);
     }
 }

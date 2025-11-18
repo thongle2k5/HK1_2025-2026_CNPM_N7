@@ -37,7 +37,7 @@ export const BusTrackingModel ={
  softDeleteBus : async (id) => {
   const sql = "UPDATE bus SET status = 'retired' WHERE bus_id = ?";
   await db.query(sql, [id]);
-  return { id: id };
+  return { id };
 },
 
 

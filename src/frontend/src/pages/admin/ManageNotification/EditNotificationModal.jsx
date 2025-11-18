@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function SendNotificationForm({ isOpen, onClose, onSave }) {
+export default function EditNotificationModal({
+  isOpen,
+  onClose,
+  onSave,
+  data,
+}) {
   const [formData, setFormData] = useState({
     title: "",
     message: "",
@@ -8,12 +13,19 @@ export default function SendNotificationForm({ isOpen, onClose, onSave }) {
   });
   const [error, setError] = useState(null);
 
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        title: data.title,
+        message: data.message,
+        target_audience: data.target_audience,
+      });
+    }
+  }, [data]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -26,22 +38,10 @@ export default function SendNotificationForm({ isOpen, onClose, onSave }) {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/notifications", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || "Lỗi khi tạo thông báo");
-      }
-
-      onSave();
+      await onSave(data.notif_id, formData);
       onClose();
-      setFormData({ title: "", message: "", target_audience: "parent" });
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Lỗi khi cập nhật");
     }
   };
 
@@ -51,7 +51,7 @@ export default function SendNotificationForm({ isOpen, onClose, onSave }) {
     <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg shadow-xl z-50 w-full max-w-lg">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Tạo thông báo mới</h2>
+          <h2 className="text-xl font-bold">Sửa thông báo</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-800"
@@ -100,7 +100,9 @@ export default function SendNotificationForm({ isOpen, onClose, onSave }) {
               className="mt-1 p-2 w-full border border-gray-300 rounded-md"
             ></textarea>
           </div>
+
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
           <div className="flex justify-end gap-4">
             <button
               type="button"
@@ -113,7 +115,7 @@ export default function SendNotificationForm({ isOpen, onClose, onSave }) {
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              Gửi thông báo
+              Lưu thay đổi
             </button>
           </div>
         </form>
