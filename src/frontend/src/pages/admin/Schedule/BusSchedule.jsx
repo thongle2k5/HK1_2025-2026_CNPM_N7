@@ -220,7 +220,6 @@ function BusSchedule() {
               driverData={drivers}
               busData={buses}
               routeData={routes}
-              isEditing={isEditing}
             />
           </div>
         </div>

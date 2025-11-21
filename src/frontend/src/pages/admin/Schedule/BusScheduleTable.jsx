@@ -102,14 +102,13 @@ function BusScheduleTable({ formdata, onDeleteAssignment, onEdit }) {
               <td className="px-4 py-3 text-center">
                 <div className="flex items-center justify-center space-x-3">
                   <button
-                    onClick={() => onEdit(item)} // Gọi hàm Sửa
+                    onClick={() => onEdit(item)}
                     className="text-indigo-600 hover:text-indigo-900 p-1 rounded-md hover:bg-indigo-50 transition"
                     title="Sửa"
                   >
                     <PiNotePencilBold size={18} />
                   </button>
                   <button
-                    // Sửa item.td thành item.schedule_id
                     onClick={() => onDeleteAssignment(item.schedule_id)}
                     className="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50 transition"
                     title="Xóa"

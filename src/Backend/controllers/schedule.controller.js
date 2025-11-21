@@ -42,6 +42,30 @@ export const ScheduleController = {
       console.error('Lỗi controller:', error);
       res.status(500).json({ error: 'Lỗi máy chủ nội bộ.' });
     }
-  }
+  },
+  updateSchedule: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const updatedData = req.body;
+            await ScheduleService.update(id, updatedData);
+            res.status(200).json({ message: 'Cập nhật thành công' });
+        } catch (error) {
+            console.error('Lỗi update:', error);
+            res.status(500).json({ error: 'Lỗi server khi cập nhật' });
+        }
+    },
+
+  
+   deleteSchedule: async (req, res) => {
+    try {
+        const { id } = req.params;
+        await ScheduleService.delete(id);
+        res.status(200).json({ message: 'Xóa thành công' });
+    } catch (error) {
+        console.error('Lỗi delete:', error);
+        
+        res.status(400).json({ error: error.message }); 
+    }
+}
 
     }

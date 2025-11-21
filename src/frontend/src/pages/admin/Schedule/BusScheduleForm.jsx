@@ -6,6 +6,8 @@ function BusScheduleForm({
   driverData,
   busData,
   routeData,
+
+  onReset,
 }) {
   return (
     <form onSubmit={onSubmit} className="flex flex-col m-4">
@@ -115,6 +117,7 @@ function BusScheduleForm({
         </button>
         <button
           type="reset"
+          onClick={onReset}
           className="border p-2 bg-white border text-gray-900 rounded-lg mx-6"
         >
           Xoá form
