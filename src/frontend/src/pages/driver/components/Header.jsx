@@ -16,8 +16,10 @@
 //     }, []);
 
 //     return (
-//         <header className="flex justify-between items-center bg-white shadow-md px-6 py-3 rounded-md">
-//             <h1 className="text-xl font-semibold text-blue-700">Hệ thống tài xế</h1>
+//         <header className="flex justify-between items-center bg-white shadow-sm px-6 py-4 rounded-xl border border-gray-100">
+//             <h1 className="text-xl font-semibold text-blue-700">
+//                 Hệ thống tài xế
+//             </h1>
 
 //             <div className="text-right text-sm text-gray-700">
 //                 <p>
@@ -37,10 +39,12 @@
 import React, { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
 
-export default function DriverHeader({ driverName = "Nguyễn Văn T" }) {
+export default function DriverHeader({ driverId }) {
+    const [driverName, setDriverName] = useState("Tài xế");
     const [currentDate, setCurrentDate] = useState("");
 
     useEffect(() => {
+        // Hiển thị ngày hiện tại
         const now = new Date();
         const formatted = now.toLocaleDateString("vi-VN", {
             weekday: "long",
@@ -49,7 +53,15 @@ export default function DriverHeader({ driverName = "Nguyễn Văn T" }) {
             year: "numeric",
         });
         setCurrentDate(formatted);
-    }, []);
+
+        // Lấy tên tài xế từ backend
+        if (driverId) {
+            fetch(`http://localhost:5000/api/driver/info/${driverId}`)
+                .then(res => res.json())
+                .then(data => setDriverName(data.name))
+                .catch(err => console.error(err));
+        }
+    }, [driverId]);
 
     return (
         <header className="flex justify-between items-center bg-white shadow-sm px-6 py-4 rounded-xl border border-gray-100">

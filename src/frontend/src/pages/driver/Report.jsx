@@ -28,27 +28,68 @@ export default function Report() {
   });
 
 
-  const handleSubmit = (e) => {
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (!type || !priority) {
+  //     alert("⚠️ Vui lòng chọn loại cảnh báo và mức độ ưu tiên!");
+  //     return;
+  //   }
+
+  //   const newReport = {
+  //     id: reports.length + 1,
+  //     type,
+  //     time: new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }),
+  //     location: position.address,
+  //     status: "Đã gửi",
+  //   };
+
+  //   setReports([newReport, ...reports]);
+  //   setType("");
+  //   setPriority("");
+  //   setDescription("");
+  //   alert("✅ Báo cáo đã được gửi thành công!");
+  // };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!type || !priority) {
       alert("⚠️ Vui lòng chọn loại cảnh báo và mức độ ưu tiên!");
       return;
     }
 
-    const newReport = {
-      id: reports.length + 1,
-      type,
-      time: new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }),
-      location: position.address,
-      status: "Đã gửi",
-    };
+    try {
+      const res = await fetch("http://localhost:5000/api/driver/notifications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          driver_id: 26, // thay bằng driver_id thực tế
+          type,
+          priority,
+          description,
+          location: position.address,
+        }),
+      });
 
-    setReports([newReport, ...reports]);
-    setType("");
-    setPriority("");
-    setDescription("");
-    alert("✅ Báo cáo đã được gửi thành công!");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Lỗi server");
+
+      const newReport = {
+        id: data.notif_id,
+        type,
+        time: new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }),
+        location: position.address,
+        status: "Đã gửi",
+      };
+      setReports([newReport, ...reports]);
+      setType("");
+      setPriority("");
+      setDescription("");
+      alert("✅ Báo cáo đã được gửi thành công!");
+    } catch (error) {
+      alert("❌ Gửi báo cáo thất bại: " + error.message);
+    }
   };
+
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen space-y-6">
