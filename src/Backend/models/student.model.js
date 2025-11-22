@@ -1,7 +1,19 @@
 import db from '../db/Connect_dtb.js';
 export const StudentModel = {
     getStudentById: async (id) => {
-        const [row] = await db.promise().query('select * from student where student_id = ?', [id]);
+        const [row] = await db.query('select * from student where student_id = ?', [id]);
+        return row[0];
+    },
+
+    getStudentsByUserId: async (userId) => {
+        const [rows] = await db.query('select student.* ' +
+            'from student left join student_parent on student.student_id = student_parent.student_id ' +
+            'left join parent on student_parent.parent_id = parent.parent_id ' +
+            'where parent.user_id = ?', [userId])
+        return rows;
+    },
+    getStudentDetailInfoByStudentId: async (studentId) => {
+        const [row] = await db.query('select * from student where student_id = ?', [id]);
         return row[0];
     },
     getStudentsByParentId: async (parentId) => {
@@ -10,6 +22,7 @@ export const StudentModel = {
     },
     getStudentDetailInfoByStudentId: async (studentId) => {
         const [rows] = await db.promise().query(
+
             'select stop.*,d.*,bus.*,schedule.* ' +
             'from student join pickup_status on student.student_id = pickup_status.student_id ' +
             'join stop on pickup_status.stop_id = stop.stop_id ' +
@@ -19,6 +32,11 @@ export const StudentModel = {
             'join bus on schedule.bus_id = bus.bus_id ' +
             'where student.student_id =?', [studentId]);
         return rows[0];
+    },
+
+    getStudentsByParentId: async (parentId) => {
+        const [rows] = await db.query('select * from student left join student_parent on student.student_id = student_parent.student_id where student_parent.parent_id = ?',[parentId]);
+        return rows;
     },
     getStudentsAdmin: async (offset, limit) => {
         const sql = `
@@ -125,6 +143,7 @@ export const StudentModel = {
         `;
         const [result] = await db.query(sql, [studentId]);
         return result;
+
     }
 
 }

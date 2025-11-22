@@ -18,7 +18,7 @@ import DriverManager from "./driver/DriverManager";
 import ManageRoute from "./ManageRouteBus/ManageRoute";
 import ManageLocation from "./ManageLocation/ManageLocation";
 import ManageAssignment from "./ManageAssignment/ManageAssignment";
-import ProFile from "./profile";
+import ProFile from "./profileManager/profile";
 import ManageNotification from "./ManageNotification/index";
 function AdminLayout() {
   const location = useLocation();
@@ -56,10 +56,11 @@ function AdminLayout() {
               <Link
                 to="/admin/AdminLayout/Dashboard"
                 className={`w-full flex items-center 
-        ${location.pathname === "/admin/AdminLayout/Dashboard"
-                    ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
-                    : ""
-                  }`}
+        ${
+          location.pathname === "/admin/AdminLayout/Dashboard"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
               >
                 🏠 Trang chủ
               </Link>
@@ -68,10 +69,11 @@ function AdminLayout() {
               <Link
                 to="/admin/AdminLayout/BusSchedule"
                 className={`w-full  flex items-center 
-        ${location.pathname === "/admin/AdminLayout/BusSchedule"
-                    ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
-                    : ""
-                  }`}
+        ${
+          location.pathname === "/admin/AdminLayout/BusSchedule"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
               >
                 📋Lịch xe buýt
               </Link>
@@ -80,10 +82,11 @@ function AdminLayout() {
               <Link
                 to="/admin/AdminLayout/DriverManager"
                 className={`w-full  flex items-center 
-        ${location.pathname === "/admin/AdminLayout/DriverManager"
-                    ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
-                    : ""
-                  }`}
+        ${
+          location.pathname === "/admin/AdminLayout/DriverManager"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
               >
                 👨‍✈️Tài xế
               </Link>
@@ -93,10 +96,11 @@ function AdminLayout() {
               <Link
                 to="/admin/AdminLayout/index"
                 className={`w-full  flex items-center 
-        ${location.pathname === "/admin/AdminLayout/index"
-                    ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
-                    : ""
-                  }`}
+        ${
+          location.pathname === "/admin/AdminLayout/index"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
               >
                 🚌Xe buýt
               </Link>
@@ -106,10 +110,11 @@ function AdminLayout() {
               <Link
                 to="/admin/AdminLayout/ManageRoute"
                 className={`w-full  flex items-center 
-        ${location.pathname === "/admin/AdminLayout/ManageRoute"
-                    ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
-                    : ""
-                  }`}
+        ${
+          location.pathname === "/admin/AdminLayout/ManageRoute"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
               >
                 🗺️Tuyến đường{" "}
               </Link>
@@ -119,10 +124,11 @@ function AdminLayout() {
               <Link
                 to="/admin/AdminLayout/students"
                 className={`w-full  flex items-center 
-        ${location.pathname === "/admin/AdminLayout/students"
-                    ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
-                    : ""
-                  }`}
+        ${
+          location.pathname === "/admin/AdminLayout/students"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
               >
                 🎓Học sinh
               </Link>
@@ -132,10 +138,11 @@ function AdminLayout() {
               <Link
                 to="/admin/AdminLayout/parents"
                 className={`w-full  flex items-center 
-        ${location.pathname === "/admin/AdminLayout/parents"
-                    ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
-                    : ""
-                  }`}
+        ${
+          location.pathname === "/admin/AdminLayout/parents"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
               >
                 👪Phụ huynh
               </Link>
@@ -144,10 +151,11 @@ function AdminLayout() {
               <Link
                 to="/admin/AdminLayout/ManageNotification"
                 className={`w-full  flex items-center 
-        ${location.pathname === "/admin/AdminLayout/ManageNotification"
-                    ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
-                    : ""
-                  }`}
+        ${
+          location.pathname === "/admin/AdminLayout/ManageNotification"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
               >
                 🔔Thông báo
               </Link>
@@ -156,10 +164,11 @@ function AdminLayout() {
               <Link
                 to="/admin/AdminLayout/ManageAssignment"
                 className={`w-full  flex items-center 
-        ${location.pathname === "/admin/AdminLayout/ManageAssignment"
-                    ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
-                    : ""
-                  }`}
+        ${
+          location.pathname === "/admin/AdminLayout/ManageAssignment"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
               >
                 🔄Phân công
               </Link>
@@ -168,10 +177,11 @@ function AdminLayout() {
               <Link
                 to="/admin/AdminLayout/ManageLocation"
                 className={`w-full  flex items-center 
-        ${location.pathname === "/admin/AdminLayout/ManageLocation"
-                    ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
-                    : ""
-                  }`}
+        ${
+          location.pathname === "/admin/AdminLayout/ManageLocation"
+            ? "border-l-4 border-blue-700 font-semibold text-gray-800 hover:text-white"
+            : ""
+        }`}
               >
                 📍Cập nhật vị trí
               </Link>

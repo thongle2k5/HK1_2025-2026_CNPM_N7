@@ -8,5 +8,12 @@ export const UserController ={
         }catch(error){
             res.status(404).json({message: error.message});
         }
-    }
+    },
+    getManagers: async (req, res) => {
+        try{
+            const managers = await UserService.getManagers();
+            res.json(managers);
+        }catch(error) {
+             res.status(404).json({message: error.message});
+        }}
 }
