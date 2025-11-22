@@ -2,142 +2,225 @@ import React, { useState, useEffect } from "react";
 import BusScheduleForm from "./BusScheduleForm";
 import BusScheduleTable from "./BusScheduleTable";
 import ActivityLog from "./ActivityLog";
-function BusSchedule() {
-  const [getDataBus, setGetDataBus] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const [assignments, setAssignments] = useState([
-    {
-      td: "1",
-      xe: "29B-12345",
-      tx: "Nguyen Van A",
-      ngay: "20-06-2024",
-      gio: "08:00",
-    },
-    {
-      td: "2",
-      xe: "29B-12342",
-      tx: "Le Van B",
-      ngay: "20-06-2024",
-      gio: "08:30",
-    },
-    {
-      td: "3",
-      xe: "29B-12335",
-      tx: "Nguyen Quoc C",
-      ngay: "21-06-2024",
-      gio: "09:00",
-    },
-  ]);
-  const [newAssigment, setNewAssigment] = useState({
-    td: "",
-    xe: "",
-    tx: "",
-    ngay: "",
-    gio: "",
+function BusSchedule() {
+  const [drivers, setDrivers] = useState([]);
+  const [buses, setBuses] = useState([]);
+  const [routes, setRoutes] = useState([]);
+  const [getDataBus, setGetDataBus] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [limit, setLimit] = useState(6);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editId, setEditId] = useState(null);
+
+  const [formdata, setFormdata] = useState({
+    route_id: "",
+    bus_id: "",
+    driver_id: "",
+    date: "",
+    start_time: "",
+    end_time: "",
+    manager_id: "",
   });
-  const handleDeleteAssignment = (tdToDelete) => {
-    const updatedAssignments = assignments.filter((item) => {
-      return item.td !== tdToDelete;
-    });
-    setAssignments(updatedAssignments);
-    if (tdToDelete) {
-      addActivity("DELETE", `Đã xóa lịch trình tuyến số ${tdToDelete.td}.`);
+
+  useEffect(() => {
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      const currentUser = JSON.parse(userString);
+      if (currentUser?.userId) {
+        setFormdata((prev) => ({ ...prev, manager_id: currentUser.userId }));
+      }
+    }
+  }, []);
+
+  const fetchTableData = async () => {
+    setIsLoading(true);
+    try {
+      const data = await fetch(
+        `http://localhost:5000/api/schedules/manager?page=${currentPage}&limit=${limit}`
+      );
+      if (!data.ok) throw new Error("Lỗi tải dữ liệu bảng");
+      const get = await data.json();
+      setGetDataBus(get.data);
+      setTotalPages(get.totalPages);
+    } catch (err) {
+      console.log("Lỗi:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
-  const handleNewInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewAssigment({ ...newAssigment, [name]: value });
-  };
-  const handleAddAssignment = (e) => {
-    e.preventDefault();
-    setAssignments([...assignments, newAssigment]);
-    setNewAssigment({ td: Date.now(), xe: "", tx: "", ngay: "", gio: "" });
-  };
-  // hàm sử lý hoạt động gần đây
-  const [activityLog, setActivityLog] = useState([]);
-  const addActivity = (type, message) => {
-    const newActivity = {
-      id: "",
-      type: type,
-      message: message,
-      timestamp: new Date().toLocaleTimeString("vi-VN"), // Giờ phút giây
-    };
-    // Chỉ giữ 5 hoạt động gần nhất
-    setActivityLog((prevLog) => [newActivity, ...prevLog].slice(0, 5));
-  };
+
   useEffect(() => {
-    const fetchData = async () => {
+    fetchTableData();
+  }, [currentPage]);
+
+  useEffect(() => {
+    const fetchOptions = async () => {
       try {
-        const data = await fetch("http://localhost:5000/api/buses");
-        if (!data.ok) {
-          throw new Error("lỗi http");
-        }
-        const get = await data.json();
-        setGetDataBus(get);
-      } catch (err) {
-        console.log("không lấy được dữ liệu busSchedule", err);
-      } finally {
-        setIsLoading(false);
+        const [driversRes, busesRes, routesRes] = await Promise.all([
+          fetch("http://localhost:5000/api/drivers"),
+          fetch("http://localhost:5000/api/buses"),
+          fetch("http://localhost:5000/api/route"),
+        ]);
+        setDrivers(await driversRes.json());
+        setBuses(await busesRes.json());
+        setRoutes(await routesRes.json());
+      } catch (error) {
+        console.error("Lỗi tải options:", error);
       }
     };
-    fetchData();
+    fetchOptions();
   }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormdata((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditClick = (item) => {
+    setIsEditing(true);
+    setEditId(item.schedule_id);
+
+    setFormdata({
+      route_id: item.route_id || "",
+      bus_id: item.bus_id || "",
+      driver_id: item.driver_id || "",
+      date: item.date ? item.date.split("T")[0] : "",
+      start_time: item.start_time || "",
+      end_time: item.end_time || "",
+      manager_id: formdata.manager_id,
+    });
+  };
+
+  const handleDeleteClick = async (id) => {
+    if (!window.confirm("Bạn có chắc muốn xóa lịch trình này?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/schedules/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Xóa thất bại");
+
+      alert("Đã xóa thành công!");
+      fetchTableData();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const handleReset = () => {
+    setIsEditing(false);
+    setEditId(null);
+    setFormdata({
+      route_id: "",
+      bus_id: "",
+      driver_id: "",
+      date: "",
+      start_time: "",
+      end_time: "",
+      manager_id: formdata.manager_id,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const url = isEditing
+      ? `http://localhost:5000/api/schedules/${editId}`
+      : "http://localhost:5000/api/schedules";
+
+    const method = isEditing ? "PUT" : "POST";
+
+    try {
+      const response = await fetch(url, {
+        method: method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formdata),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Lỗi khi lưu");
+      }
+
+      alert(isEditing ? "Cập nhật thành công!" : "Tạo lịch thành công!");
+      fetchTableData();
+      handleReset();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNextPage = () =>
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
   return (
     <div>
       <div className="px-2 py-2 border-b flex justify-between items-center rounded-lg bg-white shadow-md">
         <div>
           <div className="px-4 font-bold text-xl ">Lịch xe buýt</div>
-          <div className="px-4 text-xs">
-            Quản lý lịch chạy xe, tài xế và đồng bộ dữ liệu lên hệ thống
-          </div>
+          <div className="px-4 text-xs">Quản lý lịch chạy xe</div>
         </div>
-        <div className="px-6">
-          <button className="bg-blue-500 p-2 rounded-xl text-white">
-            Đồng bộ lên hệ thống
-          </button>
-          <input
-            type="text"
-            placeholder="Tìm kiếm theo tuyến,xe,tài xế..."
-            className="w-[250px] m-4 border p-2 outline-none rounded-3xl text-black"
-          />
-        </div>
+        <div className="px-6"></div>
       </div>
-      <div className="flex md:flex-row gap-8 h-screen  mt-4 gap-4 px-4 ">
-        <div className="bg-white rounded-lg shadow-lg md:w-8/12 overflow-x-auto ">
-          <div className="flex justify-between p-4 border-b">
-            <div className="text-gray-900">Danh sách lịch chạy</div>
-            <div className="text-gray-600 text-xs px-4">Tổng:{"6"}</div>
+
+      <div className="flex md:flex-row gap-8 h-screen mt-4 gap-4 px-4 ">
+        <div className="bg-white rounded-lg shadow-lg md:w-8/12 overflow-hidden flex flex-col h-[calc(100vh-140px)]">
+          <div className="flex justify-between p-4 border-b flex-shrink-0">
+            <div className="text-gray-900 font-bold">Danh sách lịch chạy</div>
           </div>
-          <BusScheduleTable
-            formdata={getDataBus}
-            onDeleteAssignment={handleDeleteAssignment}
-          />
-        </div>
-        <div className="md:w-4/12 ">
-          <div className="bg-white rounded-lg shadow-lg p-4 m-4">
-            <div className="text-gray-900 py-4">
-              <div className="font-bold ">Tạo cập nhật lịch</div>
-              <div className="text-xs text-gray-700">
-                Quản lý lịch chạy xe, tài xế và đồng bộ dữ liệu lên hệ thống
-              </div>
-            </div>
-            <BusScheduleForm
-              onSubmit={handleAddAssignment}
-              formdata={assignments}
-              onInputChange={handleNewInputChange}
+
+          <div className="flex-1 overflow-y-auto overflow-x-auto">
+            <BusScheduleTable
+              formdata={getDataBus}
+              onDeleteAssignment={handleDeleteClick}
+              onEdit={handleEditClick}
             />
           </div>
 
-          <div className="bg-white rounded-lg shadow-lg p-2 m-4 ">
-            <div className="text-gray-900 ">
-              <div className="border-b w-full">Hoạt động gần đây</div>
+          <div className="flex items-center justify-between p-4 border-t bg-gray-50 flex-shrink-0">
+            <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className="bg-white border px-3 py-1 rounded text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-50 shadow-sm"
+            >
+              Trước
+            </button>
+            <span className="text-sm text-gray-700 font-medium">
+              Trang {currentPage} / {totalPages || 1}
+            </span>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className="bg-white border px-3 py-1 rounded text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-50 shadow-sm"
+            >
+              Sau
+            </button>
+          </div>
+        </div>
 
-              <div className="overflow-x-auto">
-                <ActivityLog activities={activityLog} />
+        <div className="md:w-4/12">
+          <div className="bg-white rounded-lg shadow-lg p-4 m-4 border-t-4 border-blue-500">
+            <div className="text-gray-900 py-2 mb-2 border-b">
+              <div className="font-bold text-lg">
+                {isEditing ? "Chỉnh sửa lịch trình" : "Tạo lịch mới"}
               </div>
             </div>
+
+            <BusScheduleForm
+              formdata={formdata}
+              onInputChange={handleInputChange}
+              onSubmit={handleSubmit}
+              onReset={handleReset}
+              driverData={drivers}
+              busData={buses}
+              routeData={routes}
+            />
           </div>
         </div>
       </div>

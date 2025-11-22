@@ -3,6 +3,12 @@ import { NotificationController } from "../controllers/notification.controller.j
 
 const router = express.Router();
 
-router.get("/user/:userId", NotificationController.getNotificationsByUserId);
 
-export default router;
+router.get('/',NotificationController.getAllNotifi);
+router.get('/startData',NotificationController.getStartData);
+router.get("/user/:userId", NotificationController.getNotificationsByUserId);
+router.delete('/:id',NotificationController.deleteNotifi);
+router.put('/:id',NotificationController.editNotifi);
+router.post('/', NotificationController.create);
+export default router ;
+

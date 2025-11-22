@@ -1,4 +1,4 @@
-import { busService } from "../services/bus.service.js";
+import { busService } from "../services/bus.tracking.service.js";
 const getAllBuses =async (req,res)=>{
     try{
         const buses=await busService.getAllBuses();
