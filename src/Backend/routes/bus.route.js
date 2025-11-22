@@ -1,7 +1,11 @@
 import express from 'express';
 import { BusTrackingController } from '../controllers/bus.tracking.controller.js';
+import { busController } from '../controllers/bus.controller.js';
 const router = express.Router();
-router.get('/:busId/location', BusTrackingController.getLocationByBusId);
+router.get('/', busController.getAllBuses);
+router.get('/:busId/location', BusTrackingController.getCurrentLocationByBusId);
+router.post('/schedule/detail',busController.getBusDataByScheduleIds);
+//router.get('/:busId/location', BusTrackingController.getLocationByBusId);
 router.post('/location',BusTrackingController.addLocation);
 router.get('/',BusTrackingController.getAllBuses);
 router.put('/:id', BusTrackingController.updateBus);

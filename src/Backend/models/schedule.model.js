@@ -28,6 +28,10 @@ const getScheduleByManager = async (page, limit) =>{
 return { data, totalPages, currentPage: page };
     }
 export const ScheduleModel ={
+  getScheduleById: async (scheduleId) => {
+        const [rows] = await db.query('select * from schedule where schedule_id = ?', [scheduleId]);
+        return rows[0];
+    },
     getScheduleByStudentId: async (studentId) =>{
         const data = await db.promise().query('select * from pickup_status left join schedule  on pickup_status.schedule_id = schedule.schedule_id where pickup_status.student_id =?',[studentId]);
         return data[0];
@@ -90,4 +94,5 @@ export const ScheduleModel ={
     await db.query(sql, [id]);
     return { id };
 }
+
 }

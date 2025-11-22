@@ -10,6 +10,17 @@ export const StudentController = {
             res.status(404).json({ message: error.message });
         }
     },
+
+
+    getStudentsDataByUserId: async (req, res) => {
+        try {
+            const studentsData = await StudentService.getStudentsDataByUserId(req.params.userId);
+            res.json(studentsData);
+        }
+       catch (error) {
+            res.status(404).json({ message: error.message });
+        }},
+
     getStudentsByParentId: async (req, res) => {
         try {
             const students = await StudentService.getStudentByParentId(req.params.parentId);
@@ -26,6 +37,14 @@ export const StudentController = {
             res.status(404).json({ message: error.message });
         }
     },
+
+    getStudentsByParentId: async (req, res) => {
+        try {
+            const students = await StudentService.getStudentByParentId(req.params.parentId);
+            res.json(students);
+        } catch (error) {
+            res.status(404).json({ message: error.message });
+        }},
     getStudentsAdmin: async (req, res) => {
         try {
             const page = parseInt(req.query.page) || 1;
@@ -55,12 +74,10 @@ export const StudentController = {
             const studentId = req.params.studentId;
             const result = await StudentService.deleteStudentByIdAdmin(studentId);
             res.json({ message: 'Xóa thành công', result });
+
         } catch (error) {
             res.status(404).json({ message: error.message });
         }
     }
-
-
-
 
 }
