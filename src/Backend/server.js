@@ -33,7 +33,6 @@ import locationRouter from './routes/location.route.js';
 
 import schedule from "./routes/driver.schedule.route.js";
 import scheduleDetail from "./routes/driver.scheduleDetail.route.js";
-import driverNotification from "./routes/driver.notification.route.js";
 
 
 
@@ -93,7 +92,6 @@ app.use('/api/locations', locationRouter);
 
 app.use('/api/driverschedule', schedule);
 app.use('/api/scheduleDetail', scheduleDetail);
-app.use("/api/driver/notifications", driverNotification);
 
 
 
