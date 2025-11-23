@@ -16,7 +16,7 @@ import ScheduleRouter from './routes/schedule.route.js';
 import route from './routes/route.route.js'
 import studentRoutes from "./routes/StudentList.route.js";
 import notificationRoute from './routes/notification.route.js';
-
+import reportRouter from './routes/report.route.js';
 //WebSocket Server 
 import http from 'http';
 import { Server } from 'socket.io';
@@ -55,7 +55,7 @@ app.use('/api/drivers', driverRouter);
 app.use('/api/login', login)
 app.use('/api/dashboardata', dashboardRouter)
 app.use('/api/students', studentRoutes);
-
+app.use('/api/report', reportRouter);
 // ----------------------
 app.use('/api/schedules', ScheduleRouter)
 app.use('/api/users', userRoute);

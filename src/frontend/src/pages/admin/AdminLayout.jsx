@@ -1,5 +1,6 @@
-import { FaUserCircle, FaBus } from "react-icons/fa";
+import { FaUserCircle, FaBus, FaBell } from "react-icons/fa";
 import { CiLogout } from "react-icons/ci";
+import React, { useState, useEffect } from "react";
 import {
   Link,
   Routes,
@@ -20,6 +21,7 @@ import ManageLocation from "./ManageLocation/ManageLocation";
 import ManageAssignment from "./ManageAssignment/ManageAssignment";
 import ProFile from "./profileManager/profile";
 import ManageNotification from "./ManageNotification/index";
+import ManageIncident from "./ManageIncident/ManageIncident";
 function AdminLayout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -42,6 +44,28 @@ function AdminLayout() {
     localStorage.removeItem("authToken");
     navigate("/login", { replace: true });
   };
+  {
+    ("----------------------------report--------------------------");
+  }
+  const [pendingCount, setPendingCount] = useState(0);
+
+  // Hàm gọi API lấy số lượng báo cáo chưa xử lý
+  const fetchPendingCount = async () => {
+    try {
+      //Gọi API bạn vừa tạo (hoặc tạm thời để random số để test)
+      const res = await fetch("http://localhost:5000/api/report/count-pending");
+      const data = await res.json();
+      setPendingCount(data.count);
+    } catch (err) {
+      console.error("Lỗi lấy thông báo:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPendingCount(); // Gọi lần đầu khi load trang
+    const interval = setInterval(fetchPendingCount, 3000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <div className=" flex h-screen ">
       {/*------------------------------------------sidebar------------------------------------------------------------------*/}
@@ -199,7 +223,31 @@ function AdminLayout() {
       <div className="flex flex-col flex-1 overflow-hidden">
         <div className="flex items-center justify-between h-16 bg-white border-b flex-shrink-0">
           <div className="px-6"></div>
+
           <div className=" px-6 flex items-center">
+            <div className="flex items-center gap-6 mr-4">
+              <div className="relative cursor-pointer group">
+                <FaBell className="text-2xl text-gray-500 group-hover:text-blue-600 transition-colors" />
+                {pendingCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white animate-pulse">
+                    {pendingCount > 9 ? "9+" : pendingCount}
+                  </span>
+                )}
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                  <div className="p-2 text-sm text-gray-700">
+                    Bạn có{""}
+                    <strong className="text-red-500">{pendingCount}</strong> sự
+                    cố cần xử lý.
+                  </div>
+                  <Link
+                    to="/admin/AdminLayout/ManageIncident"
+                    className="block w-full text-center bg-blue-50 p-2 text-xs text-blue-600 hover:bg-blue-100"
+                  >
+                    Xem tất cả
+                  </Link>
+                </div>
+              </div>
+            </div>
             <Link to="/admin/AdminLayout/profile" className="flex items-center">
               <div className="px-2 text-black hover:border-b">
                 Xin chào {userData ? lastName : "Đang tải..."}
@@ -213,6 +261,7 @@ function AdminLayout() {
           <Routes>
             <Route path="/" element={<Navigate to="Dashboard" replace />} />
             <Route path="profile" element={<ProFile />} />
+            <Route path="ManageIncident" element={<ManageIncident />} />
             <Route path="Dashboard" element={<Dashboard />} />
             <Route path="BusSchedule" element={<BusSchedule />} />
             <Route path="DriverManager" element={<DriverManager />} />
