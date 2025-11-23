@@ -9,6 +9,7 @@ import Schedule from '../pages/driver/Schedule.jsx';
 import ScheduleDetail from '../pages/driver/ScheduleDetail.jsx';
 import Profile from '../pages/driver/Profile.jsx';
 
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -27,6 +28,8 @@ const AppRoutes = () => {
         <Route path="schedule/:scheduleId" element={<ScheduleDetail />} />
 
         <Route path="profile" element={<Profile />} />
+
+
 
 
       </Route>
