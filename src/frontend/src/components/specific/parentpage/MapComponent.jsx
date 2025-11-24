@@ -7,6 +7,14 @@ import BusMarker from './BusMarker.jsx';
 import StopMarker from './StopMarker.jsx';
 import BusInfo from './BusInfo.jsx';
 import { fetchRoutePath } from '../../../api/map.path.js';
+import MapEvents from './MapEvents.jsx';
+const status =
+{
+    "in progress": "Đang chạy",
+    "pending": "Đang chờ",
+    "completed": "Đã hoàn thành",
+    "incident": "Gặp sự cố",
+}
 
 export const socket = io("http://localhost:5000", {
     autoConnect: false,
@@ -18,20 +26,17 @@ function MapComponent({ busData }) {
     const [selectedBus, setSelectedBus] = React.useState(null);
     const [paths, setPaths] = React.useState([]);
 
-    const handleSelectBus = (bus_id,map) => {
+    const handleSelectBus = (bus_id, map) => {
         const info = busData.find(bus => bus.bus_id === bus_id);
         const data = busPos.find(b => b.bus_id === bus_id);
         const nextStop = data.next_stop;
         const eta = data.eta;
-
         setSelectedBus({ bus: info, next_stop: nextStop, eta: eta });
-        if(!map || map ===undefined)
-        {
+
+        if (!map || map === undefined) {
             console.log("map is not ready");
             return;
         }
-
-        map.flyTo(data.pos, 17, { duration: 1 })
     }
 
     React.useEffect(() => {
@@ -72,10 +77,10 @@ function MapComponent({ busData }) {
         }
     }, [paths])
 
-    // React.useEffect(() => {
-    //     if (!busPos || busPos.length === 0)
-    //         return;
-    // }, [busPos])
+    React.useEffect(() => {
+        if (!busPos || busPos.length === 0)
+            return;
+    }, [busPos])
 
     React.useEffect(() => {
         if (!busData || busData.length === 0)
@@ -106,11 +111,13 @@ function MapComponent({ busData }) {
 
     }, [busData])
 
-    return <div className="w-full h-full relative">
+    console.log("SelectedBus in MapComponent:", selectedBus);
+
+    return <div className="w-full h-full relative box-border">
         <MapContainer
             center={[10.77, 106.7]}
             zoom={13}
-            className="h-full w-full z-40">
+            className="h-full w-full z-40 box-border">
 
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -147,7 +154,8 @@ function MapComponent({ busData }) {
                                 bus_id={bus.bus_id}
                                 latitude={bus.pos[0]}
                                 longitude={bus.pos[1]}
-                                onClick={ handleSelectBus }
+                                onClick={handleSelectBus}
+                                selectedBus={selectedBus}
                             ></BusMarker>
                             <Polyline
                                 positions={bus.passed_path}
@@ -157,6 +165,8 @@ function MapComponent({ busData }) {
                     })
                 )
             }
+            <MapEvents selectedBus={selectedBus} setSelectedBus={setSelectedBus}></MapEvents>
+
         </MapContainer>
         {
             selectedBus && (
@@ -165,6 +175,7 @@ function MapComponent({ busData }) {
                     phone={selectedBus.bus.driver_phone}
                     next_stop={selectedBus.next_stop.address}
                     eta={selectedBus.eta}
+                    status={status[selectedBus.bus.status]}
                 ></BusInfo>
             )
         }
