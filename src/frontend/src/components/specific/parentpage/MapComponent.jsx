@@ -10,20 +10,15 @@ import { fetchRoutePath } from '../../../api/map.path.js';
 import MapEvents from './MapEvents.jsx';
 const status =
 {
-    "in progress": "Đang chạy",
-    "pending": "Đang chờ",
-    "completed": "Đã hoàn thành",
+    "in progress": "Đang di chuyển",
+    "pending": "Chưa khởi hành",
+    "completed": "Đã kết thúc",
     "incident": "Gặp sự cố",
 }
+function MapComponent({ busData, selectedBus, setSelectedBus, registerReqBus, socket }) {
 
-export const socket = io("http://localhost:5000", {
-    autoConnect: false,
-});
-
-function MapComponent({ busData }) {
     const uniqueStops = React.useRef(new Map());
     const [busPos, setBusPos] = React.useState([]);
-    const [selectedBus, setSelectedBus] = React.useState(null);
     const [paths, setPaths] = React.useState([]);
 
     const handleSelectBus = (bus_id, map) => {
@@ -42,20 +37,18 @@ function MapComponent({ busData }) {
     React.useEffect(() => {
         if (!paths || paths.length === 0)
             return;
-        if (!socket.connected)
-            socket.connect();
+
+        if (!socket) return;   // ⚠ check null
 
         // Join room tương ứng với bus_id trên socket và gửi data về tuyến đường
-        socket.on("connect", () => {
-            for (const path of paths) {
-                const stops = busData.find(bus => bus.bus_id === path.bus_id).stops;
-                socket.emit("parent:join_bus", {
-                    bus_id: path.bus_id,
-                    path: path.path,
-                    stops: stops,
-                })
-            }
-        })
+        for (const path of paths) {
+            const stops = busData.find(bus => bus.bus_id === path.bus_id).stops;
+            socket.emit("parent:join_bus", {
+                bus_id: path.bus_id,
+                path: path.path,
+                stops: stops,
+            })
+        }
 
         // Bắt event khi server gửi data cho client (pos, pased_path)
         socket.on("parent:bus_data", (data) => {
@@ -111,7 +104,9 @@ function MapComponent({ busData }) {
 
     }, [busData])
 
-    console.log("SelectedBus in MapComponent:", selectedBus);
+    React.useEffect(() => {
+        registerReqBus(handleSelectBus);
+    }, [busData, busPos]);
 
     return <div className="w-full h-full relative box-border">
         <MapContainer

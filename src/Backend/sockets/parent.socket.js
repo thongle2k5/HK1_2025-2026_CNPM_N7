@@ -23,11 +23,16 @@ export function getPassedPath(fullPath, currentPos) {
 const paths = new Map();//  Cache lưu lại các tuyến đường khi client join server, bao gồm path: [lat,lng], và stops: các trạm dừng của 1 tuyến của mỗi xe 
 
 export default function parentSocket(io, socket) {
+
     socket.on("parent:join_bus", ({ bus_id, path, stops }) => {
         socket.join(`bus_${bus_id}`);
+        console.log(`Parent joined bus_${bus_id}`);
         paths.set(bus_id, { path, stops });
     });
-
+    
+    socket.on("parent:join_bus_notification", ({ bus_id}) => {
+        socket.join(`bus_${bus_id}_notification`);
+    });
 
     // Hàm xử lý dữ liệu khi driver gửi vị trí đến server 
     const handleBusPos = (data) => {
@@ -80,12 +85,16 @@ export default function parentSocket(io, socket) {
 
             }
             const time = dist/avrSpeed;
+            if(time <=300)
+            {
+
+            }
             const now = new Date();
 
             const etaTime = new Date(now.getTime() + time *1000);
 
-            const hours = etaTime.getHours();
-            const minutes = etaTime.getMinutes();
+            const hours = etaTime.getHours().toString().padStart(2, '0');
+            const minutes = etaTime.getMinutes().toString().padStart(2, '0');
             
             eta = hours + ":" + minutes;
 

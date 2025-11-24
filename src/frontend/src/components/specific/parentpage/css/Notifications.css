@@ -17,6 +17,7 @@
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 20px;
+    color: blue;
 }
 
 .title{
@@ -96,6 +97,7 @@
   border: 1px solid #e5e7eb;
   height: fit-content;
   color: black;
+  margin-bottom: 20px;
 }
 
 .trip-detail p{
@@ -165,6 +167,7 @@
     width: 45%;
     margin-right: 20px;
     margin-left: 20px;
+    margin-bottom: 20px;
     padding: 15px;
   }
   
@@ -314,3 +317,131 @@
   }
 }
 
+/* Thêm các class màu mới */
+.yellow { color: #ffc107; }
+.green { color: #28a745; }
+.blue { color: #007bff; }
+.red { color: #dc3545; }
+.purple { color: #a855f7; }
+
+/* Thêm style cho thống kê */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* Style cho thông báo đặc biệt */
+.notification-highlight {
+  border-left: 4px solid #007bff;
+  background: #f8f9ff;
+}
+
+.trip-info {
+  border-left: 4px solid #007bff;
+  background: #f0f8ff;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+/* Responsive cho thống kê */
+@media screen and (max-width: 960px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  
+  .stat-item {
+    padding: 8px;
+  }
+  
+  .stat-number {
+    font-size: 1.3rem;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  
+  .stat-item {
+    padding: 6px;
+  }
+  
+  .stat-number {
+    font-size: 1.2rem;
+  }
+  
+  .stat-label {
+    font-size: 0.7rem;
+  }
+}
+
+
+.trip-info-content {
+  padding: 10px 0;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.icon-small {
+  font-size: 16px;
+  min-width: 20px;
+}
+
+.update-time {
+  text-align: center;
+  margin-top: 15px;
+  padding: 8px;
+  background: #e3f2fd;
+  border-radius: 6px;
+  font-size: 19px;
+  font-weight: bolder;
+  color: #1976d2;
+}
+
+.no-trip-info {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+}
+
+.no-trip-info p {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.no-trip-info small {
+  font-size: 14px;
+}

@@ -3,12 +3,20 @@ import { NotificationController } from "../controllers/notification.controller.j
 
 const router = express.Router();
 
-
-router.get('/',NotificationController.getAllNotifi);
-router.get('/startData',NotificationController.getStartData);
-router.get("/user/:userId", NotificationController.getNotificationsByUserId);
-router.delete('/:id',NotificationController.deleteNotifi);
-router.put('/:id',NotificationController.editNotifi);
+// ========== NOTIFICATION ROUTES ==========
+router.get('/', NotificationController.getAllNotifi);
+router.get('/startData', NotificationController.getStartData);
+router.get('/user/:userId', NotificationController.getNotificationsByUserId);
+router.get('/unread-count/:userId', NotificationController.getUnreadCount);
+router.delete('/:id', NotificationController.deleteNotifi);
+router.put('/:id', NotificationController.editNotifi);
 router.post('/', NotificationController.create);
-export default router ;
+router.post('/mark-as-read/:userId', NotificationController.markAsRead);
+router.post('/mark-all-read/:userId', NotificationController.markAllAsRead);
 
+// ========== MESSAGE ROUTES ==========
+router.get('/messages/:userId', NotificationController.getMessagesByUserId);
+router.get('/messages/unread-count/:userId', NotificationController.getUnreadMessageCount);
+router.put('/messages/mark-read/:messageId', NotificationController.markMessageAsRead);
+
+export default router;

@@ -6,7 +6,8 @@ const statusColor = {
     "dropped_off": "",
 };
 
-function DetailInfo({ studentData }) {
+function DetailInfo({ studentData ,onTrackBus}) {
+    console.log("DetailInfo studentData:", studentData);
     return <div className="flex flex-col w-auto h-auto rounded-xl bg-gray-100 m-4 border-2 border-gray-300">
         <div className={`p-2 flex flex-row border-b border-gray-300 pb-2 justify-between items-center text-blue-700 ${statusColor[studentData.pickup_status.status]}`}>
             <div className="text-2xl font-semibold">Thông tin</div>
@@ -30,8 +31,11 @@ function DetailInfo({ studentData }) {
             </div>
             <div className="font-semibold">Trạm dừng:</div>
             <div>{studentData.stop.address}</div>
-            <button>
-
+            <button className="bg-blue-600 text-white rounded-lg p-2 mt-4 self-center hover:bg-blue-700"
+            onClick={()=>{
+                onTrackBus(studentData.schedule.bus_id);
+            }}>
+             Theo dõi xe buýt        
             </button>
         </div>
 
