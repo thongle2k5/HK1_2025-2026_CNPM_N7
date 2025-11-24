@@ -1,4 +1,4 @@
-import {useMap } from 'react-leaflet';
+import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css';
 import 'leaflet-extra-markers/dist/js/leaflet.extra-markers.min.js';
@@ -13,7 +13,7 @@ const busIcon = L.ExtraMarkers.icon({
     innerHTML: '',            // thêm HTML nếu muốn
 });
 
-const BusMarker = ({ bus_id, latitude, longitude,onClick}) => {
+const BusMarker = ({ bus_id, latitude, longitude, onClick, selectedBus }) => {
     const markerRef = React.useRef(null);
     const map = useMap();
 
@@ -23,19 +23,20 @@ const BusMarker = ({ bus_id, latitude, longitude,onClick}) => {
             const marker = L.marker([latitude, longitude], {
                 icon: busIcon,
                 zIndexOffset: 2000,
-            
+
             }).addTo(map);
 
-            marker.bindTooltip(`🚌 BUS ${bus_id}`, { 
-                permanent: true, 
-                direction: 'top', 
+            marker.bindTooltip(`🚌 BUS ${bus_id}`, {
+                permanent: true,
+                direction: 'top',
                 offset: [0, -36],
-                
+
             });
 
-            marker.on('click', () =>{
-                if(onClick)
-                onClick(bus_id,map);
+            marker.on('click', (e) => {
+                L.DomEvent.stopPropagation(e); // Ngăn click lan lên map
+                if (onClick)
+                    onClick(bus_id, map);
             })
             markerRef.current = marker;
         } else {
@@ -45,6 +46,14 @@ const BusMarker = ({ bus_id, latitude, longitude,onClick}) => {
 
     }, [latitude, longitude, bus_id, map]);
 
+    React.useEffect(() => {
+        if (selectedBus !== null) {
+            if (selectedBus.bus.bus_id === bus_id) {
+                map.setView([latitude, longitude], 17);
+            }
+        }
+
+    }, [latitude, longitude, selectedBus]);
 
     // ❌ Không return JSX vì ta thao tác trực tiếp với Leaflet
     return null;

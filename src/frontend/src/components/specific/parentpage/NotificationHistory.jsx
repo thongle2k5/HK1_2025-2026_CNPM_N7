@@ -8,7 +8,10 @@ const notifications = [
 
 ];
 
-const NotificationHistory = () => {
+const NotificationHistory = ({notis}) => {
+  React.useEffect(()=>{
+    console.log(notis);
+  },[notis])
   return (
     <div className=" border-t border-gray-400 max-h-60 flex flex-col">
       <h2 className="text-blue-800 text-xl font-semibold p-4">Notification History</h2>
