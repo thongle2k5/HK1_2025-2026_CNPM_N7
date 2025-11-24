@@ -2,7 +2,6 @@ import { StopService } from "./services/stop.service.js";
 import { fetchRoutePath } from '../frontend/src/api/map.path.js'
 import { runBusAlongPath } from "./sockets/mock.bus.js";
 import { io } from "socket.io-client";
-import { exit } from "process";
 
 // Kết nối đến server WebSocket
 const socket = io("http://localhost:5000", {

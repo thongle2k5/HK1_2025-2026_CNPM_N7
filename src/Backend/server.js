@@ -11,15 +11,23 @@ import stopRoute from './routes/stop.route.js';
 import driverRouter from './routes/driver.route.js';
 import login from './services/login.service.js';
 import dashboardRouter from './routes/dashboard.router.js';
+import ScheduleRouter from './routes/schedule.route.js';
+import route from './routes/route.route.js'
 import studentRoutes from "./routes/StudentList.route.js";
 import notificationRoute from './routes/notification.route.js';
-
 //WebSocket Server 
 import http from 'http';
 import { Server } from 'socket.io';
 
 import driverSocket from './sockets/driver.socket.js';
 import parentSocket from './sockets/parent.socket.js';
+
+import notificationRouter from './routes/notification.route.js';
+
+import parentRoute from './routes/parent.route.js';
+import assignmentRouter from './routes/assignment.route.js';
+import locationRouter from './routes/location.route.js';
+
 
 const app = express();
 // ... (các app.use khác...)
@@ -30,11 +38,15 @@ app.use(express.json());
 // Báo cho server: Bất cứ request nào đến /api/buses
 // thì hãy đưa cho busRouter xử lý
 app.use('/api/buses', busRouter);
+app.use('/api/route', route)
+app.use('/api/notifications', notificationRouter);
 app.use('/api/drivers', driverRouter);
 app.use('/api/login', login)
 app.use('/api/dashboardata', dashboardRouter)
-app.use('/api/students', studentRoutes);
+// app.use('/api/students', studentRoutes); xem lại dữ liệu
+
 // ----------------------
+app.use('/api/schedules', ScheduleRouter)
 app.use('/api/users', userRoute);
 app.use('/api/students', studentRoute);
 app.use('/api/stops', stopRoute);
@@ -61,6 +73,11 @@ io.on("connection", async (socket) => {
   });
 
 });
+
+
+app.use('/api/parents', parentRoute);
+app.use('/api/assignments', assignmentRouter);
+app.use('/api/locations', locationRouter);
 
 
 // Lấy cổng từ file .env (của bạn là 5000)

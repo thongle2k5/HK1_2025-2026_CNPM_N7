@@ -3,7 +3,7 @@
     "@turf/turf": "^7.2.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
-    "docker": "^0.2.14",
+    "docker": "^1.0.0",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "http": "^0.0.1-security",

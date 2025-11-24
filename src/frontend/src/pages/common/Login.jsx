@@ -26,6 +26,7 @@ export default function Login() {
 
       console.log("Login success:", data.token);
       localStorage.setItem("authToken", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       navigate("/admin/AdminLayout", { replace: true });
     } catch (err) {
       SetError(err.message);
