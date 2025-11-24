@@ -5,16 +5,23 @@ export const AssignmentController = {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
+            const status = req.query.status || "all";
+            const keyword = req.query.keyword || "";
 
-            const assignments = await AssignmentService.getAssignmentsAdmin(page, limit);
+            const result = await AssignmentService.getAssignmentsAdmin(page, limit, status, keyword);
 
             res.json({
-                assignments: assignments.assignments,
-                totalPages: assignments.totalPages,
+                assignments: result.assignments,
+                totalPages: result.totalPages,
+                countAssignment: result.countAssignment,
+                currentPage: page,
+                currentStatus: status,
             });
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: error.message || "Server error" });
+            res
+                .status(500)
+                .json({ message: error.message || "Server error" });
         }
     },
     deleteAssignmentByIdAdmin: async (req, res) => {

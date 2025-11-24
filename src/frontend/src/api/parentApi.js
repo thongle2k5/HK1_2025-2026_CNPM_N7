@@ -1,7 +1,7 @@
 import axios from "../utils/axiosCustomize"
 
-const getParentsAdmin = (page, limit) => {
-    return axios.get(`/api/parents/admin/parents?page=${page}&limit=${limit}`);
+const getParentsAdmin = (page, limit, keyword) => {
+    return axios.get(`/api/parents/admin/parents?page=${page}&limit=${limit}&keyword=${keyword}`);
 }
 
 const getParentByIdAdmin = (parentId) => {

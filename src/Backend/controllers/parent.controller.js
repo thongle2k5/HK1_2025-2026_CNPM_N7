@@ -5,15 +5,18 @@ export const ParentController = {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
+            const keyword = req.query.keyword || "";
 
-            const parents = await ParentService.getParentsAdmin(page, limit);
+            const result = await ParentService.getParentsAdmin(page, limit, keyword);
 
             res.json({
-                parents: parents.parents,
-                totalPages: parents.totalPages
+                parents: result.parents,
+                totalPages: result.totalPages,
+                countParent: result.countParent,
             });
         } catch (error) {
-            res.status(404).json({ message: error.message });
+            console.error(error);
+            res.status(500).json({ message: error.message || "Internal server error" });
         }
     },
     getParentByIdAdmin: async (req, res) => {

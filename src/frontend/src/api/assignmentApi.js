@@ -1,7 +1,7 @@
 import axios from "../utils/axiosCustomize"
 
-const getAssignmentsAdmin = (page, limit) => {
-    return axios.get(`/api/assignments/admin/assignments?page=${page}&limit=${limit}`);
+const getAssignmentsAdmin = (page, limit, status, keyword) => {
+    return axios.get(`/api/assignments/admin/assignments?page=${page}&limit=${limit}&status=${status}&keyword=${keyword}`);
 }
 
 const deleteAssignment = (id) => {

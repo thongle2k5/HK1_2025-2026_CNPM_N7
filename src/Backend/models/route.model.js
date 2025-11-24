@@ -5,14 +5,14 @@ export const getAllRoute = {
         const [row] = await db.query('select * from route ');
         return row;
     },
-    getRoutesAdmin: async (offset, limit) => {
-        const sql = `
+    getRoutesAdmin: async (offset, limit, keyword) => {
+        let sql = `
             SELECT 
                 route.route_id,
                 route.name,
-                COUNT(DISTINCT schedule.bus_id) count_bus,
-                COUNT(DISTINCT schedule.driver_id) count_driver,
-                COUNT(DISTINCT student.student_id) count_student
+                COUNT(DISTINCT schedule.bus_id)   AS count_bus,
+                COUNT(DISTINCT schedule.driver_id) AS count_driver,
+                COUNT(DISTINCT student.student_id) AS count_student
             FROM route
             LEFT JOIN schedule 
                 ON route.route_id = schedule.route_id
@@ -20,19 +20,43 @@ export const getAllRoute = {
                 ON route.route_id = stop_route.route_id
             LEFT JOIN student 
                 ON stop_route.stop_id = student.stop_id
-            WHERE route.is_deleted = 0  
+            WHERE route.is_deleted = 0
+        `;
+
+        const params = [];
+
+        if (keyword && keyword.trim() !== "") {
+            sql += ` AND route.name LIKE ?`;
+            params.push(`%${keyword.trim()}%`);
+        }
+
+        sql += `
             GROUP BY 
                 route.route_id,
                 route.name
             LIMIT ? OFFSET ?;
-            `;
+        `;
 
-        const [rows] = await db.query(sql, [limit, offset]);
+        params.push(Number(limit), Number(offset));
+
+        const [rows] = await db.query(sql, params);
         return rows;
     },
 
-    countRoutes: async () => {
-        const [rows] = await db.query("select count(*) as total from route where is_deleted = 0");
+    countRoutes: async (keyword) => {
+        let sql = `
+            SELECT COUNT(*) AS total
+            FROM route
+            WHERE is_deleted = 0
+        `;
+        const params = [];
+
+        if (keyword && keyword.trim() !== "") {
+            sql += ` AND name LIKE ?`;
+            params.push(`%${keyword.trim()}%`);
+        }
+
+        const [rows] = await db.query(sql, params);
         return rows[0].total;
     },
     getRouteByIdAdmin: async (routeId) => {

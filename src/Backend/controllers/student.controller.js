@@ -17,9 +17,10 @@ export const StudentController = {
             const studentsData = await StudentService.getStudentsDataByUserId(req.params.userId);
             res.json(studentsData);
         }
-       catch (error) {
+        catch (error) {
             res.status(404).json({ message: error.message });
-        }},
+        }
+    },
 
     getStudentsByParentId: async (req, res) => {
         try {
@@ -44,20 +45,25 @@ export const StudentController = {
             res.json(students);
         } catch (error) {
             res.status(404).json({ message: error.message });
-        }},
+        }
+    },
     getStudentsAdmin: async (req, res) => {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
+            const status = req.query.status || 'all';
+            const keyword = req.query.keyword || '';
 
-            const students = await StudentService.getStudentsAdmin(page, limit);
+            const result = await StudentService.getStudentsAdmin(page, limit, status, keyword);
+
             res.json({
-                students: students.students,
-                totalPages: students.totalPages,
-                countStudent: students.countStudent
+                students: result.students,
+                totalPages: result.totalPages,
+                countStudent: result.countStudent,
             });
         } catch (error) {
-            res.status(404).json({ message: error.message });
+            console.error(error);
+            res.status(500).json({ message: error.message });
         }
     },
     getStudentByIdAdmin: async (req, res) => {

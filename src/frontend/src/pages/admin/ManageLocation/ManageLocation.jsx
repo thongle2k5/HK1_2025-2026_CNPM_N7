@@ -11,23 +11,30 @@ import { getAdminLocations } from '../../../api/locationApi'
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 
+import LiveMapSection from "./LiveMapSection";
+
 
 function ManageLocation() {
 
-    const LIMIT_STUDENT = 10;
+    const LIMIT_LOCATION = 10;
     const [pageCount, setPageCount] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [listLocations, setListLocations] = useState([]);
+
+    const [keyword, setKeyword] = useState("");
+    const [keywordInput, setKeywordInput] = useState("");
+
 
     useEffect(() => {
         fetchListLocationsWithPaginate(1);
     }, []);
 
-    const fetchListLocationsWithPaginate = async (page) => {
+    const fetchListLocationsWithPaginate = async (page, kw = keyword) => {
         try {
-            const res = await getAdminLocations(page, LIMIT_STUDENT);
+            const res = await getAdminLocations(page, LIMIT_LOCATION, kw);
             setListLocations(res.data.locations);
             setPageCount(res.data.totalPages);
+            setCurrentPage(page);
             // console.log(res)
         } catch (error) {
             alert("ManageLocation.jsx ----- Lỗi ");
@@ -44,6 +51,20 @@ function ManageLocation() {
     const handleDelete = () => {
 
     }
+
+    const handleSearchClick = () => {
+        setKeyword(keywordInput);
+        fetchListLocationsWithPaginate(1, keywordInput);
+    };
+
+    const handleRefreshClick = () => {
+        setKeywordInput("");
+        setKeyword("");
+        setCurrentPage(1);
+
+        fetchListLocationsWithPaginate(1, "");
+    };
+
     return (
         // Component này chỉ tập trung vào nội dung trang Học sinh
         <div className="p-4 bg-white">
@@ -55,19 +76,28 @@ function ManageLocation() {
                 <div className="flex items-center"  >
 
                     <div className='relative '>
-                        <input type="text" placeholder="Tìm theo mã xe hoặc tài xế..." className=" rounded-lg p-2 w-[391px] border border-[#9CA3AF]" />
-                        <FaSearch className="text-lg text-[#9CA3AF] absolute right-5 top-1/2 -translate-y-1/2" />
+                        <input
+                            type="text" placeholder="Tìm theo mã xe hoặc tài xế..." className=" rounded-lg p-2 w-[391px] border border-[#9CA3AF]"
+                            value={keywordInput}
+                            onChange={(e) => setKeywordInput(e.target.value)} />
+                        <FaSearch
+                            className="text-lg text-[#9CA3AF] absolute right-5 top-1/2 -translate-y-1/2 cursor-pointer"
+                            onClick={handleSearchClick}
+                        />
                     </div>
 
                     <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center shadow hover:bg-blue-700 transition-colors ml-5">
                         <FiRefreshCcw className="mr-2" />
                         Làm mới vị trí
                     </button>
+
+                    <FiRefreshCcw className="cursor-pointer text-lg ml-4" onClick={handleRefreshClick} />
+
                 </div>
             </div>
 
             {/* Mấy cái cục thống kê số lượng cơ bản */}
-            <div>
+            {/* <div>
                 <div className="grid grid-cols-4 py-10 space-x-5 mb-5">
                     <div className="bg-[#EAF4FF] px-3 py-3 flex gap-7 rounded-md items-center">
                         <FaBus className='text-5xl' />
@@ -104,7 +134,7 @@ function ManageLocation() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* KHU VỰC CHỨA BẢNG VÀ CHỨC NĂNG */}
             <div className="bg-white rounded-xl mb-10">
@@ -125,61 +155,68 @@ function ManageLocation() {
                             </tr>
                         </thead>
                         <tbody>
-                            {listLocations.map((loc, index) => {
+                            {listLocations && listLocations.length > 0 ? (
+                                listLocations.map((loc, index) => {
 
-                                const coordinates = `${loc.latitude}, ${loc.longitude}`;
+                                    const coordinates = `${loc.latitude}, ${loc.longitude}`;
 
-                                const dateObj = new Date(loc.timestamp);
-                                const formattedTime = dateObj.toLocaleTimeString("vi-VN", { hour12: false });
-                                const formattedDate = dateObj.toLocaleDateString("vi-VN");
-                                const dateDisplay = `${formattedTime} ${formattedDate}`;
+                                    const dateObj = new Date(loc.timestamp);
+                                    const formattedTime = dateObj.toLocaleTimeString("vi-VN", { hour12: false });
+                                    const formattedDate = dateObj.toLocaleDateString("vi-VN");
+                                    const dateDisplay = `${formattedTime} ${formattedDate}`;
 
-                                return (
-                                    <tr
-                                        key={index}
-                                        className="hover:bg-gray-50 border-b border-gray-300 last:border-0 h-10 text-black"
-                                    >
-                                        <td className="pl-3">{loc.bus_id}</td>
-                                        <td>{loc.driver_name}</td>
-                                        <td>{loc.route_name}</td>
-                                        <td>{coordinates === 'null, null' ? "Chưa có tọa độ" : coordinates}</td>
+                                    return (
+                                        <tr
+                                            key={index}
+                                            className="hover:bg-gray-50 border-b border-gray-300 last:border-0 h-10 text-black"
+                                        >
+                                            <td className="pl-3">{loc.bus_id}</td>
+                                            <td>{loc.driver_name}</td>
+                                            <td>{loc.route_name}</td>
+                                            <td>{coordinates === 'null, null' ? "Chưa có tọa độ" : coordinates}</td>
 
-                                        <td>
-                                            <span
-                                                className={`rounded-md px-2 py-1 font-bold ${loc.status === "active"
-                                                    ? "bg-[#DCFCE7] text-[#15803D]"
-                                                    : loc.status === "inactive"
-                                                        ? "bg-[#F3F4F6] text-[#6B7280]"
-                                                        : loc.status === "maintenance"
-                                                            ? "bg-[#FEF9C3] text-[#A16207]"
-                                                            : "bg-[#FEE2E2] text-[#B91C1C]"
-                                                    }`}
-                                            >
-                                                {
-                                                    loc.status === "active"
-                                                        ? "Đang di chuyển"
+                                            <td>
+                                                <span
+                                                    className={`rounded-md px-2 py-1 font-bold ${loc.status === "active"
+                                                        ? "bg-[#DCFCE7] text-[#15803D]"
                                                         : loc.status === "inactive"
-                                                            ? "Dừng"
+                                                            ? "bg-[#F3F4F6] text-[#6B7280]"
                                                             : loc.status === "maintenance"
-                                                                ? "Bảo trì"
-                                                                : "Mất tín hiệu"
-                                                }
-                                            </span>
-                                        </td>
+                                                                ? "bg-[#FEF9C3] text-[#A16207]"
+                                                                : "bg-[#FEE2E2] text-[#B91C1C]"
+                                                        }`}
+                                                >
+                                                    {
+                                                        loc.status === "active"
+                                                            ? "Đang di chuyển"
+                                                            : loc.status === "inactive"
+                                                                ? "Dừng"
+                                                                : loc.status === "maintenance"
+                                                                    ? "Bảo trì"
+                                                                    : "Mất tín hiệu"
+                                                    }
+                                                </span>
+                                            </td>
 
-                                        <td>{dateDisplay}</td>
+                                            <td>{dateDisplay}</td>
 
-                                        <td className="py-2 w-32">
-                                            <p
-                                                className="text-bold text-[#007BFF] cursor-pointer"
-                                                onClick={() => { }}
-                                            >
-                                                Xem trên bản đồ
-                                            </p>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
+                                            <td className="py-2 w-32">
+                                                <p
+                                                    className="text-bold text-[#007BFF] cursor-pointer"
+                                                    onClick={() => { }}
+                                                >
+                                                    Xem trên bản đồ
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    );
+                                })) : (
+                                <tr>
+                                    <td colSpan="8" className="text-center py-4 text-gray-500">
+                                        Không có dữ liệu
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
 
                     </table>
@@ -197,13 +234,15 @@ function ManageLocation() {
                         pageClassName="border border-gray-300 rounded"
                         pageLinkClassName="px-3 py-1 block hover:bg-gray-200"
                         activeClassName="bg-blue-500 text-white"
+                        forcePage={currentPage - 1}
+
                     />
                 </div>
                 )}
 
 
-                <div className="flex items-center mb-5 w-[50%] justify-center">
-                    <div className='w-full border-t pt-2'>
+                <div className=" mb-5 w-full">
+                    {/* <div className='w-full  pt-2'>
                         <button className='text-lg flex items-center gap-3 mb-2 bg-[#007BFF] text-white p-2 rounded-md'><FaToggleOn className='' /> Bật theo dõi thời gian thực</button>
                         <iframe
                             title="Google Map"
@@ -215,7 +254,8 @@ function ManageLocation() {
                             loading="lazy"
                             referrerPolicy="no-referrer-when-downgrade"
                         />
-                    </div>
+                    </div> */}
+                    <LiveMapSection />
                 </div>
 
             </div>

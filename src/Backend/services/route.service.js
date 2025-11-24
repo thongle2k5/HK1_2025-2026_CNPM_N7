@@ -7,18 +7,18 @@ export const getRoute = {
         const stops = await getAllRoute.getRoute();
         return stops;
     },
-    getRoutesAdmin: async (page, limit) => {
+    getRoutesAdmin: async (page, limit, keyword = "") => {
         const offset = (page - 1) * limit;
 
-        // lấy danh sách route + số xe buýt + số tài xế + số học sinh
         const [routes, total] = await Promise.all([
-            getAllRoute.getRoutesAdmin(offset, limit),
-            getAllRoute.countRoutes(),
+            getAllRoute.getRoutesAdmin(offset, limit, keyword),
+            getAllRoute.countRoutes(keyword),
         ]);
 
         return {
             routes,
-            totalPages: Math.ceil(total / limit)
+            totalPages: Math.ceil(total / limit),
+            countRoute: total,
         };
     },
     getRouteByIdAdmin: async (routeId) => {
