@@ -9,7 +9,7 @@ const statusColor = {
   "N/A": "bg-gray-400",
 };
 
-function StudentInfo({ studentsData }) {
+function StudentInfo({ studentsData,onTrackBus }) {
   // State quản lý học sinh được chọn để xem thông tin chi tiết 
   const [selectedStudent, setSelectedStudent] = React.useState(null);
 
@@ -84,6 +84,7 @@ function StudentInfo({ studentsData }) {
         selectedStudent != null && (
           <DetailInfo
             studentData ={selectedStudent}
+            onTrackBus={onTrackBus}
           />
         )
       }

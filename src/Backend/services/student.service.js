@@ -51,15 +51,13 @@ export const StudentService = {
     },
     getStudentDetailInfoByStudentId: async (studentId) => {
         const studentDetailInfo = await StudentModel.getStudentDetailInfoByStudentId(studentId);
+        console.log("student detail info: ", studentDetailInfo);
         return studentDetailInfo;
 
 
     },
 
-    getStudentDetailInfoByStudentId: async (parentId) => {
-        const studentDetailInfo = await StudentModel.getStudentDetailInfoByStudentId(parentId);
-        return studentDetailInfo;
-    },
+
     getStudentsAdmin: async (page, limit) => {
         const offset = (page - 1) * limit;
 

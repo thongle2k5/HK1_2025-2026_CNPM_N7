@@ -1,26 +1,28 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import { BrowserRouter as Router } from "react-router-dom";
-import AppRoutes from "./routes/index.jsx";
-import Login from "./pages/common/Login.jsx";
-import AdminLayout from "./pages/admin/AdminLayout";
-export default function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/admin/AdminLayout/*" element={<AdminLayout />} />
-      <Route path="*" element={<AppRoutes />} />
-    </Routes>
-  );
-}
+// import React from "react";
+// import { Router, Routes, Route, useNavigate } from "react-router-dom";
+// import { BrowserRouter as Router } from "react-router-dom";
+// import AppRoutes from "./routes/index.jsx";
+// import Login from "./pages/common/Login.jsx";
+// import AdminLayout from "./pages/admin/AdminLayout";
+// export default function App() {
+//   return (
+//     <Routes>
+//       <Route path="/" element={<Login />} />
+//       <Route path="/login" element={<Login />} />
+//       <Route path="/admin/AdminLayout/*" element={<AdminLayout />} />
+//       <Route path="*" element={<AppRoutes />} />
+//     </Routes>
+//   );
+// }
+
+
 
 // import { useState } from "react";
 // import Header from "./components/specific/parentpage/Header.jsx";
 // import ChildTracking from "./pages/parent/ChildTracking.jsx";
 // import Notifications from "./pages/parent/Notifications.jsx";
+// import { SocketProvider } from "./components/specific/parentpage/ParentSocketProvider.jsx";
 
-// const user = { user_id: 1 };
 // function ParentApp() {
 //   const [screen, setScreen] = useState("tracking");
 //   return (
@@ -34,7 +36,30 @@ export default function App() {
 //     </div>
 //   );
 // }
-// export default ParentApp;
+import { Routes, Route } from "react-router-dom";
+import Header from "./components/specific/parentpage/Header.jsx";
+import ChildTracking from "./pages/parent/ChildTracking.jsx";
+import Notifications from "./pages/parent/Notifications.jsx";
+import { SocketProvider } from "./components/specific/parentpage/ParentSocketProvider.jsx";
+
+export default function App() {
+  const user = { user_id: 1 };
+
+  return (
+    <div className="w-screen h-screen flex flex-col relative">
+      <Header />   {/* tuỳ bạn đặt ở đâu */}
+      <SocketProvider>
+        <Routes>
+          <Route path="/" element={<ChildTracking user={user}/>} />
+          <Route path="/parent" element={<ChildTracking user={user}/>} />
+          <Route path="/parent/notifications" element={<Notifications user={user}/>} />
+        </Routes>
+      </SocketProvider>
+    </div>
+  );
+}
+
+
 
 // import AppRoutes from "./routes/index.jsx";
 // export default function App() {
@@ -46,12 +71,3 @@ export default function App() {
 //   return <AppRoutes />;
 // }
 
-// export const user= {user_id:1}
-// import ChildTracking from "./pages/parent/ChildTracking.jsx";
-// import Header from "./components/specific/parentpage/Header.jsx"
-// export default function App() {
-//   return <div>
-//     <Header></Header>
-//     <ChildTracking user= {user}></ChildTracking>
-//   </div>
-// }

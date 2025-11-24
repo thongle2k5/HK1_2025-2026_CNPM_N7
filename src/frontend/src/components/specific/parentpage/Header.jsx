@@ -1,18 +1,20 @@
 import React from "react";
 import { Bell } from "lucide-react";
-
-const Header = ({ title, onBellClick }) => {
-
+import { useNavigate } from "react-router-dom";
+const Header = () => {
+  const navigate = useNavigate();
   return (
     <header className="bg-blue-600 text-white px-6 py-3 flex justify-between items-center">
-      <h1 className="text-2xl font-semibold">{title}My Child's Bus</h1>
+      <h1 className="text-2xl font-semibold">My Child's Bus</h1>
         
       <div className="flex items-center gap-4">
         
         {/* Bell Icon */}
         <div 
           className="relative cursor-pointer group"
-          onClick={onBellClick}
+          onClick={()=>{
+            navigate("/parent/notifications");
+          }}
         >
           <Bell 
             className="

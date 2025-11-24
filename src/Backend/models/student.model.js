@@ -12,17 +12,13 @@ export const StudentModel = {
             'where parent.user_id = ?', [userId])
         return rows;
     },
-    getStudentDetailInfoByStudentId: async (studentId) => {
-        const [row] = await db.query('select * from student where student_id = ?', [id]);
-        return row[0];
-    },
+
     getStudentsByParentId: async (parentId) => {
-        const [rows] = await db.promise().query('select * from student left join student_parent on student.student_id = student_parent.student_id where student_parent.parent_id = ?', [parentId]);
+        const [rows] = await db.query('select * from student left join student_parent on student.student_id = student_parent.student_id where student_parent.parent_id = ?', [parentId]);
         return rows;
     },
     getStudentDetailInfoByStudentId: async (studentId) => {
-        const [rows] = await db.promise().query(
-
+        const [rows] = await db.query(
             'select stop.*,d.*,bus.*,schedule.* ' +
             'from student join pickup_status on student.student_id = pickup_status.student_id ' +
             'join stop on pickup_status.stop_id = stop.stop_id ' +

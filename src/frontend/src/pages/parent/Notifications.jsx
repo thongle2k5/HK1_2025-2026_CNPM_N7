@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from "react";
 import "../../components/specific/parentpage/css/Notifications.css";
 import { FaBell, FaBus, FaMapMarkerAlt, FaChild } from "react-icons/fa";
-
-const Notifications = ({ user, onTracking }) => {
+import { useNavigate } from "react-router-dom";
+const Notifications = ({ user}) => {
   const baseURL = "http://localhost:5000/api";
   const [students, setStudents] = useState([]);
   const [studentDetails, setStudentDetails] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
   // Lấy danh sách học sinh theo parent ID
   useEffect(() => {
     if (!user || !user.user_id) {
       console.log("No user found");
       return;
     }
-
     const fetchStudents = async () => {
       try {
         const response = await fetch(`${baseURL}/students/parent/${user.user_id}`);
@@ -54,7 +53,7 @@ const Notifications = ({ user, onTracking }) => {
   // Lấy chi tiết và status cho từng học sinh
   useEffect(() => {
     if (!students || students.length === 0) return;
-
+    console.log("students: ", students);
     const fetchStudentDetailsAndStatus = async () => {
       try {
         setLoading(true);
@@ -220,7 +219,7 @@ const Notifications = ({ user, onTracking }) => {
       </div>
 
       <div className="close-btn">
-        <div className="relative cursor-pointer group" onClick={onTracking}>
+        <div className="relative cursor-pointer group" onClick={()=>navigate("/parent")}>
           <p className="red-text">X</p>
         </div>
       </div>
