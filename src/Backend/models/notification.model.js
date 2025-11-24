@@ -2,10 +2,12 @@
 import db from '../db/Connect_dtb.js';
 import pool from '../models/Connect_dtb.js';
 export const NotificationModel = {
+
   getNotificationsByUserId: async (userId) => {
     try {
       const [rows] = await db.query(
-        'SELECT * FROM notification WHERE user_id = ? ORDER BY timestamp DESC',
+        'SELECT * FROM notification join notification_read_status '+
+        'on notification.notif_id = notification_read_status.notif_id WHERE user_id = ? ORDER BY created_at DESC',
         [userId]
       );
       return rows;

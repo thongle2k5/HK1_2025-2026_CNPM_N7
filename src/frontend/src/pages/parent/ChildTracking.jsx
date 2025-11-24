@@ -6,7 +6,8 @@ import api from '../../api/sql.api.js';
 function ChildTracking({ user }) {
   const [studentsData, setStudentsData] = useState([]);
   const [busData,setBusData] = useState([]);
-  
+  const [notis,setNotis] = useState([])
+
   useEffect(() => {
     if (!user || !user.user_id) {
       console.log("No user found");
@@ -16,13 +17,22 @@ function ChildTracking({ user }) {
       try {
         const studentsDataRes = await api.get(`/students/user/${user.user_id}/detail`);
         setStudentsData(studentsDataRes.data);
-        console.log(studentsDataRes.data);
-
+        console.log("student data: ",studentsDataRes.data);
       } catch (error) {
         console.log(error);
       }
     };
+    const fetchNotis = async ()=>{
+      try{
+        const notis = await api.get(`/notifications/user/${user.user_id}`);
+        setNotis(notis.data);
+      }catch(error)
+      {
+        console.log("Can not fetch notifications ",error);
+      }
+    }
     fetchStudentData();
+    fetchNotis();
   }, [user]);
 
   useEffect(()=>{
@@ -43,13 +53,14 @@ function ChildTracking({ user }) {
     if(!busData || busData.length === 0)
       return;
   },[busData])
+
   return (
-    <div className="flex flex-row h-full w-full relative">
+    <div className="flex flex-row h-screen w-screen relative">
       <div className="flex flex-col shrink-0 h-full w-3/4 relative">
         <div className="w-full h-3/4 relative">
           <MapComponent busData={busData} />
         </div>
-        <NotificationHistory />
+        <NotificationHistory notis = {notis}/>
       </div>
       <StudentInfo studentsData={studentsData} />
 

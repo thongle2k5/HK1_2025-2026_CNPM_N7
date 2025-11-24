@@ -12,4 +12,5 @@ router.get("/:id",StudentController.getStudentById);
 router.get('/admin/students', StudentController.getStudentsAdmin);
 router.get('/admin/:studentId', StudentController.getStudentByIdAdmin);
 router.delete('/admin/:studentId', StudentController.deleteStudentByIdAdmin);
+
 export default router;

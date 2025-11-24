@@ -47,7 +47,7 @@ const getBusDataByScheduleIds = async (scheduleIds) => {
         const stops = await StopModel.getStopsByRouteId(schedule.route_id);
         const driver = await getDriverById(schedule.driver_id);
         const user = await UserModel.getUserById(driver.user_id);
-        return { bus_id: schedule.bus_id, license_plate: bus.license_plate, route_id: schedule.route_id, stops: stops, driver_name: user.name, driver_phone: user.phone };
+        return { bus_id: schedule.bus_id, status: schedule.status, license_plate: bus.license_plate, route_id: schedule.route_id, stops: stops, driver_name: user.name, driver_phone: user.phone };
     }))
     return busData;
 

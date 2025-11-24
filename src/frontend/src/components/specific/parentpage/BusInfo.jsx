@@ -2,7 +2,7 @@
 
 
 
-const BusInfo = ({driver_name,license_plate,phone,next_stop,eta}) => {
+const BusInfo = ({driver_name,license_plate,phone,next_stop,eta,status}) => {
     return (
         <div className=" absolute left-4 bottom-4 bg-white rounded-xl m-4  w-1/4 z-50 p-4 flex flex-col border border-gray-500">
             <span className="text-2xl font-semibold pb-2">Thông tin xe</span>
@@ -18,6 +18,7 @@ const BusInfo = ({driver_name,license_plate,phone,next_stop,eta}) => {
                 <span>Thời gian dự kiến:</span>
                 <span>{eta}</span>
                 <span>Trạng thái: </span>
+                <span>{status}</span>
             </div>
 
         </div>
