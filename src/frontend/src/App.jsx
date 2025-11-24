@@ -39,3 +39,23 @@ import AppRoutes from "./routes/index.jsx";
 export default function App() {
   return <AppRoutes />;
 }
+
+
+// import AppRoutes from "./routes/index.jsx";
+// export default function App() {
+//   return <AppRoutes />;
+// }
+
+// export const user= {user_id:1}
+// import ChildTracking from "./pages/parent/ChildTracking.jsx";
+// import Header from "./components/specific/parentpage/Header.jsx"
+// export default function App() {
+//   return <div>
+//     <Header></Header>
+//     <ChildTracking user= {user}></ChildTracking>
+//   </div>
+// }
+
+
+
+
