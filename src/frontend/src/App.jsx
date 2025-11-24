@@ -1,18 +1,19 @@
-// import React from "react";
-// import { Routes, Route } from "react-router-dom";
-// import { BrowserRouter as Router } from "react-router-dom";
-
-// import Login from "./pages/common/Login.jsx";
-// import AdminLayout from "./pages/admin/AdminLayout";
-// export default function App() {
-//   return (
-//     <Routes>
-//       <Route path="/" element={<Login />} />
-//       <Route path="/login" element={<Login />} />
-//       <Route path="/admin/AdminLayout/*" element={<AdminLayout />} />
-//     </Routes>
-//   );
-// }
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
+import AppRoutes from "./routes/index.jsx";
+import Login from "./pages/common/Login.jsx";
+import AdminLayout from "./pages/admin/AdminLayout";
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/admin/AdminLayout/*" element={<AdminLayout />} />
+      <Route path="*" element={<AppRoutes />} />
+    </Routes>
+  );
+}
 
 // import { useState } from "react";
 // import Header from "./components/specific/parentpage/Header.jsx";
@@ -35,7 +36,7 @@
 // }
 // export default ParentApp;
 
-import AppRoutes from "./routes/index.jsx";
-export default function App() {
-  return <AppRoutes />;
-}
+// import AppRoutes from "./routes/index.jsx";
+// export default function App() {
+//   return <AppRoutes />;
+// }

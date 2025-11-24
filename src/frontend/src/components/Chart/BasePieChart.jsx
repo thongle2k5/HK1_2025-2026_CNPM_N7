@@ -1,48 +1,56 @@
-//Biểu đồ tròn
 import React from "react";
 import {
   PieChart,
   Pie,
-  Tooltip,
   Cell,
-  ResponsiveContainer,
+  Tooltip,
   Legend,
+  ResponsiveContainer,
 } from "recharts";
-const DEFAULT_COLORS = [
-  "#0088FE",
-  "#00C49F",
-  "#FFBB28",
-  "#FF8042",
-  "#AF19FF",
-  "#FF0000",
-];
-function BasePieChart({ data, nameKey, valueKey, colors = DEFAULT_COLORS }) {
-  return (
-    <ResponsiveContainer width="100%" height={250}>
-      <PieChart margin={{ top: 20, right: 0, left: 0, bottom: 5 }}>
-        <Tooltip />
-        {/* Vị trí Legend có thể được tùy chỉnh bằng props nếu cần */}
-        <Legend layout="vertical" verticalAlign="middle" align="right" />
 
+const BasePieChart = ({ data, nameKey, valueKey, colors }) => {
+  return (
+    <ResponsiveContainer width="100%" height="100%">
+      <PieChart>
         <Pie
           data={data}
-          dataKey={valueKey} // Lấy key giá trị động
-          nameKey={nameKey} // Lấy key tên động
           cx="50%"
           cy="50%"
-          outerRadius={100}
-          label
+          // --- CHỈNH SỬA QUAN TRỌNG ---
+          innerRadius={60} // Tạo lỗ tròn ở giữa (Donut chart) nhìn sang hơn
+          outerRadius={80} // Thu nhỏ bán kính để không bị tràn
+          paddingAngle={5} // Tạo khe hở giữa các miếng
+          dataKey={valueKey}
+          nameKey={nameKey}
+          labelLine={false} // Tắt đường kẻ chỉ dẫn (rất rối)
+          label={false} // Tắt nhãn đè lên hình (dùng Legend thay thế)
         >
-          {/* Lặp qua dữ liệu để gán màu sắc */}
           {data.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={colors[index % colors.length]} // Đảm bảo màu sắc lặp lại nếu thiếu
-            />
+            <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
           ))}
         </Pie>
+
+        <Tooltip
+          formatter={(value) => [`${value} học sinh`]} // Format nội dung tooltip
+          contentStyle={{
+            borderRadius: "8px",
+            border: "none",
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+          }}
+        />
+
+        {/* Đưa chú thích xuống dưới đáy */}
+        <Legend
+          verticalAlign="bottom"
+          height={36}
+          iconType="circle"
+          formatter={(value, entry) => (
+            <span className="text-gray-600 text-xs ml-1">{value}</span>
+          )}
+        />
       </PieChart>
     </ResponsiveContainer>
   );
-}
+};
+
 export default BasePieChart;

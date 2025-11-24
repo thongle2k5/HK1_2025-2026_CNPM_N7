@@ -4,6 +4,7 @@ import DriverTable from "./DriverTable";
 import DriverCharts from "./DriverCharts";
 import DriverForm from "./DriverForm";
 import DriverEditModal from "./DriverEditModal";
+import ChatBox from "./ChatBox";
 function DriverManager() {
   const [drivers, setDrivers] = useState([]);
   const [totaldriver, setTotalDriver] = useState([]);
@@ -114,7 +115,14 @@ function DriverManager() {
       console.error("Lỗi khi xóa tài xế:", error);
     }
   };
+  {
+    ("--------------------------chatbox--------------------------");
+  }
+  const [chatDriver, setChatDriver] = useState(null); // Lưu tài xế đang chat
 
+  const handleOpenChat = (driver) => {
+    setChatDriver(driver);
+  };
   return (
     <div>
       <div className="flex items-center justify-between text-left py-6 mx-4  font-bold text-2xl text-black">
@@ -152,6 +160,7 @@ function DriverManager() {
           data={filteredDriver}
           onDelete={handleDelete}
           onEdit={handleEdit}
+          onOpenChat={handleOpenChat}
         />
       </div>
       <DriverEditModal
@@ -161,6 +170,9 @@ function DriverManager() {
         onSave={handleSaveEdit}
         driverData={editingItem}
       />
+      {chatDriver && (
+        <ChatBox driver={chatDriver} onClose={() => setChatDriver(null)} />
+      )}
     </div>
   );
 }

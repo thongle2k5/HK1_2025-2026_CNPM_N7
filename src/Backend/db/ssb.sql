@@ -386,3 +386,26 @@ CREATE TABLE incident_reports (
     
     FOREIGN KEY (driver_id) REFERENCES driver(driver_id)
 );
+-------khởi tạo bảng message-----------------
+DROP TABLE IF EXISTS messages;
+
+CREATE TABLE messages (
+    message_id INT AUTO_INCREMENT PRIMARY KEY,
+    
+    -- Người gửi (Liên kết với bảng user)
+    sender_id INT NOT NULL, 
+    
+    -- Người nhận (Liên kết với bảng user - Có thể là Driver hoặc Parent)
+    receiver_id INT NOT NULL, 
+    
+    content TEXT NOT NULL,
+    
+    -- Trạng thái đã xem (Tùy chọn, để hiện "Đã xem")
+    is_read BOOLEAN DEFAULT FALSE,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Ràng buộc khóa ngoại (Quan trọng)
+    FOREIGN KEY (sender_id) REFERENCES user(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES user(user_id) ON DELETE CASCADE
+);

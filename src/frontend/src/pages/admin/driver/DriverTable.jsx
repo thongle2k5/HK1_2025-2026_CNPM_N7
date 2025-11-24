@@ -21,7 +21,7 @@ const getStatusBadge = (status) => {
       return <span className="bg-gray-500 px-2 py-1 rounded-xl">{status}</span>;
   }
 };
-function DriverTable({ data, onEdit, onDelete }) {
+function DriverTable({ data, onEdit, onDelete, onOpenChat }) {
   return (
     <div>
       <div className="overflow-x-auto rounded-lg overflow-hidden shadow-md border border-gray-200">
@@ -100,7 +100,7 @@ function DriverTable({ data, onEdit, onDelete }) {
                   >
                     <RiDeleteBin6Line />
                   </button>
-                  <button className="p-4">
+                  <button onClick={() => onOpenChat(driver)} className="p-4">
                     <FaMessage className="text-green-600 " />
                   </button>
                   <button onClick={() => onEdit(driver)}>

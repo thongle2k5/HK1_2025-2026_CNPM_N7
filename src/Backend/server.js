@@ -30,7 +30,7 @@ import parentRoute from './routes/parent.route.js';
 import assignmentRouter from './routes/assignment.route.js';
 import locationRouter from './routes/location.route.js';
 
-
+import MessageRoutter from './routes/message.route.js';
 import schedule from "./routes/driver.schedule.route.js";
 import scheduleDetail from "./routes/driver.scheduleDetail.route.js";
 
@@ -62,7 +62,7 @@ app.use('/api/users', userRoute);
 app.use('/api/students', studentRoute);
 app.use('/api/stops', stopRoute);
 app.use('/api/notifications', notificationRoute);
-
+app.use('/api/messages', MessageRoutter);
 
 // Server WebSocket 
 const server = http.createServer(app);
@@ -74,11 +74,20 @@ export const io = new Server(server, {
 
 io.on("connection", async (socket) => {
   console.log("Client connected:", socket.id);
-
+socket.on("join_room", (data) => { /*...*/ });
+  socket.on("send_message", (data) => { /*...*/ });
   parentSocket(io, socket);
 
   driverSocket(io, socket);
+ socket.on("send_location", (data) => {
+    // data gồm: { driver_id, bus_license, lat, lng }
+    
+    console.log(`📍 Xe ${data.bus_license} đang ở: ${data.lat}, ${data.lng}`);
 
+    // 2. Bắn ngay cho Admin (và Phụ huynh sau này)
+    // 'receive_location' là tên sự kiện mà Admin sẽ lắng nghe
+    socket.broadcast.emit("receive_location", data);
+  });
   socket.on("disconnect", () => {
     console.log("Client disconnected:", socket.id);
   });

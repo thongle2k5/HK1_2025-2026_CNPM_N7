@@ -1,46 +1,78 @@
-import pool from '../models/Connect_dtb.js';
+import pool from '../models/Connect_dtb.js'; // Đảm bảo đường dẫn đúng
 import jwt from 'jsonwebtoken';
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import { register } from 'module';
+
 const router = express.Router();
+
 router.post('/', async (req, res) => {
     try {
-        const { username, password } = req.body;
-        const [rows] = await pool.query('select * from user where username=?', [username])
-        const user = rows[0];
-        const cleanPassword = password.trim()
-        if (!user) {
-            return res.status(401).json({ message: 'Sai tài khoản hoặc mật khẩu' })
-        }
-        const isMatch = await bcrypt.compare(cleanPassword, user.password)
+        const { username, password, role } = req.body;
 
+        // 1. Kiểm tra input đầu vào cơ bản
+        if (!username || !password || !role) {
+            return res.status(400).json({ message: 'Vui lòng nhập đầy đủ thông tin!' });
+        }
+
+        // 2. Tìm user trong database
+        const [rows] = await pool.query('SELECT * FROM user WHERE username = ?', [username]);
+        const user = rows[0];
+
+        // 3. Nếu không thấy user
+        if (!user) {
+            return res.status(401).json({ message: 'Sai tài khoản hoặc mật khẩu' });
+        }
+
+        // 4. So khớp mật khẩu
+        const isMatch = await bcrypt.compare(password.trim(), user.password);
         if (!isMatch) {
-            return res.status(401).json({ message: 'Sai tài khoản hoặc mật khẩu' })
+            return res.status(401).json({ message: 'Sai tài khoản hoặc mật khẩu' });
         }
-        if (user.role != 'manager') {
-            return res.status(401).json({ message: 'Bạn không có quyền truy cập!' })
+
+        // 5. KIỂM TRA QUYỀN (Logic quan trọng nhất)
+        // Logic: Role người dùng chọn (req.body.role) phải khớp với Role trong DB (user.role)
+        // Lưu ý: DB bạn dùng 'manager', nhưng Frontend gửi lên 'admin', cần map lại.
+        
+        let isValidRole = false;
+
+        if (role === 'admin' && user.role === 'manager') {
+            isValidRole = true;
+        } else if (role === 'driver' && user.role === 'driver') {
+            isValidRole = true;
+        } else if (role === 'student' && user.role === 'student') {
+            isValidRole = true;
         }
+
+        if (!isValidRole) {
+            return res.status(403).json({ 
+                message: 'Bạn không có quyền truy cập vào vai trò này!' 
+            });
+        }
+
+        // 6. Tạo Token (Payload không nên chứa thông tin nhạy cảm)
         const payload = {
             userId: user.user_id,
             username: user.username,
             role: user.role,
             name: user.name
-
         };
-        const token = jwt.sign(
-            payload, 'you_secret_key',
-            { expiresIn: '1h' }
-        )
-        res.json({
-            message: 'dang nhap thanh cong',
+
+        // Nên dùng process.env.JWT_SECRET thay vì hardcode string
+        const secretKey = process.env.JWT_SECRET || 'you_secret_key_safe_fallback';
+
+        const token = jwt.sign(payload, secretKey, { expiresIn: '12h' });
+
+        // 7. Trả về kết quả
+        return res.json({
+            message: 'Đăng nhập thành công',
             token: token,
             user: payload
-        })
-    }
-    catch (error) {
+        });
+
+    } catch (error) {
         console.error("!!! LỖI ĐĂNG NHẬP:", error);
-        res.status(500).json({ message: 'Lỗi server', error: error.message });
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
-})
+});
+
 export default router;
