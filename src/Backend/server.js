@@ -79,13 +79,12 @@ socket.on("join_room", (data) => { /*...*/ });
   parentSocket(io, socket);
 
   driverSocket(io, socket);
+  socket.on("join_room", (userId) => {
+    socket.join(String(userId)); // Join vào phòng có tên là UserID
+    console.log(`User ${userId} đã vào phòng chat riêng`);
+  });
  socket.on("send_location", (data) => {
-    // data gồm: { driver_id, bus_license, lat, lng }
-    
     console.log(`📍 Xe ${data.bus_license} đang ở: ${data.lat}, ${data.lng}`);
-
-    // 2. Bắn ngay cho Admin (và Phụ huynh sau này)
-    // 'receive_location' là tên sự kiện mà Admin sẽ lắng nghe
     socket.broadcast.emit("receive_location", data);
   });
   socket.on("disconnect", () => {

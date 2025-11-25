@@ -1,7 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Clock, User, Bell, Circle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+const getUserFromToken = () => {
+  const token = localStorage.getItem("authToken");
+  if (!token) return null;
 
+  try {
+    // Giải mã token để lấy payload (userId, role, name...)
+    const decoded = jwtDecode(token);
+    return decoded;
+  } catch (error) {
+    console.error("Token không hợp lệ:", error);
+    return null;
+  }
+};
 export default function DriverHeader({ driverId }) {
   const [driverName, setDriverName] = useState("Tài xế");
   const [currentDate, setCurrentDate] = useState("");
@@ -33,24 +46,23 @@ export default function DriverHeader({ driverId }) {
   }, [driverId]);
 
   // Lấy thông báo
+  const user = getUserFromToken();
+  // alert(user.userId);
   const fetchNotifications = async () => {
-    if (!token) return;
+    if (!user.userId) return;
+
     try {
-      setLoadingNotif(true);
+      // Gọi API mới đơn giản hơn
       const res = await fetch(
-        "http://localhost:5000/api/notifications/my-notifications",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        `http://localhost:5000/api/notifications/user/${user.userId}`
       );
+
       if (res.ok) {
         const data = await res.json();
-        setNotifications(data || []);
+        setNotifications(data);
       }
     } catch (err) {
       console.error("Lỗi tải thông báo:", err);
-    } finally {
-      setLoadingNotif(false);
     }
   };
 

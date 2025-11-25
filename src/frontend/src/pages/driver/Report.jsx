@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { MapPin, Send, AlertTriangle, Clock } from "lucide-react";
 import DriverHeader from "./components/Header";
-
 export default function Report() {
   const [type, setType] = useState("");
   const [priority, setPriority] = useState("");
   const [description, setDescription] = useState("");
-
   const [reports, setReports] = useState([
     {
       id: 1,
@@ -27,76 +25,50 @@ export default function Report() {
     address: "Đại học Sài Gòn, TP. Hồ Chí Minh",
   });
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   if (!type || !priority) {
-  //     alert("⚠️ Vui lòng chọn loại cảnh báo và mức độ ưu tiên!");
-  //     return;
-  //   }
-
-  //   const newReport = {
-  //     id: reports.length + 1,
-  //     type,
-  //     time: new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }),
-  //     location: position.address,
-  //     status: "Đã gửi",
-  //   };
-
-  //   setReports([newReport, ...reports]);
-  //   setType("");
-  //   setPriority("");
-  //   setDescription("");
-  //   alert("✅ Báo cáo đã được gửi thành công!");
-  // };
-
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/report/driver/2`);
+        if (res.ok) {
+          const data = await res.json();
+          setReports(data);
+        }
+      } catch (err) {
+        console.error("Lỗi tải lịch sử:", err);
+      }
+    };
+    fetchHistory();
+  }, [2]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!type || !priority) {
       alert("⚠️ Vui lòng chọn loại cảnh báo và mức độ ưu tiên!");
       return;
     }
-    useEffect(() => {
-      const fetchHistory = async () => {
-        try {
-          const res = await fetch(`http://localhost:5000/api/report/driver/2`);
-          if (res.ok) {
-            const data = await res.json();
-            setReports(data);
-          }
-        } catch (err) {
-          console.error("Lỗi tải lịch sử:", err);
-        }
-      };
-      fetchHistory();
-    }, [2]);
+
     try {
-      const res = await fetch(
-        "http://localhost:5000/api/driver/notifications",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            driver_id: 2,
-            type,
-            priority,
-            description,
-            location: position.address,
-          }),
-        }
-      );
+      const res = await fetch("http://localhost:5000/api/report/post/2", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          driver_id: 2,
+          type,
+          priority,
+          description,
+          location: position.address,
+        }),
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Lỗi server");
 
       const newReport = {
-        id: data.notif_id,
-        type,
-        time: new Date().toLocaleTimeString("vi-VN", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        location: position.address,
-        status: "Đã gửi",
+        report_id: data.notif_id,
+        title: type,
+        priority: priority,
+        created_at: new Date().toISOString(),
+        address: position.address,
+        status: "pending",
       };
       setReports([newReport, ...reports]);
       setType("");

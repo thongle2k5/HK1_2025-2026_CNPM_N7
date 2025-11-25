@@ -62,7 +62,6 @@ const deleteNotifi= async(req,res)=>{
 
   
 
-
 export const NotificationController = {
   getNotificationsByUserId: async (req, res) => {
     try {
@@ -80,5 +79,5 @@ export const NotificationController = {
   editNotifi,
   create
 };
-//================================================================================================
+
 

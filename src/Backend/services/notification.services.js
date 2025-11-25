@@ -1,6 +1,9 @@
 import {notificationModel} from '../models/notification.model.js';
 import * as userModel from '../models/user.model.js';
 export const notificationService ={
+   getNotificationsByUserId : async (userId) => {
+  return await notificationModel.getByUserId(userId);
+},
     getAllNotifi: async () =>{
         const data = await notificationModel.getAllNotifi();
         return data;

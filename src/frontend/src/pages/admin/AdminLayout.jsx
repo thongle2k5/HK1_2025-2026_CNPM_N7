@@ -397,7 +397,6 @@ function AdminLayout() {
   // ------------------- PHẦN 1 & 2: BẢO MẬT & ĐIỀU HƯỚNG -------------------
   useEffect(() => {
     const checkAuth = () => {
-      // Giả lập token nếu chưa có (để bạn xem được giao diện ngay)
       let token = localStorage.getItem("authToken");
       if (!token) {
         return navigate("/login", { replace: true });

@@ -16,23 +16,27 @@ const getStatusBus = (data) => {
 };
 export default function BusTable({
   searchTerm,
-  onRowClick,
+  onToggleView,
   dataBus,
   onEditClick,
   ondelete,
+  selectedBusId,
 }) {
   // Lọc dữ liệu dựa trên searchTerm (từ component cha)
   const filteredData = useMemo(
-    () =>
-      dataBus.filter((bus) => {
-        const busIdString = String(bus.bus_id);
-        const searchTermLower = searchTerm.toLowerCase();
+    () => {
+      if (!searchTerm) return dataBus;
+
+      const searchTermLower = searchTerm.toLowerCase();
+      return dataBus.filter((bus) => {
+        const idString = String(bus.bus_id);
         return (
-          busIdString.includes(searchTermLower) ||
-          bus.license_plate.toLowerCase().includes(searchTerm.toLowerCase())
+          idString.includes(searchTermLower) ||
+          bus.license_plate.toLowerCase().includes(searchTermLower)
         );
-      }),
-    [searchTerm, dataBus]
+      });
+    },
+    [searchTerm, dataBus] // Dữ liệu sẽ update khi dataBus (paginated) hoặc searchTerm thay đổi
   );
 
   // Hàm xử lý class cho status
@@ -82,53 +86,66 @@ export default function BusTable({
           </tr>
         </thead>
         <tbody>
-          {filteredData.map((bus, index) => (
-            <tr key={bus.bus_id} className="border-b hover:bg-gray-50 ">
-              <td className="p-3 text-sm text-gray-700">{index + 1}</td>
-              <td className="p-3 text-sm text-gray-700">{bus.bus_id}</td>
-              <td className="p-3 text-sm text-gray-700">{bus.license_plate}</td>
-              <td className="p-3 text-sm text-gray-700">{bus.model}</td>
-              <td className="p-3 text-sm text-gray-700">{bus.capacity}</td>
-              <td className="p-3 text-sm">
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
-                    bus.status
-                  )}`}
-                >
-                  {getStatusBus(bus.status)}
-                </span>
-              </td>
-              <td className="p-3 text-sm text-gray-700">
-                <button
-                  onClick={() => onRowClick(bus)}
-                  disabled={!bus.last_update}
-                  className="border px-8 py-1 bg-green-100 rounded-xl cursor-pointer hover:bg-green-200 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
-                >
-                  xem
-                </button>
-              </td>
+          {filteredData.map((bus, index) => {
+            const isSelected = selectedBusId === bus.bus_id;
+            return (
+              <tr key={bus.bus_id} className="border-b hover:bg-gray-50 ">
+                <td className="p-3 text-sm text-gray-700">{index + 1}</td>
+                <td className="p-3 text-sm text-gray-700">{bus.bus_id}</td>
+                <td className="p-3 text-sm text-gray-700">
+                  {bus.license_plate}
+                </td>
+                <td className="p-3 text-sm text-gray-700">{bus.model}</td>
+                <td className="p-3 text-sm text-gray-700">{bus.capacity}</td>
+                <td className="p-3 text-sm">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
+                      bus.status
+                    )}`}
+                  >
+                    {getStatusBus(bus.status)}
+                  </span>
+                </td>
+                <td className="p-3 text-sm text-gray-700">
+                  <button
+                    onClick={() => onToggleView(bus)}
+                    disabled={!bus.current_latitude}
+                    className={`border px-6 py-1 rounded-xl cursor-pointer transition-colors duration-200
+                      ${
+                        !bus.current_latitude
+                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                          : isSelected
+                          ? "bg-red-500 text-white hover:bg-red-600 border-red-500"
+                          : "bg-green-100 text-green-700 hover:bg-green-200 border-green-200"
+                      }
+                    `}
+                  >
+                    {isSelected ? "Hủy" : "Xem"}
+                  </button>
+                </td>
 
-              <td className="p-3 text-sm text-gray-700">
-                {bus.last_update
-                  ? format(new Date(bus.last_update), "dd/MM/yyyy HH:mm")
-                  : "—"}
-              </td>
-              <td className="p-3 text-sm">
-                <button
-                  className="text-blue-600 hover:text-blue-800 mr-3"
-                  onClick={() => onEditClick(bus)}
-                >
-                  Sửa
-                </button>
-                <button
-                  className="text-red-600 hover:text-red-800"
-                  onClick={() => ondelete(bus.bus_id)}
-                >
-                  Xóa
-                </button>
-              </td>
-            </tr>
-          ))}
+                <td className="p-3 text-sm text-gray-700">
+                  {bus.last_update
+                    ? format(new Date(bus.last_update), "dd/MM/yyyy HH:mm")
+                    : "—"}
+                </td>
+                <td className="p-3 text-sm">
+                  <button
+                    className="text-blue-600 hover:text-blue-800 mr-3"
+                    onClick={() => onEditClick(bus)}
+                  >
+                    Sửa
+                  </button>
+                  <button
+                    className="text-red-600 hover:text-red-800"
+                    onClick={() => ondelete(bus.bus_id)}
+                  >
+                    Xóa
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
