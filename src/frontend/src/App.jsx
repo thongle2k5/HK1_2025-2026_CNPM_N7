@@ -61,7 +61,7 @@ function ParentApp() {
   return (
     <div className="w-screen h-screen flex flex-col relative">
       <Header 
-        onBellClick={handleBellClick} 
+        onBellClick={handleBellClick}
         unreadCount={unreadCount} 
       />
 
