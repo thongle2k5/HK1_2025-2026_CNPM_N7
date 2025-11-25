@@ -1,6 +1,6 @@
 
 // File này để giả lập xe buýt chạy trên tuyến đường 
-export async function runBusAlongPath(path, speedKmH = 30, stepsPerSegment = 5, emitFunc) {
+export async function runBusAlongPath(path, speedKmH, stepsPerSegment, emitFunc) {
   console.log("Bắt đầu đi");
 
   if (!path || path.length < 2) return;

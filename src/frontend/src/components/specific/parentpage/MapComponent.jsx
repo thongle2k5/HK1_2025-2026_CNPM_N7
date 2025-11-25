@@ -2,12 +2,12 @@
 import React from 'react';
 import { MapContainer, TileLayer, Marker, Polyline, useMap, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { io } from 'socket.io-client';
 import BusMarker from './BusMarker.jsx';
 import StopMarker from './StopMarker.jsx';
 import BusInfo from './BusInfo.jsx';
 import { fetchRoutePath } from '../../../api/map.path.js';
 import MapEvents from './MapEvents.jsx';
+import api from '../../../api/sql.api.js';
 const status =
 {
     "in progress": "Đang di chuyển",
@@ -26,7 +26,8 @@ function MapComponent({ busData, selectedBus, setSelectedBus, registerReqBus, so
         const data = busPos.find(b => b.bus_id === bus_id);
         const nextStop = data.next_stop;
         const eta = data.eta;
-        setSelectedBus({ bus: info, next_stop: nextStop, eta: eta });
+        const status = data.status;
+        setSelectedBus({ bus: info, next_stop: nextStop, eta: eta, status: status });
 
         if (!map || map === undefined) {
             console.log("map is not ready");
@@ -38,29 +39,36 @@ function MapComponent({ busData, selectedBus, setSelectedBus, registerReqBus, so
         if (!paths || paths.length === 0)
             return;
 
-        if (!socket) return;   // ⚠ check null
+        if (!socket) return;
 
         // Join room tương ứng với bus_id trên socket và gửi data về tuyến đường
         for (const path of paths) {
-            const stops = busData.find(bus => bus.bus_id === path.bus_id).stops;
+            const bus = busData.find(bus => bus.bus_id === path.bus_id)
+            const stops = bus.stops;
+            const schedule_id = bus.schedule_id
+
             socket.emit("parent:join_bus", {
                 bus_id: path.bus_id,
                 path: path.path,
                 stops: stops,
+                schedule_id: schedule_id,
+                status: bus.status
             })
         }
 
         // Bắt event khi server gửi data cho client (pos, pased_path)
         socket.on("parent:bus_data", (data) => {
-            const { bus_id, pos, passed_path, next_stop, eta } = data;
+            const { bus_id, pos, passed_path, next_stop, eta, status } = data;
             setBusPos(prev => {
-                const idx = prev.findIndex(b => b.bus_id === bus_id);
+                const newState = [...prev];
+                const idx = newState.findIndex(b => b.bus_id === bus_id);
+
                 if (idx >= 0) {
-                    prev[idx] = { ...prev[idx], pos: pos, passed_path: passed_path, next_stop: next_stop, eta: eta };
-                    return [...prev];
+                    newState[idx] = { ...newState[idx], pos, passed_path, next_stop, eta, status };
                 } else {
-                    return [...prev, { bus_id: bus_id, pos: pos, passed_path: passed_path, next_stop: next_stop, eta: eta }];
+                    newState.push({ bus_id, pos, passed_path, next_stop, eta, status });
                 }
+                return newState;
             });
 
         });
@@ -73,6 +81,21 @@ function MapComponent({ busData, selectedBus, setSelectedBus, registerReqBus, so
     React.useEffect(() => {
         if (!busPos || busPos.length === 0)
             return;
+        // console.log("bus pos: ", busPos);
+        if (selectedBus !== null) {
+            const bus = busPos.find(b => b.bus_id === selectedBus.bus.bus_id);
+            if (bus.next_stop !== null) {
+                if (bus.eta !== selectedBus.eta || bus.status !== selectedBus.status)
+                    setSelectedBus(prev => {
+                        return { ...prev, next_stop: bus.next_stop, eta: bus.eta, status: bus.status };
+                    });
+            } else {
+                setSelectedBus(prev => {
+                    return { ...prev, status: bus.status };
+                });
+            }
+        }
+
     }, [busPos])
 
     React.useEffect(() => {
@@ -98,6 +121,15 @@ function MapComponent({ busData, selectedBus, setSelectedBus, registerReqBus, so
                 for (const stop of bus.stops) {
                     uniqueStops.current.set(stop.stop_id, stop);
                 }
+
+                const location_track = await api.get(`/buses/${bus.bus_id}/location`);
+                setBusPos(prev => {
+                    const idx = prev.findIndex(b => b.bus_id === location_track.data.bus_id);
+                    if (idx < 0) {
+                        return [...prev, { bus_id: location_track.data.bus_id, pos: [location_track.data.latitude, location_track.data.longitude], passed_path: [], next_stop: null, eta: null, status: null }];
+                    }
+                    return prev;
+                });
             }
         }
         getPathsStops();
@@ -142,7 +174,7 @@ function MapComponent({ busData, selectedBus, setSelectedBus, registerReqBus, so
                 )
             }
             {
-                busPos.length > 0 && (
+                busPos !== undefined && busPos.length > 0 && (
                     busPos.map((bus) => {
                         return <React.Fragment key={bus.bus_id}>
                             <BusMarker
@@ -152,10 +184,12 @@ function MapComponent({ busData, selectedBus, setSelectedBus, registerReqBus, so
                                 onClick={handleSelectBus}
                                 selectedBus={selectedBus}
                             ></BusMarker>
-                            <Polyline
-                                positions={bus.passed_path}
-                                pathOptions={{ color: 'blue', weight: 5 }}
-                            />
+                            {bus.passed_path && bus.passed_path.length > 0 && (
+                                <Polyline
+                                    positions={bus.passed_path}
+                                    pathOptions={{ color: 'blue', weight: 5 }}
+                                />
+                            )}
                         </React.Fragment>
                     })
                 )
@@ -168,9 +202,9 @@ function MapComponent({ busData, selectedBus, setSelectedBus, registerReqBus, so
                 <BusInfo license_plate={selectedBus.bus.license_plate}
                     driver_name={selectedBus.bus.driver_name}
                     phone={selectedBus.bus.driver_phone}
-                    next_stop={selectedBus.next_stop.address}
+                    next_stop={selectedBus.next_stop}
                     eta={selectedBus.eta}
-                    status={status[selectedBus.bus.status]}
+                    status={status[selectedBus.status]}
                 ></BusInfo>
             )
         }

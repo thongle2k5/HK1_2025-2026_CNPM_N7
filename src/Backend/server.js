@@ -76,9 +76,10 @@ io.on("connection", async (socket) => {
   console.log("Client connected:", socket.id);
 socket.on("join_room", (data) => { /*...*/ });
   socket.on("send_message", (data) => { /*...*/ });
-  parentSocket(io, socket);
 
+  parentSocket(io, socket);
   driverSocket(io, socket);
+  
  socket.on("send_location", (data) => {
     // data gồm: { driver_id, bus_license, lat, lng }
     

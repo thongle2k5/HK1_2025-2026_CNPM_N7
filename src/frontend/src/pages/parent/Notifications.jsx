@@ -219,7 +219,7 @@ const Notifications = ({ user}) => {
       </div>
 
       <div className="close-btn">
-        <div className="relative cursor-pointer group" onClick={()=>navigate("/parent")}>
+        <div className="relative cursor-pointer group" onClick={()=> window.history.back()}>
           <p className="red-text">X</p>
         </div>
       </div>

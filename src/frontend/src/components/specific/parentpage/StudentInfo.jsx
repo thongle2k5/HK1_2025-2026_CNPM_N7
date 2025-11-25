@@ -3,7 +3,8 @@ import { MoreHorizontal } from "lucide-react";
 import DetailInfo from "./DetailInfo";
 import api from '../../../api/sql.api.js';
 const statusColor = {
-  "boarded": "bg-green-400",
+  "picked up": "bg-green-500",
+  "dropped off": "bg-blue-500",
   "waiting": "bg-yellow-400",
   "missed": "bg-red-500",
   "N/A": "bg-gray-400",
