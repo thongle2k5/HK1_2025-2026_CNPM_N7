@@ -3,12 +3,14 @@ import { Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 const Header = ({unreadCount = 0, onBellClick})  => {
   const navigate = useNavigate();
+  
   const BellClicked = () => {
     if (onBellClick) {
       onBellClick();
       navigate("/parent/notifications");
     }
   };
+
   return (
     <header className="bg-blue-600 text-white px-6 py-3 flex justify-between items-center">
       <h1 className="text-2xl font-semibold">My Child's Bus</h1>
