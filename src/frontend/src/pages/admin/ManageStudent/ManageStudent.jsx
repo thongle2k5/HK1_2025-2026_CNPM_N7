@@ -2,6 +2,8 @@
 import React from "react";
 import { FaBus, FaPlus, FaPen, FaTrash, FaSearch, FaSchool, FaChartPie, FaChartBar, FaRegEye } from "react-icons/fa"; // Giả sử dùng React Icons
 import { IoIosSchool, IoIosWarning } from "react-icons/io";
+import { FiRefreshCcw } from "react-icons/fi";
+
 import ModalCreateStudent from "./ModalCreateStudent";
 import ModalViewDetail from "./ModalViewDetail";
 import ModalUpdateStudent from "./ModalUpdateStudent";
@@ -27,17 +29,21 @@ function ManageStudent() {
   const [studentId, setStudentId] = useState(null);
   const [studentIdDelete, setStudentIdDelete] = useState(null);
 
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [keyword, setKeyword] = useState("");
+  const [keywordInput, setKeywordInput] = useState("");
+
   useEffect(() => {
     fetchListStudentsWithPaginate(1);
   }, []);
 
-  const fetchListStudentsWithPaginate = async (page) => {
+  const fetchListStudentsWithPaginate = async (page, status = statusFilter, kw = keyword) => {
     try {
-      const res = await getStudentsAdmin(page, LIMIT_STUDENT);
+      const res = await getStudentsAdmin(page, LIMIT_STUDENT, status, kw);
       setListStudents(res.data.students);
       setPageCount(res.data.totalPages);
       setStudentCount(res.data.countStudent);
-      // console.log(res)
+      setCurrentPage(page);
     } catch (error) {
       alert("ManageStudent.jsx ----- Lỗi ");
     }
@@ -65,6 +71,24 @@ function ManageStudent() {
     fetchListStudentsWithPaginate(currentPage);
   };
 
+  const handleChangeStatus = (e) => {
+    const value = e.target.value;
+    setStatusFilter(value);
+    fetchListStudentsWithPaginate(1, value);
+  };
+
+  const handleSearchClick = () => {
+    setKeyword(keywordInput);
+    fetchListStudentsWithPaginate(1, statusFilter, keywordInput);
+  };
+
+  const handleRefreshClick = () => {
+    setKeywordInput("");
+    setKeyword("");
+    setCurrentPage(1);
+
+    fetchListStudentsWithPaginate(1, statusFilter, "");
+  };
 
   return (
     // Component này chỉ tập trung vào nội dung trang Học sinh
@@ -76,9 +100,20 @@ function ManageStudent() {
 
         <div className="flex items-center"  >
           <div className='relative '>
-            <input type="text" placeholder="Tìm kiếm học sinh..." className=" rounded-lg p-2 w-[391px] border border-[#9CA3AF]" />
-            <FaSearch className="text-lg text-[#9CA3AF] absolute right-5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Tìm kiếm tên học sinh..."
+              className="rounded-lg p-2 w-[391px] border border-[#9CA3AF]"
+              value={keywordInput}
+              onChange={(e) => setKeywordInput(e.target.value)}
+            />
+            <FaSearch
+              className="text-lg text-[#9CA3AF] absolute right-5 top-1/2 -translate-y-1/2 cursor-pointer"
+              onClick={handleSearchClick} />
           </div>
+
+          <FiRefreshCcw className="cursor-pointer text-lg ml-4" onClick={handleRefreshClick} />
+
 
 
           {/* <button
@@ -103,7 +138,7 @@ function ManageStudent() {
           </div>
 
 
-          <div className="bg-[#EAF4FF] px-3 py-3 flex gap-7 rounded-md items-center">
+          {/* <div className="bg-[#EAF4FF] px-3 py-3 flex gap-7 rounded-md items-center">
             <FaBus className='text-5xl' />
             <div className="">
               <p className="text-black">Số học sinh đang được đưa đón</p>
@@ -127,22 +162,32 @@ function ManageStudent() {
               <p className="text-black">Số học sinh chưa có chuyến xe</p>
               <p className="text-2xl font-bold">70</p>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
       {/* KHU VỰC CHỨA BẢNG VÀ CHỨC NĂNG */}
       <div className="bg-white rounded-xl mb-10">
         <div className="flex justify-between items-center mb-5">
-          <div className='flex justify-between items-center space-x-4'>
-            <button className='bg-[#EFEFEF] text-black py-2 px-4 rounded-md w-[160px]'>abc</button>
-            <button className='bg-[#EFEFEF] text-black py-2 px-4 rounded-md w-[160px]'>def</button>
+          <div className='flex justify-between items-center space-x-4 '>
+            <select
+              className="border px-3 py-2 rounded cursor-pointer"
+              value={statusFilter}
+              onChange={handleChangeStatus}
+            >
+              <option value="all">Tất cả</option>
+              <option value="boarded">Đang trên xe</option>
+              <option value="waiting">Chờ đón</option>
+              <option value="missed">Lỡ xe</option>
+              <option value="dropped_off">Đã xuống xe</option>
+            </select>
+
           </div>
 
-          <div className="flex items-center" >
+          {/* <div className="flex items-center" >
             <input type="text" placeholder="Tìm kiếm học sinh trong bảng..." className=" border border-[#9CA3AF] rounded-lg p-2 w-[320px]" />
             <FaSearch className="-translate-x-8 text-lg text-[#9CA3AF]" />
-          </div>
+          </div> */}
 
 
         </div>
@@ -177,7 +222,7 @@ function ManageStudent() {
 
                     <td>
                       <span
-                        className={`rounded-md px-2 py-1 font-bold ${student.pickup_status === "boarded"
+                        className={`rounded-md px-2 py-1 font-bold w-[120px] inline-block ${student.pickup_status === "boarded"
                           ? "bg-[#DCFCE7] text-[#15803D]"
                           : student.pickup_status === "missed"
                             ? "bg-[#FEE2E2] text-[#B91C1C]"
@@ -246,32 +291,6 @@ function ManageStudent() {
           />
         </div>
         )}
-
-
-        {/* Biểu đồ thống kê */}
-        <div className="flex justify-between items-center space-x-7">
-          <div>
-            <p className="text-xl mb-4 font-bold">Tỷ lệ học sinh theo tuyến đường</p>
-            <div className="">
-              <FaChartPie className="text-[300px] text-gray-600" />
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xl mb-4 font-bold">Số học sinh theo lớp học</p>
-            <div className="">
-              <FaChartBar className="text-[300px] text-gray-600" />
-            </div>
-          </div>
-
-
-          <div>
-            <p className="text-xl mb-4 font-bold">Vị trí xe buýt hiện tại đang chở học sinh</p>
-            <div className="">
-              <FaChartPie className="text-[300px] text-gray-600" />
-            </div>
-          </div>
-        </div>
       </div>
 
       <ModalViewDetail isOpen={isOpenModalView} setIsOpen={setIsOpenModalView} studentId={studentId} />

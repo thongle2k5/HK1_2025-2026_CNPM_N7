@@ -28,7 +28,7 @@ function ModalDelete(props) {
                 className={`fixed left-1/2 transform -translate-x-1/2
           transition-all duration-500 ease-out 
           ${props.isOpen
-                        ? "top-[10%] -translate-y-[10%] opacity-100 pointer-events-auto"
+                        ? "top-[20%] -translate-y-[20%] opacity-100 pointer-events-auto"
                         : "top-0 opacity-0 pointer-events-none"
                     }
           bg-white rounded-lg shadow-lg z-50

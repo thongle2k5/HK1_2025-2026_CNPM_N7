@@ -1,11 +1,11 @@
 import { ParentModel } from "../models/parent.model.js";
 export const ParentService = {
-    getParentsAdmin: async (page, limit) => {
+    getParentsAdmin: async (page, limit, keyword = "") => {
         const offset = (page - 1) * limit;
 
         const [parents, totalParents] = await Promise.all([
-            ParentModel.getParentsAdmin(offset, limit),
-            ParentModel.countParents(),
+            ParentModel.getParentsAdmin(offset, limit, keyword),
+            ParentModel.countParents(keyword),
         ]);
 
         const parentsWithStudents = await Promise.all(
@@ -21,6 +21,7 @@ export const ParentService = {
         return {
             parents: parentsWithStudents,
             totalPages: Math.ceil(totalParents / limit),
+            countParent: totalParents,
         };
     },
     getParentByIdAdmin: async (parentId) => {

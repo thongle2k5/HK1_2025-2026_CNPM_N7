@@ -5,6 +5,7 @@ import { FaBus, FaPlus, FaPen, FaTrash, FaSearch, FaSchool, FaChartPie, FaChartB
 import { FcNext } from "react-icons/fc";
 import { FcPrevious } from "react-icons/fc";
 import { FiRefreshCcw } from "react-icons/fi";
+
 import { IoIosSchool, IoIosWarning } from "react-icons/io";
 import ReactPaginate from "react-paginate";
 
@@ -30,16 +31,21 @@ function ManageAssignment() {
     const [assignmentIdDelete, setAssignmentIdDelete] = useState(null);
     const [id, setId] = useState(null);
 
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [keyword, setKeyword] = useState("");
+    const [keywordInput, setKeywordInput] = useState("");
+
     useEffect(() => {
         fetchListAssignmentsWithPaginate(1);
     }, []);
 
-    const fetchListAssignmentsWithPaginate = async (page) => {
+    const fetchListAssignmentsWithPaginate = async (page, status = statusFilter, kw = keyword) => {
         try {
-            const res = await getAssignmentsAdmin(page, LIMIT_ASSIGNMENT);
+            const res = await getAssignmentsAdmin(page, LIMIT_ASSIGNMENT, status, kw);
             setListAssignments(res.data.assignments);
             setPageCount(res.data.totalPages);
             // console.log(res)
+            setCurrentPage(page);
         } catch (error) {
             alert("ManageAssignment.jsx ----- Lỗi ");
         }
@@ -65,6 +71,24 @@ function ManageAssignment() {
         setId(id);
     };
 
+    const handleChangeStatus = (e) => {
+        const value = e.target.value;
+        setStatusFilter(value);
+        fetchListAssignmentsWithPaginate(1, value);
+    };
+
+    const handleSearchClick = () => {
+        setKeyword(keywordInput);
+        fetchListAssignmentsWithPaginate(1, statusFilter, keywordInput);
+    };
+
+    const handleRefreshClick = () => {
+        setKeywordInput("");
+        setKeyword("");
+        setCurrentPage(1);
+
+        fetchListAssignmentsWithPaginate(1, statusFilter, "");
+    };
 
 
     return (
@@ -77,8 +101,13 @@ function ManageAssignment() {
 
                 <div className="flex items-center"  >
                     <div className='relative '>
-                        <input type="text" placeholder="Tìm kiếm phân công..." className=" rounded-lg p-2 w-[391px] border border-[#9CA3AF]" />
-                        <FaSearch className="text-lg text-[#9CA3AF] absolute right-5 top-1/2 -translate-y-1/2" />
+                        <input
+                            type="text" placeholder="Tìm kiếm phân công..." className=" rounded-lg p-2 w-[391px] border border-[#9CA3AF]"
+                            value={keywordInput}
+                            onChange={(e) => setKeywordInput(e.target.value)} />
+                        <FaSearch
+                            className="text-lg text-[#9CA3AF] absolute right-5 top-1/2 -translate-y-1/2 cursor-pointer"
+                            onClick={handleSearchClick} />
                     </div>
 
                     <button
@@ -87,6 +116,9 @@ function ManageAssignment() {
                         <FaPlus className="mr-2" />
                         Thêm phân công mới
                     </button>
+
+                    <FiRefreshCcw className="cursor-pointer text-lg ml-4" onClick={handleRefreshClick} />
+
                 </div>
             </div>
 
@@ -94,12 +126,16 @@ function ManageAssignment() {
             <div className="bg-white rounded-xl mb-10">
                 <div className="flex justify-between items-center mb-5">
                     <div className='flex justify-between items-center space-x-4'>
-                        <button className='bg-[#EFEFEF] text-black py-2 px-4 rounded-md w-[160px]'>abc</button>
-                        <button className='border border-[#9CA3AF] text-black py-2 px-4 rounded-md cursor-pointer'>Tất cả</button>
-                        <button className='border border-[#9CA3AF] text-black py-2 px-4 rounded-md cursor-pointer'>Đang hoạt động</button>
-                        <button className='border border-[#9CA3AF] text-black py-2 px-4 rounded-md cursor-pointer'>Hết hạn</button>
-                        <button className='border border-[#9CA3AF] text-black py-2 px-4 rounded-md cursor-pointer'>Chưa phân công</button>
-                        <button className='border border-[#9CA3AF] text-black py-2 px-4 rounded-md cursor-pointer'><FiRefreshCcw className="mr-2 inline" />Làm mới</button>
+                        <select
+                            className="border px-3 py-2 rounded cursor-pointer"
+                            value={statusFilter}
+                            onChange={handleChangeStatus}
+                        >
+                            <option value="all">Tất cả</option>
+                            <option value="pending">Đang chờ</option>
+                            <option value="in progress">Đang tiến hành</option>
+                            <option value="completed">Hoàn thành</option>
+                        </select>
                     </div>
                 </div>
 
@@ -133,7 +169,7 @@ function ManageAssignment() {
                                         <td>
                                             <span
                                                 className={`
-                                                rounded-md px-2 py-1 font-bold
+                                                rounded-md px-2 py-1 font-bold inline-block w-[150px]
                                                 ${assignment.status === "pending"
                                                         ? "bg-[#F3F4F6] text-[#6B7280]"
                                                         : assignment.status === "in progress"
@@ -154,7 +190,7 @@ function ManageAssignment() {
                                             <div className="flex space-x-3 justify-center items-center">
                                                 <FaPen className="cursor-pointer text-[#007BFF] text-lg" onClick={() => handleUpdate(+assignment.schedule_id)} />
                                                 <FaTrash className="cursor-pointer text-[#dc3545] text-lg" onClick={() => handleDelete(+assignment.schedule_id)} />
-                                                <FaClock className="cursor-pointer text-[#EAB308] text-lg" />
+                                                {/* <FaClock className="cursor-pointer text-[#EAB308] text-lg" /> */}
                                                 <FaTelegramPlane className="cursor-pointer text-[#16A34A] text-lg" />
                                             </div>
                                         </td>
@@ -190,7 +226,7 @@ function ManageAssignment() {
 
 
                 {/* Biểu đồ thống kê */}
-                <div className="flex justify-between items-center space-x-7">
+                {/* <div className="flex justify-between items-center space-x-7">
                     <div>
                         <p className="text-xl mb-4 font-bold">Tỷnom  lệ phân công theo trạng thái</p>
                         <div className="">
@@ -212,7 +248,7 @@ function ManageAssignment() {
                             <FaChartLine className="text-[300px] text-gray-600" />
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
 
             <ModalCreateAssignment isOpen={isOpenModalCreate} setIsOpen={setIsOpenModalCreate} refresh={refreshAssignments} />

@@ -1,18 +1,18 @@
 import { AssignmentModel } from "../models/assignment.model.js";
 
 export const AssignmentService = {
-    getAssignmentsAdmin: async (page, limit) => {
+    getAssignmentsAdmin: async (page, limit, status = "all", keyword = "") => {
         const offset = (page - 1) * limit;
 
-        // lấy danh sách route + số xe buýt + số tài xế + số học sinh
         const [assignments, total] = await Promise.all([
-            AssignmentModel.getAssignmentsAdmin(offset, limit),
-            AssignmentModel.countAssignments(),
+            AssignmentModel.getAssignmentsAdmin(offset, limit, status, keyword),
+            AssignmentModel.countAssignments(status, keyword),
         ]);
 
         return {
             assignments,
-            totalPages: Math.ceil(total / limit)
+            totalPages: Math.ceil(total / limit),
+            countAssignment: total,
         };
     },
     deleteAssignmentByIdAdmin: async (assignmentId) => {

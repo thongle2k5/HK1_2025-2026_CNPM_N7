@@ -1,19 +1,27 @@
 import { notificationModel } from '../models/notification.model.js';
 import * as userModel from '../models/user.model.js';
-export const notificationService = {
-  getAllNotifi: async () => {
-    const data = await notificationModel.getAllNotifi();
-    return data;
-  },
-  getStartData: async () => {
-    const data = await notificationModel.startData();
-    return data;
-  },
-  deleteNotifi: async (id) => {
-    const data = await notificationModel.deleteNotifi(id);
-    return data;
-  },
-  update: async (id, data) => {
+
+export const notificationService ={
+   getNotificationsByUserId : async (userId) => {
+  return await notificationModel.getByUserId(userId);
+},
+    getAllNotifi: async () =>{
+        const data = await notificationModel.getAllNotifi();
+        return data;
+    },
+    getStartData: async()=>{
+        const data=await notificationModel.startData();
+        return data;
+    },
+    deleteNotifi: async(id)=>{
+        const data=await notificationModel.deleteNotifi(id);
+        return data;
+    },
+    update: async (id, data) => {
+       
+  return await notificationModel.update(id, data);
+},
+
 
     return await notificationModel.update(id, data);
   },

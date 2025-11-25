@@ -3,8 +3,8 @@
 import React from "react";
 import { FaBus, FaPlus, FaPen, FaTrash, FaSearch, FaSchool, FaChartPie, FaChartBar, FaRegEye, FaRoad, FaPauseCircle } from "react-icons/fa"; // Giả sử dùng React Icons
 import { FcNext } from "react-icons/fc";
-import { FcPrevious } from "react-icons/fc";
-import { IoIosSchool, IoIosWarning } from "react-icons/io";
+import { FiRefreshCcw } from "react-icons/fi";
+
 import { PiStudentFill } from "react-icons/pi";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
@@ -34,15 +34,19 @@ function ManageRoute() {
     const [routeId, setRouteId] = useState(null);
     const [routeIdDelete, setRouteIdDelete] = useState(null);
 
+    const [keyword, setKeyword] = useState("");
+    const [keywordInput, setKeywordInput] = useState("");
+
     useEffect(() => {
         fetchListRoutesWithPaginate(1);
     }, []);
 
-    const fetchListRoutesWithPaginate = async (page) => {
+    const fetchListRoutesWithPaginate = async (page, kw = keyword) => {
         try {
-            const res = await getRoutesAdmin(page, LIMIT_ROUTE);
+            const res = await getRoutesAdmin(page, LIMIT_ROUTE, kw);
             setListRoutes(res.data.routes);
             setPageCount(res.data.totalPages);
+            setRouteCount(res.data.countRoute);
             // console.log(res)
         } catch (error) {
             alert("ManageRoute.jsx ----- Lỗi ");
@@ -83,6 +87,19 @@ function ManageRoute() {
         setRouteId(id);
     };
 
+    const handleSearchClick = () => {
+        setKeyword(keywordInput);
+        fetchListRoutesWithPaginate(1, keywordInput);
+    };
+
+    const handleRefreshClick = () => {
+        setKeywordInput("");
+        setKeyword("");
+        setCurrentPage(1);
+
+        fetchListRoutesWithPaginate(1, "");
+    };
+
 
     return (
         // Component này chỉ tập trung vào nội dung trang Học sinh
@@ -96,8 +113,15 @@ function ManageRoute() {
 
 
                     <div className='relative '>
-                        <input type="text" placeholder="Tìm kiếm tuyến đường..." className=" rounded-lg p-2 w-[391px] border border-[#9CA3AF]" />
-                        <FaSearch className="text-lg text-[#9CA3AF] absolute right-5 top-1/2 -translate-y-1/2" />
+                        <input
+                            type="text" placeholder="Tìm kiếm tuyến đường..." className=" rounded-lg p-2 w-[391px] border border-[#9CA3AF]"
+                            value={keywordInput}
+                            onChange={(e) => setKeywordInput(e.target.value)}
+                        />
+                        <FaSearch
+                            className="text-lg text-[#9CA3AF] absolute right-5 top-1/2 -translate-y-1/2 cursor-pointer"
+                            onClick={handleSearchClick}
+                        />
                     </div>
 
                     <button
@@ -106,6 +130,8 @@ function ManageRoute() {
                         <FaPlus className="mr-2" />
                         Thêm tuyến Mới
                     </button>
+                    <FiRefreshCcw className="cursor-pointer text-lg ml-4" onClick={handleRefreshClick} />
+
                 </div>
             </div>
 
@@ -116,12 +142,12 @@ function ManageRoute() {
                         <FaRoad className='text-5xl' />
                         <div className="">
                             <p className="text-black">Tổng số tuyến đường</p>
-                            <p className="text-2xl font-bold">12</p>
+                            <p className="text-2xl font-bold">{routeCount}</p>
                         </div>
                     </div>
 
 
-                    <div className="bg-[#EAF4FF] px-3 py-3 flex gap-7 rounded-md items-center">
+                    {/* <div className="bg-[#EAF4FF] px-3 py-3 flex gap-7 rounded-md items-center">
                         <FaBus className='text-5xl' />
                         <div className="">
                             <p className="text-black">Số tuyến đang hoạt động</p>
@@ -145,22 +171,22 @@ function ManageRoute() {
                             <p className="text-black">Số học sinh được đưa đón</p>
                             <p className="text-2xl font-bold">1200</p>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 
             {/* KHU VỰC CHỨA BẢNG VÀ CHỨC NĂNG */}
             <div className="bg-white rounded-xl mb-10">
                 <div className="flex justify-between items-center mb-5">
-                    <div className='flex justify-between items-center space-x-4'>
+                    {/* <div className='flex justify-between items-center space-x-4'>
                         <p className='text-black'>Lọc trạng thái:</p>
                         <button className='bg-[#EFEFEF] text-black py-2 px-4 rounded-md w-[160px]'>def</button>
-                    </div>
+                    </div> */}
 
-                    <div className="flex items-center" >
+                    {/* <div className="flex items-center" >
                         <input type="text" placeholder="Tìm kiếm tuyến đường..." className=" border border-[#9CA3AF] rounded-lg p-2 w-[320px]" />
                         <FaSearch className="-translate-x-8 text-lg text-[#9CA3AF]" />
-                    </div>
+                    </div> */}
 
 
                 </div>
@@ -248,7 +274,7 @@ function ManageRoute() {
 
 
                 {/* Biểu đồ thống kê */}
-                <div className="flex justify-between items-center space-x-7">
+                {/* <div className="flex justify-between items-center space-x-7">
                     <div>
                         <p className="text-xl mb-4 font-bold">Bản đồ tuyến xe</p>
                         <div className="">
@@ -266,21 +292,8 @@ function ManageRoute() {
                         </div>
                     </div>
 
-                    <div>
-                        <p className="text-xl mb-4 font-bold">Phân bố số học sinh theo tuyến</p>
-                        <div className="">
-                            <FaChartBar className="text-[300px] text-gray-600" />
-                        </div>
-                    </div>
-
-
-                    <div>
-                        <p className="text-xl mb-4 font-bold">Số chuyến hoàn thành theo chuyến</p>
-                        <div className="">
-                            <FaChartPie className="text-[300px] text-gray-600" />
-                        </div>
-                    </div>
-                </div>
+                
+                </div> */}
             </div>
             <ModalCreateRoute isOpen={isOpenModalCreate} setIsOpen={setIsOpenModalCreate} refresh={refreshRoutes} />
             <ModalViewDetail isOpen={isOpenModalView} setIsOpen={setIsOpenModalView} routeId={routeId} />

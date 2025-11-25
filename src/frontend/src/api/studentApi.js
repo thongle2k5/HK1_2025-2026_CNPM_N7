@@ -1,7 +1,7 @@
 import axios from "../utils/axiosCustomize"
 
-const getStudentsAdmin = (page, limit) => {
-    return axios.get(`/api/students/admin/students?page=${page}&limit=${limit}`);
+const getStudentsAdmin = (page, limit, status, keyword) => {
+    return axios.get(`/api/students/admin/students?page=${page}&limit=${limit}&status=${status}&keyword=${keyword}`);
 }
 
 const getStudentByIdAdmin = (studentId) => {

@@ -31,76 +31,121 @@ export const StudentModel = {
     },
 
     getStudentsByParentId: async (parentId) => {
-        const [rows] = await db.query('select * from student left join student_parent on student.student_id = student_parent.student_id where student_parent.parent_id = ?',[parentId]);
+        const [rows] = await db.query('select * from student left join student_parent on student.student_id = student_parent.student_id where student_parent.parent_id = ?', [parentId]);
         return rows;
     },
-    getStudentsAdmin: async (offset, limit) => {
-        const sql = `
-            SELECT
-                s.student_id,
-                s.class,
-                s.student_name,
+    getStudentsAdmin: async (offset, limit, status, keyword) => {
+        let sql = `
+        SELECT
+            s.student_id,
+            s.class,
+            s.student_name,
 
-                (
-                    SELECT r2.name
-                    FROM stop_route sr2
-                    JOIN route r2 ON r2.route_id = sr2.route_id
-                    WHERE sr2.stop_id = s.stop_id
-                    ORDER BY sr2.\`order\` ASC
+            (
+                SELECT r2.name
+                FROM stop_route sr2
+                JOIN route r2 ON r2.route_id = sr2.route_id
+                WHERE sr2.stop_id = s.stop_id
+                ORDER BY sr2.\`order\` ASC
+                LIMIT 1
+            ) AS route_name,
+
+            (
+                SELECT b2.license_plate
+                FROM schedule sch2
+                JOIN bus b2 ON b2.bus_id = sch2.bus_id
+                WHERE sch2.route_id = (
+                    SELECT sr3.route_id
+                    FROM stop_route sr3
+                    WHERE sr3.stop_id = s.stop_id
+                    ORDER BY sr3.\`order\` ASC
                     LIMIT 1
-                ) AS route_name,
+                )
+                ORDER BY sch2.date DESC, sch2.start_time DESC
+                LIMIT 1
+            ) AS license_plate,
 
-                (
-                    SELECT b2.license_plate
-                    FROM schedule sch2
-                    JOIN bus b2 ON b2.bus_id = sch2.bus_id
-                    WHERE sch2.route_id = (
-                        SELECT sr3.route_id
-                        FROM stop_route sr3
-                        WHERE sr3.stop_id = s.stop_id
-                        ORDER BY sr3.\`order\` ASC
-                        LIMIT 1
-                    )
-                    ORDER BY sch2.date DESC, sch2.start_time DESC
-                    LIMIT 1
-                ) AS license_plate,
+            (
+                SELECT ps2.status
+                FROM pickup_status ps2
+                WHERE ps2.student_id = s.student_id
+                ORDER BY ps2.\`time\` DESC
+                LIMIT 1
+            ) AS pickup_status,
 
-                (
-                    SELECT ps2.status
-                    FROM pickup_status ps2
-                    WHERE ps2.student_id = s.student_id
-                    ORDER BY ps2.\`time\` DESC
-                    LIMIT 1
-                ) AS pickup_status,
+            (
+                SELECT u2.phone
+                FROM student_parent sp2
+                JOIN parent p2 ON p2.parent_id = sp2.parent_id
+                JOIN \`user\` u2 ON u2.user_id = p2.user_id
+                WHERE sp2.student_id = s.student_id
+                ORDER BY (p2.relationship_info='mẹ') DESC,
+                         (p2.relationship_info='cha') DESC,
+                         u2.phone ASC
+                LIMIT 1
+            ) AS parent_phone
 
-                (
-                    SELECT u2.phone
-                    FROM student_parent sp2
-                    JOIN parent p2 ON p2.parent_id = sp2.parent_id
-                    JOIN \`user\` u2 ON u2.user_id = p2.user_id
-                    WHERE sp2.student_id = s.student_id
-                    ORDER BY (p2.relationship_info='mẹ') DESC,
-                            (p2.relationship_info='cha') DESC,
-                            u2.phone ASC
-                    LIMIT 1
-                ) AS parent_phone
+        FROM student s
+        WHERE s.is_deleted = 0
+    `;
 
-            FROM student s
-            WHERE s.is_deleted = 0     
-            ORDER BY s.student_id
-            LIMIT ? OFFSET ?;
+        const params = [];
+
+        if (status && status !== 'all') {
+            sql += `
+            AND (
+                SELECT ps2.status
+                FROM pickup_status ps2
+                WHERE ps2.student_id = s.student_id
+                ORDER BY ps2.\`time\` DESC
+                LIMIT 1
+            ) = ?
         `;
+            params.push(status);
+        }
 
-        const [rows] = await db.query(sql, [Number(limit), Number(offset)]);
+        if (keyword && keyword.trim() !== '') {
+            sql += ` AND s.student_name LIKE ?`;
+            params.push(`%${keyword.trim()}%`);
+        }
+
+        sql += `
+        ORDER BY s.student_id
+        LIMIT ? OFFSET ?;
+    `;
+        params.push(Number(limit), Number(offset));
+
+        const [rows] = await db.query(sql, params);
         return rows;
     },
-    countStudents: async () => {
-        const sql = `
-            SELECT COUNT(*) AS total
-            FROM student
-            WHERE is_deleted = 0;
+
+    countStudents: async (status, keyword) => {
+        let sql = `
+        SELECT COUNT(*) AS total
+        FROM student s
+        WHERE s.is_deleted = 0
+    `;
+        const params = [];
+
+        if (status && status !== 'all') {
+            sql += `
+            AND (
+                SELECT ps2.status
+                FROM pickup_status ps2
+                WHERE ps2.student_id = s.student_id
+                ORDER BY ps2.\`time\` DESC
+                LIMIT 1
+            ) = ?
         `;
-        const [rows] = await db.query(sql);
+            params.push(status);
+        }
+
+        if (keyword && keyword.trim() !== '') {
+            sql += ` AND s.student_name LIKE ?`;
+            params.push(`%${keyword.trim()}%`);
+        }
+
+        const [rows] = await db.query(sql, params);
         return rows[0].total;
     },
     getStudentByIdAdmin: async (studentId) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import BusHeader from "./BusHeader";
 import BusTable from "./BusTable";
 import BusLocationMap from "./BusLocationMap";
@@ -7,6 +7,7 @@ import "leaflet/dist/leaflet.css";
 export default function ManageBus() {
   const [searchTerm, setSearchTerm] = useState("");
   const [getBuses, setGetBuses] = useState([]);
+
   const fetchBuses = async () => {
     try {
       const getAllBuses = await fetch("http://localhost:5000/api/buses");
@@ -22,23 +23,55 @@ export default function ManageBus() {
   useEffect(() => {
     fetchBuses();
   }, []);
+  // --- LOGIC PHÂN TRANG MỚI ---
+  const ITEMS_PER_PAGE = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Lọc dữ liệu thô (Chưa phân trang)
+  const filteredData = useMemo(() => {
+    if (!getBuses) return [];
+    const lowerTerm = searchTerm.toLowerCase();
+    return getBuses.filter((bus) => {
+      const idString = String(bus.bus_id);
+      return (
+        idString.includes(lowerTerm) ||
+        bus.license_plate.toLowerCase().includes(lowerTerm)
+      );
+    });
+  }, [getBuses, searchTerm]);
+
+  // Cắt mảng để hiển thị theo trang
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    return filteredData.slice(start, end);
+  }, [filteredData, currentPage]);
+
+  const totalItems = filteredData.length;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+  // --- END LOGIC PHÂN TRANG ---
   {
     ("-------------------------Hàm dành cho hiển thị map---------------------");
   }
-  const [selectedBus, setSelectedBus] = useState(null);
-  const handleViewLocation = (bus) => {
-    if (bus.current_latitude && bus.current_longitude) {
-      setSelectedBus(bus);
+  const [selectedBusId, setSelectedBusId] = useState(null);
+  const handleToggleViewMap = (bus) => {
+    if (selectedBusId === bus.bus_id) {
+      // Nếu đang xem xe này rồi mà bấm lại -> Hủy (Reset về null)
+      setSelectedBusId(null);
     } else {
-      setSelectedBus(null);
+      // Nếu chưa xem -> Chọn xe này
+      setSelectedBusId(bus.bus_id);
     }
   };
-  const mapPosition = selectedBus
-    ? [selectedBus.current_latitude, selectedBus.current_longitude]
-    : null;
-  const busInfo = selectedBus
-    ? { license_plate: selectedBus.license_plate, model: selectedBus.model }
-    : null;
+  const busesOnMap = selectedBusId
+    ? getBuses?.filter((b) => b.bus_id === selectedBusId)
+    : getBuses || [];
   {
     ("--------------------hàm cho các nút sửa xoá trong table-----------------------");
   }
@@ -96,14 +129,42 @@ export default function ManageBus() {
   return (
     <div className="flex flex-col gap-6">
       <BusHeader onSearch={setSearchTerm} />
-      <BusTable
-        searchTerm={searchTerm}
-        onRowClick={(bus) => handleViewLocation(bus)}
-        onEditClick={handleOpenEditModal}
-        dataBus={getBuses}
-        ondelete={handleDeleteBus}
-      />
-      <BusLocationMap position={mapPosition} busInfo={busInfo} />
+      <div className="bg-white rounded-lg shadow-lg flex flex-col min-h-[380px] border border-gray-200">
+        <div className="flex-1 overflow-x-auto">
+          <BusTable
+            searchTerm={searchTerm}
+            dataBus={paginatedData}
+            selectedBusId={selectedBusId}
+            onToggleView={handleToggleViewMap}
+            onEditClick={handleOpenEditModal}
+            ondelete={handleDeleteBus}
+          />
+        </div>
+
+        {totalPages > 1 && (
+          <div className="flex justify-between items-center p-4 border-t bg-gray-50 flex-shrink-0">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="bg-white border px-3 py-1 rounded text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+            >
+              Trang trước
+            </button>
+            <span className="text-sm text-gray-700">
+              Trang {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="bg-white border px-3 py-1 rounded text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+            >
+              Trang sau
+            </button>
+          </div>
+        )}
+      </div>
+
+      <BusLocationMap buses={busesOnMap} />
       <EditBus
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}

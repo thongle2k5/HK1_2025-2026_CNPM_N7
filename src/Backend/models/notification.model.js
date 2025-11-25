@@ -121,6 +121,35 @@ export const notificationModel = {
   deleteNotifi,
   update,
   create,
+  getByUserId,
   createBusNoti,
   getBusNoti
 };
+const getByUserId = async (userId) => {
+ 
+  const [userRows] = await db.query("SELECT role FROM user WHERE user_id = ?", [userId]);
+  const role = userRows[0]?.role || '';
+
+  const sql = `
+    SELECT 
+      n.notif_id, 
+      n.title, 
+      n.message, 
+      n.created_at,
+      COALESCE(rs.is_read, 0) as is_read -- Nếu chưa có trong bảng read_status thì coi như chưa đọc
+    FROM notification n
+    LEFT JOIN notification_read_status rs 
+      ON n.notif_id = rs.notif_id AND rs.user_id = ?
+    WHERE 
+      -- Lấy tin nhắn gửi riêng cho user này
+      rs.user_id = ?
+      -- HOẶC lấy tin nhắn gửi chung cho role này (ví dụ 'driver')
+      OR n.target_audience = ?
+      OR n.target_audience = 'all'
+    ORDER BY n.created_at DESC
+  `;
+
+  const [rows] = await db.query(sql, [userId, userId, role]);
+  return rows;
+};
+

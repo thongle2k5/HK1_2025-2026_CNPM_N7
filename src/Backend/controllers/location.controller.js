@@ -5,12 +5,15 @@ export const LocationController = {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
+            const keyword = req.query.keyword || "";
 
-            const result = await LocationService.getLocationsAdmin(page, limit);
+            const result = await LocationService.getLocationsAdmin(page, limit, keyword);
 
             return res.json({
                 locations: result.locations,
                 totalPages: result.totalPages,
+                countBus: result.countBus,
+                currentPage: page,
             });
         } catch (error) {
             console.error("Error:", error);

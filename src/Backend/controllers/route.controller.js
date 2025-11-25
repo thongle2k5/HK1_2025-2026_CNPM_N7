@@ -13,12 +13,14 @@ export const routeConTroller = {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
+            const keyword = req.query.keyword || "";
 
-            const routes = await getRoute.getRoutesAdmin(page, limit);
+            const result = await getRoute.getRoutesAdmin(page, limit, keyword);
 
             res.json({
-                routes: routes.routes,
-                totalPages: routes.totalPages,
+                routes: result.routes,
+                totalPages: result.totalPages,
+                countRoute: result.countRoute
             });
         } catch (error) {
             console.error(error);

@@ -10,5 +10,6 @@ router.get("/user/:userId", NotificationController.getNotificationsByUserId);
 router.delete('/:id',NotificationController.deleteNotifi);
 router.put('/:id',NotificationController.editNotifi);
 router.post('/', NotificationController.create);
+
 export default router ;
 

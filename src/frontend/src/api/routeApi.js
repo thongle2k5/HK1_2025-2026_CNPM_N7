@@ -1,7 +1,7 @@
 import axios from "../utils/axiosCustomize"
 
-const getRoutesAdmin = (page, limit) => {
-    return axios.get(`/api/route/admin/routes?page=${page}&limit=${limit}`);
+const getRoutesAdmin = (page, limit, keyword) => {
+    return axios.get(`/api/route/admin/routes?page=${page}&limit=${limit}&keyword=${keyword}`);
 }
 
 const getRouteByIdAdmin = (routeId) => {

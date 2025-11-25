@@ -10,5 +10,6 @@ router.get('/', reportController.getAllReports);
 router.get('/count-pending', reportController.countPending);
 router.get('/driver/:driverId', reportController.getHistoryByDriver);
 // 3. Cập nhật trạng thái (Xử lý xong/Đang xử lý)
+router.post('/post/:id',reportController.createReport)
 router.put('/:id', reportController.updateStatus);
 export default router;
