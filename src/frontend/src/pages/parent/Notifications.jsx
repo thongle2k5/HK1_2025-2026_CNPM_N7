@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import "../../components/specific/parentpage/css/Notifications.css";
-import { FaBell, FaBus, FaMapMarkerAlt, FaChild, FaUser, FaCar } from "react-icons/fa";
+import { FaBell, FaBus, FaMapMarkerAlt, FaChild, FaUser, FaCar, FaFile } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-const Notifications = ({ user}) => {
+
+const Notifications = ({ user }) => {
   const baseURL = "http://localhost:5000/api";
   const [students, setStudents] = useState([]);
   const [studentDetails, setStudentDetails] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [busNotifications, setBusNotifications] = useState([]);
   const [tripDetails, setTripDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  
   const navigate = useNavigate();
-
 
   // Lấy danh sách học sinh theo parent ID
   useEffect(() => {
@@ -57,7 +59,7 @@ const Notifications = ({ user}) => {
   // Lấy chi tiết và status cho từng học sinh
   useEffect(() => {
     if (!students || students.length === 0) return;
-    console.log("students: ", students);
+    
     const fetchStudentDetailsAndStatus = async () => {
       try {
         setLoading(true);
@@ -104,10 +106,63 @@ const Notifications = ({ user}) => {
     fetchStudentDetailsAndStatus();
   }, [students]);
 
+  // Tạo thông báo xe buýt từ trạng thái pickup của học sinh
+  useEffect(() => {
+    if (studentDetails.length === 0) return;
+
+    const generateBusNotifications = () => {
+      const busNotifs = [];
+
+      studentDetails.forEach((item) => {
+        if (!item.status) return;
+
+        const studentName = item.student.student_name;
+        const status = item.status.status;
+        const time = item.status.time;
+
+        let message = '';
+        let type = '';
+
+        switch (status) {
+          case 'boarded':
+            message = `H.S "${studentName}" đã lên xe`;
+            type = 'boarded';
+            break;
+          case 'picked_up':
+            message = `H.S "${studentName}" đã xuống xe`;
+            type = 'picked_up';
+            break;
+          case 'on_the_way':
+            message = `H.S "${studentName}" đang trên đường`;
+            type = 'on_the_way';
+            break;
+          case 'completed':
+            message = `H.S "${studentName}" đã đến trường`;
+            type = 'completed';
+            break;
+          default:
+            return;
+        }
+
+        busNotifs.push({
+          id: `${type}-${item.student.student_id}-${time}`,
+          type: type,
+          time: time,
+          message: message,
+          studentName: studentName
+        });
+      });
+
+      return busNotifs.sort((a, b) => new Date(b.time) - new Date(a.time));
+    };
+
+    const newBusNotifications = generateBusNotifications();
+    setBusNotifications(newBusNotifications);
+  }, [studentDetails]);
+
   // Fallback: Nếu không có tripDetails từ API, tạo thông tin mặc định từ student details
   useEffect(() => {
     if (!tripDetails && studentDetails.length > 0) {
-      // Tìm student đầu tiên có thông tin chi tiết
       const studentWithDetail = studentDetails.find(item => item.detail);
       if (studentWithDetail && studentWithDetail.detail) {
         setTripDetails({
@@ -146,7 +201,7 @@ const Notifications = ({ user}) => {
   };
 
   const formatNotificationTime = (timestamp) => {
-    if (!timestamp) return '';
+    if (!timestamp) return '--:--';
     
     const date = new Date(timestamp);
     return date.toLocaleTimeString('vi-VN', {
@@ -168,125 +223,159 @@ const Notifications = ({ user}) => {
 
   return (
     <div className="notification-container">
-      <div className="general-notic">Thông báo xe buýt</div>
+      <div className="general-notic">Thông báo</div>
 
-      {/* Cột trái: Thông báo đưa đón từ bảng notification */}
-      <div className="student-list">
+      {/* Thông báo từ nhà trường*/}
+      <div className="school-notify-list">
         <div className="box-title"> 
           <FaBell className="inline mb-1 mr-2" /> Thông báo từ nhà trường
         </div>
         
-        {notifications.length > 0 ? (
-          notifications.map((notification) => (
-            <div key={notification.notif_id} className="notify-card">
-              <p><strong>{formatNotificationTime(notification.created_at)}</strong></p>
-              <p>{notification.message}</p>
-              {notification.title && (
-                <p style={{fontWeight: 'bold', color: '#4a6cf7'}}>{notification.title}</p>
-              )}
+        <div className="scrollable-notifications">
+          {notifications.length > 0 ? (
+            notifications.map((notification) => (
+              <div key={notification.notif_id} className="notify-card">
+                <p><strong>{formatNotificationTime(notification.created_at)}</strong></p>
+                <p>{notification.message}</p>
+                {notification.title && (
+                  <p style={{fontWeight: 'bold', color: '#eb4040ff'}}>{notification.title}</p>
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="notify-card">
+              <p><strong>--:--</strong></p>
+              <p>Không có thông báo mới từ nhà trường</p>
             </div>
-          ))
-        ) : (
-          <div className="notify-card">
-            <p><strong>--:--</strong></p>
-            <p>Không có thông báo mới từ nhà trường</p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      {/* Cột giữa: Danh sách học sinh */}
-      <div className="student-list">
+      {/* Thông báo của xe buýt */}
+      <div className="bus-notify">
         <div className="box-title">
-          <FaChild className="inline mb-1 mr-2" /> Danh sách học sinh
-        </div>        
-
-        {studentDetails.map((item, index) => (
-          <div key={item.student.student_id} className="notify-card purple-bg">
-            <div className="icon purple"><FaChild /></div>
-            <div>
-              <span className="title">{item.student.student_name}</span>
-              <span className="class">{item.student.class}</span>
-              {item.status ? (
-                <span className={`status ${getStatusClass(item.status.status)}`}>
-                  {getStatusText(item.status.status)}
-                </span>
-              ) : (
-                <span className="status blue">Chưa cập nhật</span>
-              )}
-            </div>
-          </div>
-        ))}
-        
-        {studentDetails.length === 0 && (
-          <div className="notify-card purple-bg">
-            <div className="icon purple"><FaChild /></div>
-            <div>
-              <span className="title">Không có học sinh</span>
-              <span className="class">--</span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Cột phải: Chi tiết chuyến xe  */}
-      <div className="trip-detail">
-        <div className="box-title">
-          <FaBus className="inline mb-1 mr-2" /> Chi tiết chuyến xe
+          <FaBus className="inline mb-1 mr-2" /> Thông báo từ xe buýt
         </div>
 
-        {tripDetails ? (
-          <div className="trip-info-content">
-            <div className="info-item">
-              <FaMapMarkerAlt className="icon-small blue" />
-              <span>Điểm đón: <strong>{tripDetails.stop_address || tripDetails.address || "Đang cập nhật"}</strong></span>
+        <div className="scrollable-notifications">
+          {busNotifications.length > 0 ? (
+            busNotifications.map((notification) => (
+              <div key={notification.id} className="notify-card">
+                <p><strong>{formatNotificationTime(notification.time)}</strong></p>
+                <p>{notification.message}</p>
+              </div>
+            ))
+          ) : (
+            <div className="notify-card">
+              <p><strong>--:--</strong></p>
+              <p>Chưa có thông báo mới từ xe buýt</p>
             </div>
-            
-            <div className="info-item">
-              <FaUser className="icon-small green" />
-              <span>Tài xế: <strong>{tripDetails.driver_name || tripDetails.name || "Chưa có thông tin"}</strong></span>
-            </div>
-            
-            <div className="info-item">
-              <FaBell className="icon-small purple" />
-              <span>
-                SĐT tài xế: 
-                <strong>
-                  {tripDetails.driver_phone || tripDetails.phone ? (
-                    <a href={`tel:${tripDetails.driver_phone || tripDetails.phone}`} style={{marginLeft: '5px'}}>
-                      {tripDetails.driver_phone || tripDetails.phone}
-                    </a>
+          )}
+        </div>
+      </div>
+        
+      {/* Thông tin của học sinh & xe buýt */}
+      <div className="student-bus-infor">
+        <div className="box-title">
+          <FaFile className="inline mb-1 mr-2" /> Thông tin học sinh & chuyến xe
+        </div>
+
+        {/* Danh sách học sinh */}
+        <div className="student-list">
+          <div className="box-title">
+            <FaChild className="inline mb-1 mr-2" /> Danh sách học sinh
+          </div>        
+
+          <div className="scrollable-students">
+            {studentDetails.map((item, index) => (
+              <div key={item.student.student_id} className="notify-card purple-bg">
+                <div className="icon purple"><FaChild /></div>
+                <div>
+                  <span className="title">{item.student.student_name}</span>
+                  <span className="class">{item.student.class}</span>
+                  {item.status ? (
+                    <span className={`status ${getStatusClass(item.status.status)}`}>
+                      {getStatusText(item.status.status)}
+                    </span>
                   ) : (
-                    " Chưa có SĐT"
+                    <span className="status blue">Chưa cập nhật</span>
                   )}
-                </strong>
-              </span>
-            </div>
+                </div>
+              </div>
+            ))}
             
-            <div className="info-item">
-              <FaCar className="icon-small red" />
-              <span>Biển số xe: <strong>{tripDetails.bus_plate || tripDetails.license_plate || "Chưa có biển số"}</strong></span>
-            </div>
-            
-            {tripDetails.bus_model && (
-              <div className="info-item">
-                <span>Loại xe: <strong>{tripDetails.bus_model}</strong></span>
+            {studentDetails.length === 0 && (
+              <div className="notify-card purple-bg">
+                <div className="icon purple"><FaChild /></div>
+                <div>
+                  <span className="title">Không có học sinh</span>
+                  <span className="class">--</span>
+                </div>
               </div>
             )}
-            
-            <div className="update-time">
-              <small>Cập nhật lúc: {formatUpdateTime()}</small>
+          </div>
+        </div>
+
+        {/* Chi tiết chuyến xe */}
+        <div className="trip-detail">
+          <div className="box-title">
+            <FaBus className="inline mb-1 mr-2" /> Chi tiết chuyến xe
+          </div>
+
+          {tripDetails ? (
+            <div className="trip-info-content">
+              <div className="info-item">
+                <FaMapMarkerAlt className="icon-small blue" />
+                <span>Điểm đón: <strong>{tripDetails.stop_address || tripDetails.address || "Đang cập nhật"}</strong></span>
+              </div>
+              
+              <div className="info-item">
+                <FaUser className="icon-small green" />
+                <span>Tài xế: <strong>{tripDetails.driver_name || tripDetails.name || "Chưa có thông tin"}</strong></span>
+              </div>
+              
+              <div className="info-item">
+                <FaBell className="icon-small purple" />
+                <span>
+                  SĐT tài xế: 
+                  <strong>
+                    {tripDetails.driver_phone || tripDetails.phone ? (
+                      <a href={`tel:${tripDetails.driver_phone || tripDetails.phone}`} style={{marginLeft: '5px'}}>
+                        {tripDetails.driver_phone || tripDetails.phone}
+                      </a>
+                    ) : (
+                      " Chưa có SĐT"
+                    )}
+                  </strong>
+                </span>
+              </div>
+              
+              <div className="info-item">
+                <FaCar className="icon-small red" />
+                <span>Biển số xe: <strong>{tripDetails.bus_plate || tripDetails.license_plate || "Chưa có biển số"}</strong></span>
+              </div>
+              
+              {tripDetails.bus_model && (
+                <div className="info-item">
+                  <span>Loại xe: <strong>{tripDetails.bus_model}</strong></span>
+                </div>
+              )}
+              
+              <div className="update-time">
+                <small>Cập nhật lúc: {formatUpdateTime()}</small>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="no-trip-info">
-            <p>🚌 Chưa có thông tin chuyến xe</p>
-            <small>Thông tin sẽ được cập nhật khi có lịch trình</small>
-          </div>
-        )}
+          ) : (
+            <div className="no-trip-info">
+              <p>🚌 Chưa có thông tin chuyến xe</p>
+              <small>Thông tin sẽ được cập nhật khi có lịch trình</small>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="close-btn">
-        <div className="relative cursor-pointer group" onClick={()=>navigate("/parent")}>
+        <div className="relative cursor-pointer group" onClick={() => navigate("/parent")}>
           <p className="red-text">X</p>
         </div>
       </div>

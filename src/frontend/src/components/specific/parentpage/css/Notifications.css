@@ -1,16 +1,27 @@
 .notification-container {
   gap: 30px;
-  padding: 20px;
+  padding: 10px;
   width: 100%;
   position: relative;;
   font-size: 19px;
 }
 
+.school-notify-list {
+  width: 32%;
+  float: left;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  margin-right: 15px;
+  margin-left: 15px;
+}
 .general-notic {
     width: 100%;
-    font-size: 30px;
-    font-weight: bold;
-    margin: 20px 0 20px 20px;
+    font-size: 40px;
+    font-weight: bolder;
+    margin: 10px 0 10px 10px;
+    color: #2813c5;
 }
 
 .box-title{
@@ -24,16 +35,13 @@
     font-size: 20px;
     font-weight: bold;
 }
-/* Cột trái */
+
 .student-list {
-  width: 30%;
-  float: left;
+  width: 100%;
   background: white;
   padding: 20px;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
-  margin-right: 40px;
-  margin-left: 40px;
 }
 
 .notify-card {
@@ -64,9 +72,9 @@
 }
 
 .green { color: #0f8f2f; }
-.blue { color: #4a6cf7; }
+.blue { color: #395eef; }
 .purple { color: #a855f7; }
-.red { color: #ff0000; }
+.red { color: #e21d1d; }
 
 .purple-bg {
   background: #f3e9f9 !important;
@@ -79,7 +87,16 @@
 }
 
 /* Cột giữa */
-
+.bus-notify{
+  width: 32%;
+  float: left;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  margin-right: 10px;
+  margin-left: 10px;
+}
 
 .pickup-box h3 {
   display: flex;
@@ -88,16 +105,29 @@
 }
 
 /* Cột phải */
-.trip-detail {
-  width: 30%;
+.student-bus-infor {
+  width: 32%;
   float: left;
+  display: block;
+  background: white;
+  padding: 20px ;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  height: fit-content;
+  color: black;
+  margin-bottom: 20px;
+  margin-left: 15px;
+}
+
+.trip-detail {
+  margin-top: 20px;
+  width: 100%;
   background: white;
   padding: 20px 25px;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   height: fit-content;
   color: black;
-  margin-bottom: 20px;
 }
 
 .trip-detail p{
@@ -146,6 +176,145 @@
     color: #ed0e0e;
 }
 
+
+/* Thêm các class màu mới */
+.yellow { color: #ffc107; }
+.green { color: #28a745; }
+.blue { color: #007bff; }
+.red { color: #dc3545; }
+.purple { color: #a855f7; }
+
+/* Thêm style cho thống kê */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* Style cho thông báo đặc biệt */
+.notification-highlight {
+  border-left: 4px solid #007bff;
+  background: #f8f9ff;
+}
+
+.trip-info {
+  border-left: 4px solid #007bff;
+  background: #f0f8ff;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+
+.trip-info-content {
+  padding: 0px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.icon-small {
+  font-size: 16px;
+  min-width: 20px;
+}
+
+.update-time {
+  text-align: center;
+  margin-top: 15px;
+  padding: 8px;
+  background: #e3f2fd;
+  border-radius: 6px;
+  font-size: 19px;
+  font-weight: bolder;
+  color: #1976d2;
+}
+
+.no-trip-info {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+}
+
+.no-trip-info p {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.no-trip-info small {
+  font-size: 14px;
+}
+
+/* Container có thanh cuộn cho thông báo */
+.scrollable-notifications {
+  max-height: 550px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* Container có thanh cuộn cho danh sách học sinh */
+.scrollable-students {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* Thanh cuộn tùy chỉnh */
+.scrollable-notifications::-webkit-scrollbar,
+.scrollable-students::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-notifications::-webkit-scrollbar-track,
+.scrollable-students::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.scrollable-notifications::-webkit-scrollbar-thumb,
+.scrollable-students::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.scrollable-notifications::-webkit-scrollbar-thumb:hover,
+.scrollable-students::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Firefox */
+.scrollable-notifications,
+.scrollable-students {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
 /* Tablet (768px - 1024px) */
 @media screen and (max-width: 1324px) {
   .notification-container {
@@ -154,7 +323,7 @@
   }
   
   .general-notic {
-    font-size: 26px;
+    font-size: 40px;
     margin: 15px 0 15px 15px;
   }
   
@@ -162,8 +331,9 @@
     font-size: 21px;
   }
   
-  .student-list,
-  .trip-detail {
+  .school-notify-list,
+  .bus-notify,
+  .student-bus-infor {
     width: 45%;
     margin-right: 20px;
     margin-left: 20px;
@@ -187,6 +357,15 @@
     margin: 10px;
     padding-right: 15px;
   }
+  
+  /* Thanh cuộn tablet */
+  .scrollable-notifications {
+    max-height: 300px;
+  }
+  
+  .scrollable-students {
+    max-height: 250px;
+  }
 }
 
 /* Small Tablet (600px - 768px) */
@@ -200,13 +379,14 @@
   }
   
   .general-notic {
-    font-size: 24px;
+    font-size: 40px;
     margin: 12px 0;
     text-align: center;
   }
   
-  .student-list,
-  .trip-detail {
+  .school-notify-list,
+  .bus-notify,
+  .student-bus-infor {
     width: 100%;
     float: none;
     margin: 0 0 20px 0;
@@ -264,6 +444,16 @@
   .red-text {
     font-size: 32px;
   }
+  
+  /* Thanh cuộn small tablet */
+  .scrollable-notifications {
+    max-height: 250px;
+  }
+  
+  .scrollable-students {
+    max-height: 200px;
+  }
+  
 }
 
 /* Mobile (480px - 600px) */
@@ -274,15 +464,16 @@
   }
   
   .general-notic {
-    font-size: 20px;
+    font-size: 35px;
   }
   
   .box-title {
     font-size: 20px;
   }
   
-  .student-list,
-  .trip-detail {
+  .school-notify-list,
+  .bus-notify,
+  .student-bus-infor {
     padding: 10px;
   }
   
@@ -315,133 +506,19 @@
   .red-text {
     font-size: 24px;
   }
-}
-
-/* Thêm các class màu mới */
-.yellow { color: #ffc107; }
-.green { color: #28a745; }
-.blue { color: #007bff; }
-.red { color: #dc3545; }
-.purple { color: #a855f7; }
-
-/* Thêm style cho thống kê */
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.stat-item {
-  text-align: center;
-  padding: 10px;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.stat-number {
-  display: block;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #007bff;
-}
-
-.stat-label {
-  font-size: 0.8rem;
-  color: #6c757d;
-}
-
-/* Style cho thông báo đặc biệt */
-.notification-highlight {
-  border-left: 4px solid #007bff;
-  background: #f8f9ff;
-}
-
-.trip-info {
-  border-left: 4px solid #007bff;
-  background: #f0f8ff;
-  padding: 12px;
-  border-radius: 8px;
-  margin-top: 15px;
-}
-
-/* Responsive cho thống kê */
-@media screen and (max-width: 960px) {
-  .stats-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+  
+  /* Thanh cuộn mobile */
+  .scrollable-notifications {
+    max-height: 200px;
   }
   
-  .stat-item {
-    padding: 8px;
+  .scrollable-students {
+    max-height: 150px;
   }
   
-  .stat-number {
-    font-size: 1.3rem;
-  }
-}
-
-@media screen and (max-width: 600px) {
-  .stats-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
+  .scrollable-notifications::-webkit-scrollbar,
+  .scrollable-students::-webkit-scrollbar {
+    width: 6px;
   }
   
-  .stat-item {
-    padding: 6px;
-  }
-  
-  .stat-number {
-    font-size: 1.2rem;
-  }
-  
-  .stat-label {
-    font-size: 0.7rem;
-  }
-}
-
-
-.trip-info-content {
-  padding: 10px 0;
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 12px 0;
-  padding: 8px;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.icon-small {
-  font-size: 16px;
-  min-width: 20px;
-}
-
-.update-time {
-  text-align: center;
-  margin-top: 15px;
-  padding: 8px;
-  background: #e3f2fd;
-  border-radius: 6px;
-  font-size: 19px;
-  font-weight: bolder;
-  color: #1976d2;
-}
-
-.no-trip-info {
-  text-align: center;
-  padding: 20px;
-  color: #6c757d;
-}
-
-.no-trip-info p {
-  font-size: 16px;
-  margin-bottom: 8px;
-}
-
-.no-trip-info small {
-  font-size: 14px;
 }

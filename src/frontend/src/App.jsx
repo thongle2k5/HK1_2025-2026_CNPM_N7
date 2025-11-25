@@ -18,6 +18,7 @@ import { useState, useEffect } from "react"; // Thêm useEffect import
 import Header from "./components/specific/parentpage/Header.jsx";
 import ChildTracking from "./pages/parent/ChildTracking.jsx";
 import Notifications from "./pages/parent/Notifications.jsx";
+import ChatBubble from "./pages/parent/ChatBubble.jsx";
 import { SocketProvider } from "./components/specific/parentpage/ParentSocketProvider.jsx";
 
 
@@ -63,6 +64,7 @@ function ParentApp() {
         onBellClick={handleBellClick} 
         unreadCount={unreadCount} 
       />
+
       <SocketProvider>
         <Routes>
           <Route path="/" element={<ChildTracking user={user}/>} />
@@ -70,6 +72,9 @@ function ParentApp() {
           <Route path="/parent/notifications" element={<Notifications user={user}/>} />
         </Routes>
       </SocketProvider>
+
+      <ChatBubble user={user} />
+
     </div>
   );
 }
