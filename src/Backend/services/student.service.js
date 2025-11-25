@@ -57,15 +57,19 @@ export const StudentService = {
 
     },
 
-
-    getStudentsAdmin: async (page, limit) => {
+    getStudentsAdmin: async (page, limit, status = 'all', keyword = '') => {
         const offset = (page - 1) * limit;
 
         const [students, total] = await Promise.all([
-            StudentModel.getStudentsAdmin(offset, limit),
-            StudentModel.countStudents(),
+            StudentModel.getStudentsAdmin(offset, limit, status, keyword),
+            StudentModel.countStudents(status, keyword),
         ]);
-        return { students, totalPages: Math.ceil(total / limit), countStudent: total };
+
+        return {
+            students,
+            totalPages: Math.ceil(total / limit),
+            countStudent: total,
+        };
     },
     getStudentByIdAdmin: async (studentId) => {
         const rows = await StudentModel.getStudentByIdAdmin(studentId);

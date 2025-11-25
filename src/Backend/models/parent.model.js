@@ -1,22 +1,34 @@
 import db from '../db/Connect_dtb.js';
 
 export const ParentModel = {
-    getParentsAdmin: async (offset, limit) => {
-        const sql = `
+    getParentsAdmin: async (offset, limit, keyword) => {
+        let sql = `
             SELECT 
-            p.parent_id,
-            u.name,
-            u.phone,
-            u.email
+                p.parent_id,
+                u.name,
+                u.phone,
+                u.email
             FROM parent p
             JOIN user u ON p.user_id = u.user_id
-            WHERE p.is_deleted = 0  
-            LIMIT ? OFFSET ?;
+            WHERE p.is_deleted = 0
         `;
 
-        const [rows] = await db.query(sql, [limit, offset]);
+        const params = [];
+
+        if (keyword && keyword.trim() !== "") {
+            sql += ` AND u.name LIKE ?`;
+            params.push(`%${keyword.trim()}%`);
+        }
+
+        sql += `
+            LIMIT ? OFFSET ?;
+        `;
+        params.push(Number(limit), Number(offset));
+
+        const [rows] = await db.query(sql, params);
         return rows;
     },
+
     getStudentsByParentId: async (parent_id) => {
         const sql = `
             SELECT s.student_id
@@ -28,8 +40,22 @@ export const ParentModel = {
         const [rows] = await db.query(sql, [parent_id]);
         return rows;
     },
-    countParents: async () => {
-        const [rows] = await db.query("SELECT COUNT(*) AS total FROM parent WHERE is_deleted = 0");
+
+    countParents: async (keyword) => {
+        let sql = `
+            SELECT COUNT(*) AS total
+            FROM parent p
+            JOIN user u ON p.user_id = u.user_id
+            WHERE p.is_deleted = 0
+        `;
+        const params = [];
+
+        if (keyword && keyword.trim() !== "") {
+            sql += ` AND u.name LIKE ?`;
+            params.push(`%${keyword.trim()}%`);
+        }
+
+        const [rows] = await db.query(sql, params);
         return rows[0].total;
     },
     getParentByIdAdmin: async (parentId) => {

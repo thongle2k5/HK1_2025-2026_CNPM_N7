@@ -24,6 +24,7 @@ export default function Home() {
     } else {
       console.error("Trình duyệt không hỗ trợ Geolocation");
       setCurrentPos({ lat: 10.762622, lng: 106.660172 });
+      alert("Vui lòng bật quyền truy cập vị trí để sử dụng tính năng này.");
     }
   }, []);
 
@@ -35,7 +36,12 @@ export default function Home() {
     pickedUp: 10,
     remaining: 5,
     alerts: [
-      { id: 1, type: "Kẹt xe nhẹ", time: "06:50", location: "Nguyễn Văn Cừ, Q.5" },
+      {
+        id: 1,
+        type: "Kẹt xe nhẹ",
+        time: "06:50",
+        location: "Nguyễn Văn Cừ, Q.5",
+      },
     ],
   };
 
@@ -50,7 +56,9 @@ export default function Home() {
           <CalendarDays className="w-8 h-8 text-blue-600" />
           <div>
             <p className="text-sm text-gray-600">Tuyến hôm nay</p>
-            <p className="text-lg font-semibold text-blue-700">{driverInfo.route}</p>
+            <p className="text-lg font-semibold text-blue-700">
+              {driverInfo.route}
+            </p>
           </div>
         </div>
 
@@ -58,7 +66,9 @@ export default function Home() {
           <Users className="w-8 h-8 text-green-600" />
           <div>
             <p className="text-sm text-gray-600">Đã đón</p>
-            <p className="text-lg font-semibold text-green-700">{driverInfo.pickedUp}</p>
+            <p className="text-lg font-semibold text-green-700">
+              {driverInfo.pickedUp}
+            </p>
           </div>
         </div>
 
@@ -66,7 +76,9 @@ export default function Home() {
           <Users className="w-8 h-8 text-yellow-600" />
           <div>
             <p className="text-sm text-gray-600">Chưa đón</p>
-            <p className="text-lg font-semibold text-yellow-700">{driverInfo.remaining}</p>
+            <p className="text-lg font-semibold text-yellow-700">
+              {driverInfo.remaining}
+            </p>
           </div>
         </div>
       </div>
@@ -76,7 +88,11 @@ export default function Home() {
         <h2 className="text-lg font-semibold mb-2 flex items-center gap-2">
           <MapPin className="w-5 h-5 text-blue-500" /> Vị trí xe hiện tại
         </h2>
-        {currentPos ? <MapView position={currentPos} /> : <p>Đang xác định vị trí...</p>}
+        {currentPos ? (
+          <MapView position={currentPos} />
+        ) : (
+          <p>Đang xác định vị trí...</p>
+        )}
       </div>
 
       {/* Cảnh báo gần nhất */}

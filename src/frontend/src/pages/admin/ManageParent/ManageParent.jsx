@@ -29,16 +29,23 @@ function ManageParent() {
 
   const [parentCount, setParentCount] = useState(0);
 
+  const [keyword, setKeyword] = useState("");
+  const [keywordInput, setKeywordInput] = useState("");
+
+
   useEffect(() => {
     fetchListParentsWithPaginate(1);
   }, []);
 
-  const fetchListParentsWithPaginate = async (page) => {
+  const fetchListParentsWithPaginate = async (page, kw = keyword) => {
     try {
-      const res = await getParentsAdmin(page, LIMIT_PARENT);
+      const res = await getParentsAdmin(page, LIMIT_PARENT, kw);
       setListParents(res.data.parents);
       setPageCount(res.data.totalPages);
-      // console.log(res)
+      if (res.data.countParent !== undefined) {
+        setParentCount(res.data.countParent);
+      }
+      setCurrentPage(page);
     } catch (error) {
       alert("ManageParent.jsx ----- Lỗi ");
     }
@@ -67,6 +74,21 @@ function ManageParent() {
   };
 
 
+  const handleSearchClick = () => {
+    setKeyword(keywordInput);
+    fetchListParentsWithPaginate(1, keywordInput);
+  };
+
+  const handleRefreshClick = () => {
+    setKeywordInput("");
+    setKeyword("");
+    setCurrentPage(1);
+
+    fetchListParentsWithPaginate(1, "");
+  };
+
+
+
   return (
     // Component này chỉ tập trung vào nội dung trang Phụ huynh
     <div className="p-4 bg-white">
@@ -77,9 +99,18 @@ function ManageParent() {
 
         <div className="flex items-center"  >
           <div className='relative '>
-            <input type="text" placeholder="Tìm kiếm phụ huynh..." className=" rounded-lg p-2 w-[391px] border border-[#9CA3AF]" />
-            <FaSearch className="text-lg text-[#9CA3AF] absolute right-5 top-1/2 -translate-y-1/2" />
+            <input type="text" placeholder="Tìm kiếm phụ huynh..."
+              className=" rounded-lg p-2 w-[391px] border border-[#9CA3AF] "
+              value={keywordInput}
+              onChange={(e) => setKeywordInput(e.target.value)}
+            />
+            <FaSearch
+              className="text-lg text-[#9CA3AF] absolute right-5 top-1/2 -translate-y-1/2 cursor-pointer"
+              onClick={handleSearchClick}
+            />
           </div>
+          <FiRefreshCcw className="cursor-pointer text-lg ml-4" onClick={handleRefreshClick} />
+
 
           {/* <button
             className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center shadow hover:bg-blue-700 transition-colors ml-5"
@@ -98,12 +129,12 @@ function ManageParent() {
             <FaUsers className='text-5xl' />
             <div className="">
               <p className="text-black">Tổng số phụ huynh</p>
-              <p className="text-2xl font-bold">600</p>
+              <p className="text-2xl font-bold">{parentCount}</p>
             </div>
           </div>
 
 
-          <div className="bg-[#EAF4FF] px-3 py-3 flex gap-7 rounded-md items-center">
+          {/* <div className="bg-[#EAF4FF] px-3 py-3 flex gap-7 rounded-md items-center">
             <PiStudentFill className='text-5xl' />
             <div className="">
               <p className="text-black">Tổng số học sinh liên kết</p>
@@ -128,23 +159,19 @@ function ManageParent() {
               <p className="text-black">Phụ huynh chưa kích hoạt tài khoản</p>
               <p className="text-2xl font-bold text-[#EF4444]">20</p>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
       {/* KHU VỰC CHỨA BẢNG VÀ CHỨC NĂNG */}
       <div className="bg-white rounded-xl mb-10">
         <div className="flex justify-between items-center mb-5">
-          <div className='flex justify-between items-center space-x-4'>
-            <p className='text-black'>Lọc trạng thái:</p>
-            <button className='bg-[#EFEFEF] text-black py-2 px-4 rounded-md w-[160px]'>def</button>
-          </div>
 
-          <div className="flex items-center" >
+          {/* <div className="flex items-center" >
             <input type="text" placeholder="Tìm kiếm phụ huynh trong bảng..." className=" border border-[#9CA3AF] rounded-lg p-2 w-[320px]" />
             <FaSearch className="-translate-x-8 text-lg text-[#9CA3AF]" />
             <FiRefreshCcw className="text-2xl" />
-          </div>
+          </div> */}
 
 
         </div>
@@ -166,24 +193,33 @@ function ManageParent() {
               </tr>
             </thead>
             <tbody>
-              {listParents.map((parent, index) => (
-                <tr key={index} className="hover:bg-gray-50 border-b border-gray-300 last:border-0 h-10 text-black">
-                  <td className="pl-3">{parent.parent_id}</td>
-                  <td>{parent.name}</td>
-                  <td>{parent.phone}</td>
-                  <td>{parent.email}</td>
-                  <td>{parent.student_ids.join(", ")}</td>
+              {listParents && listParents.length > 0 ? (
 
-                  <td className="py-2 w-20">
-                    <div className="flex space-x-3 justify-center items-center">
-                      <FaRegEye className="cursor-pointer text-[#007BFF] text-lg" onClick={() => handleView(+parent.parent_id)} />
-                      {/* <FaPen className="cursor-pointer text-[#EAB308] text-lg" onClick={() => setIsOpenModalUpdate(true)} /> */}
-                      <FaTrash className="cursor-pointer text-[#dc3545] text-lg" onClick={() => handleDelete(+parent.parent_id)} />
-                      {/* <FaBell className="cursor-pointer text-[#007BFF] text-lg" /> */}
-                    </div>
+                listParents.map((parent, index) => (
+                  <tr key={index} className="hover:bg-gray-50 border-b border-gray-300 last:border-0 h-10 text-black">
+                    <td className="pl-3">{parent.parent_id}</td>
+                    <td>{parent.name}</td>
+                    <td>{parent.phone}</td>
+                    <td>{parent.email}</td>
+                    <td>{parent.student_ids.join(", ")}</td>
+
+                    <td className="py-2 w-20">
+                      <div className="flex space-x-3 justify-center items-center">
+                        <FaRegEye className="cursor-pointer text-[#007BFF] text-lg" onClick={() => handleView(+parent.parent_id)} />
+                        {/* <FaPen className="cursor-pointer text-[#EAB308] text-lg" onClick={() => setIsOpenModalUpdate(true)} /> */}
+                        <FaTrash className="cursor-pointer text-[#dc3545] text-lg" onClick={() => handleDelete(+parent.parent_id)} />
+                        {/* <FaBell className="cursor-pointer text-[#007BFF] text-lg" /> */}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" className="text-center py-4 text-gray-500">
+                    Không có dữ liệu
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
@@ -205,24 +241,6 @@ function ManageParent() {
           />
         </div>
         )}
-
-
-        {/* Biểu đồ thống kê */}
-        <div className="flex justify-between items-center space-x-7">
-          <div>
-            <p className="text-xl mb-4 font-bold">Tỷ lệ phụ huynh theo trạng thái tài khoản</p>
-            <div className="">
-              <FaChartPie className="text-[300px] text-gray-600" />
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xl mb-4 font-bold">Số học sinh trung bình trên mỗi phụ huynh</p>
-            <div className="">
-              <FaChartBar className="text-[300px] text-gray-600" />
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* <ModalCreateParent isOpen={isOpenModalCreate} setIsOpen={setIsOpenModalCreate} /> */}

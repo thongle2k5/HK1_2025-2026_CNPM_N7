@@ -373,4 +373,39 @@ ALTER TABLE student ADD COLUMN is_deleted TINYINT(1) DEFAULT 0;
 ALTER TABLE route ADD COLUMN is_deleted TINYINT(1) DEFAULT 0;
 ALTER TABLE parent ADD COLUMN is_deleted TINYINT(1) DEFAULT 0;
 ALTER TABLE schedule ADD COLUMN is_deleted TINYINT(1) DEFAULT 0;
+------thêm bảng report -----------------
+CREATE TABLE incident_reports (
+    report_id INT AUTO_INCREMENT PRIMARY KEY,
+    driver_id INT NOT NULL,
+    title VARCHAR(100),      -- Tương ứng với 'type' bên frontend (Kẹt xe, Hỏng xe...)
+    description TEXT,        -- Tương ứng với 'description'
+    priority ENUM('Thấp', 'Trung bình', 'Cao') DEFAULT 'Trung bình', -- Tương ứng với 'priority'
+    address VARCHAR(255),    -- Tương ứng với 'location'
+    status ENUM('pending', 'processing', 'resolved') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (driver_id) REFERENCES driver(driver_id)
+);
+-------khởi tạo bảng message-----------------
+DROP TABLE IF EXISTS messages;
 
+CREATE TABLE messages (
+    message_id INT AUTO_INCREMENT PRIMARY KEY,
+    
+    -- Người gửi (Liên kết với bảng user)
+    sender_id INT NOT NULL, 
+    
+    -- Người nhận (Liên kết với bảng user - Có thể là Driver hoặc Parent)
+    receiver_id INT NOT NULL, 
+    
+    content TEXT NOT NULL,
+    
+    -- Trạng thái đã xem (Tùy chọn, để hiện "Đã xem")
+    is_read BOOLEAN DEFAULT FALSE,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Ràng buộc khóa ngoại (Quan trọng)
+    FOREIGN KEY (sender_id) REFERENCES user(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES user(user_id) ON DELETE CASCADE
+);

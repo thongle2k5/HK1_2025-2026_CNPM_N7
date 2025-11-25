@@ -1,8 +1,8 @@
 import db from '../db/Connect_dtb.js';
 
 export const AssignmentModel = {
-  getAssignmentsAdmin: async (offset, limit) => {
-    const sql = `
+  getAssignmentsAdmin: async (offset, limit, status, keyword) => {
+    let sql = `
       SELECT
         schedule.schedule_id,
         user.name AS driver_name,
@@ -19,22 +19,56 @@ export const AssignmentModel = {
         ON driver.user_id = user.user_id
       JOIN route 
         ON schedule.route_id = route.route_id
-      WHERE schedule.is_deleted = 0  
+      WHERE schedule.is_deleted = 0
+    `;
+
+    const params = [];
+
+    if (status && status !== "all") {
+      sql += ` AND schedule.status = ?`;
+      params.push(status);
+    }
+
+    if (keyword && keyword.trim() !== "") {
+      sql += ` AND user.name LIKE ?`;
+      params.push(`%${keyword.trim()}%`);
+    }
+
+    sql += `
       ORDER BY schedule.date DESC
       LIMIT ? OFFSET ?;
     `;
 
-    const [rows] = await db.query(sql, [limit, offset]);
+    params.push(Number(limit), Number(offset));
+
+    const [rows] = await db.query(sql, params);
     return rows;
   },
-  countAssignments: async () => {
-    const sql = `
+
+  countAssignments: async (status, keyword) => {
+    let sql = `
       SELECT COUNT(*) AS total
       FROM schedule
-      where schedule.is_deleted = 0;
+      JOIN driver 
+        ON schedule.driver_id = driver.driver_id
+      JOIN user 
+        ON driver.user_id = user.user_id
+      WHERE schedule.is_deleted = 0
     `;
 
-    const [rows] = await db.query(sql);
+    const params = [];
+
+    if (status && status !== "all") {
+      sql += ` AND schedule.status = ?`;
+      params.push(status);
+    }
+
+    if (keyword && keyword.trim() !== "") {
+      sql += ` AND user.name LIKE ?`;
+      params.push(`%${keyword.trim()}%`);
+    }
+
+    const [rows] = await db.query(sql, params);
     return rows[0].total;
   },
   deleteAssignmentByIdAdmin: async (assignmentId) => {

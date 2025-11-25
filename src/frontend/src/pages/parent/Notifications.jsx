@@ -14,13 +14,13 @@ const Notifications = ({ user }) => {
   
   const navigate = useNavigate();
 
+
   // Lấy danh sách học sinh theo parent ID
   useEffect(() => {
     if (!user || !user.user_id) {
       console.log("No user found");
       return;
     }
-
     const fetchStudents = async () => {
       try {
         const response = await fetch(`${baseURL}/students/parent/${user.user_id}`);
@@ -59,7 +59,6 @@ const Notifications = ({ user }) => {
   // Lấy chi tiết và status cho từng học sinh
   useEffect(() => {
     if (!students || students.length === 0) return;
-    
     const fetchStudentDetailsAndStatus = async () => {
       try {
         setLoading(true);
@@ -376,6 +375,7 @@ const Notifications = ({ user }) => {
 
       <div className="close-btn">
         <div className="relative cursor-pointer group" onClick={() => navigate("/parent")}>
+
           <p className="red-text">X</p>
         </div>
       </div>

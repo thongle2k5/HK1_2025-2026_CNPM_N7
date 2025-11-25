@@ -1,6 +1,6 @@
-// notification.services.js
-import { notificationModel } from '../models/notification.model.js';
 
+import {notificationModel} from '../models/notification.model.js';
+import * as userModel from '../models/user.model.js';
 // ========== NOTIFICATION SERVICES ==========
 
 const getNotificationsByUserId = async (userId) => {
@@ -53,10 +53,33 @@ const markMessageAsRead = async (messageId, userId) => {
 const getUnreadMessageCount = async (userId) => {
     return await notificationModel.getUnreadMessageCount(userId);
 };
-
+ 
 // ========== EXPORT ==========
 
 export const notificationService = {
+       getNotificationsByUserId : async (userId) => {
+  return await notificationModel.getByUserId(userId);
+},
+    getAllNotifi: async () =>{
+        const data = await notificationModel.getAllNotifi();
+        return data;
+    },
+    getStartData: async()=>{
+        const data=await notificationModel.startData();
+        return data;
+    },
+    deleteNotifi: async(id)=>{
+        const data=await notificationModel.deleteNotifi(id);
+        return data;
+    },
+    update: async (id, data) => {
+       
+  return await notificationModel.update(id, data);
+},
+ create : async (notificationData) => {
+  const { target_audience } = notificationData;
+  return await notificationModel
+ },
     // Notification services
     getNotificationsByUserId,
     getUnreadCountByUserId,
@@ -72,4 +95,4 @@ export const notificationService = {
     getMessagesByUserId,
     markMessageAsRead,
     getUnreadMessageCount
-};
+}

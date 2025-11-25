@@ -13,8 +13,6 @@ router.put('/:id', NotificationController.editNotifi);
 router.post('/', NotificationController.create);
 router.post('/mark-as-read/:userId', NotificationController.markAsRead);
 router.post('/mark-all-read/:userId', NotificationController.markAllAsRead);
-
-// ========== MESSAGE ROUTES ==========
 router.get('/messages/:userId', NotificationController.getMessagesByUserId);
 router.get('/messages/unread-count/:userId', NotificationController.getUnreadMessageCount);
 router.put('/messages/mark-read/:messageId', NotificationController.markMessageAsRead);

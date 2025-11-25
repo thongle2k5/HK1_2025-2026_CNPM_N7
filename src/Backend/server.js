@@ -3,6 +3,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 
+
 // ... (các import khác như userRouter...)
 import busRouter from './routes/bus.route.js';
 import userRoute from './routes/user.route.js';
@@ -15,6 +16,7 @@ import ScheduleRouter from './routes/schedule.route.js';
 import route from './routes/route.route.js'
 import studentRoutes from "./routes/StudentList.route.js";
 import notificationRoute from './routes/notification.route.js';
+import reportRouter from './routes/report.route.js';
 //WebSocket Server 
 import http from 'http';
 import { Server } from 'socket.io';
@@ -28,6 +30,11 @@ import parentRoute from './routes/parent.route.js';
 import assignmentRouter from './routes/assignment.route.js';
 import locationRouter from './routes/location.route.js';
 
+import MessageRoutter from './routes/message.route.js';
+import schedule from "./routes/driver.schedule.route.js";
+import scheduleDetail from "./routes/driver.scheduleDetail.route.js";
+
+
 
 const app = express();
 // ... (các app.use khác...)
@@ -39,19 +46,23 @@ app.use(express.json());
 // thì hãy đưa cho busRouter xử lý
 app.use('/api/buses', busRouter);
 app.use('/api/route', route)
+
 app.use('/api/notifications', notificationRouter);
+
+
+
 app.use('/api/drivers', driverRouter);
 app.use('/api/login', login)
 app.use('/api/dashboardata', dashboardRouter)
-// app.use('/api/students', studentRoutes); xem lại dữ liệu
-
+app.use('/api/students', studentRoutes);
+app.use('/api/report', reportRouter);
 // ----------------------
 app.use('/api/schedules', ScheduleRouter)
 app.use('/api/users', userRoute);
 app.use('/api/students', studentRoute);
 app.use('/api/stops', stopRoute);
 app.use('/api/notifications', notificationRoute);
-
+app.use('/api/messages', MessageRoutter);
 
 // Server WebSocket 
 const server = http.createServer(app);
@@ -63,21 +74,33 @@ export const io = new Server(server, {
 
 io.on("connection", async (socket) => {
   console.log("Client connected:", socket.id);
-
+socket.on("join_room", (data) => { /*...*/ });
+  socket.on("send_message", (data) => { /*...*/ });
   parentSocket(io, socket);
 
   driverSocket(io, socket);
-
+  socket.on("join_room", (userId) => {
+    socket.join(String(userId)); // Join vào phòng có tên là UserID
+    console.log(`User ${userId} đã vào phòng chat riêng`);
+  });
+ socket.on("send_location", (data) => {
+    console.log(`📍 Xe ${data.bus_license} đang ở: ${data.lat}, ${data.lng}`);
+    socket.broadcast.emit("receive_location", data);
+  });
   socket.on("disconnect", () => {
     console.log("Client disconnected:", socket.id);
   });
 
 });
 
-
 app.use('/api/parents', parentRoute);
 app.use('/api/assignments', assignmentRouter);
 app.use('/api/locations', locationRouter);
+
+
+app.use('/api/driverschedule', schedule);
+app.use('/api/scheduleDetail', scheduleDetail);
+
 
 
 // Lấy cổng từ file .env (của bạn là 5000)
@@ -87,8 +110,5 @@ server.listen(PORT, async () => {
   console.log(`Server đang chạy tại http://localhost:${PORT}`);
 
 });
-
-
-
 
 
