@@ -1,4 +1,5 @@
 
+import { get } from "http";
 import { NotificationModel } from "../models/notification.model.js";
 import {notificationService} from '../services/notification.services.js';
   const getAllNotifi = async (req, res) => {
@@ -59,6 +60,16 @@ const deleteNotifi= async(req,res)=>{
   }
 };
 
+const getBusNotiByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const notifications = await NotificationModel.getBusNotiByUserId(userId);
+    res.json(notifications);
+  } catch (error) {
+    console.error("Error getting bus notifications:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
 
   
 
@@ -77,7 +88,8 @@ export const NotificationController = {
   getStartData,
   deleteNotifi,
   editNotifi,
-  create
+  create,
+  getBusNotiByUserId
 };
 
 

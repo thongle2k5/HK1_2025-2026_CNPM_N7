@@ -62,20 +62,23 @@ export default function parentSocket(io, socket) {
             nextStop = stop;
         }
         else if (nextStop !== null) {
-
             pathToStop = getPassedPath(path.path, [nextStop.latitude, nextStop.longitude])
+
             if (passedPath.length >= pathToStop.length) {
+                const arrivedBusNoti = await notificationService.getBusNotiByIds(bus_id, nextStop.stop_id, path.schedule_id, "arrived");
+                if (arrivedBusNoti === undefined) {
+                    console.log("No arrived bus noti found, creating one.");
+                    const createArrivedBusNotiRes = await notificationService.createBusNoti(bus_id, nextStop.stop_id, path.schedule_id, "arrived");
+                }
                 const idx = path.stops.indexOf(nextStop);
                 const s = path.stops[idx + 1];
+
+
                 if (s !== undefined) { /// Cập nhật trạm tiếp theo sau khi xe đã đi qua trạm hiện tại
-                    const arrivedBusNoti = await notificationService.getBusNoti(bus_id, nextStop.stop_id, path.schedule_id, "arrived");
-                    if (arrivedBusNoti === undefined) {
-                        console.log("No arrived bus noti found, creating one.");
-                        const createArrivedBusNotiRes = await notificationService.createBusNoti(bus_id, nextStop.stop_id, path.schedule_id, "arrived");
-                    }
                     nextStop = s;
                     path.nearNextStop = false;
                 } else {
+
                     nextStop = null;
                 }
 
@@ -85,7 +88,7 @@ export default function parentSocket(io, socket) {
         if (nextStop !== null) {// Nếu có trạm tiếp theo thì tính eta (thời gian dự kiến)
             pathToStop = getPassedPath(path.path, [nextStop.latitude, nextStop.longitude]);
 
-            const avrSpeed = 200 * 1000 / 3600; // Giả sử tốc độ trung bình 100km/h => m/s
+            const avrSpeed = 300 * 1000 / 3600; // Giả sử tốc độ trung bình 100km/h => m/s
             let dist = 0;
 
             const p = pathToStop.slice(passedPath.length);
@@ -98,9 +101,9 @@ export default function parentSocket(io, socket) {
 
             const time = dist / avrSpeed;
             if (time <= 300 && !path.nearNextStop) {
-                const closeToBusNoti = await notificationService.getBusNoti(bus_id, nextStop.stop_id, path.schedule_id, "close to");
+                const closeToBusNoti = await notificationService.getBusNotiByIds(bus_id, nextStop.stop_id, path.schedule_id, "close to");
                 if (closeToBusNoti === undefined) {
-                    console.log("No bus noti found, creating one.");
+                    console.log("No close to bus noti found, creating one.");
                     const createCloseToBusNotiRes = await notificationService.createBusNoti(bus_id, nextStop.stop_id, path.schedule_id, "close to");
                     path.nearNextStop = true;
                 }
@@ -117,9 +120,8 @@ export default function parentSocket(io, socket) {
 
         } else {
             console.log("No next stop for bus ", bus_id);
-            await ScheduleService.updateScheduleStatus(path.schedule_id, 'completed');
+            // await ScheduleService.updateScheduleStatus(path.schedule_id, 'completed');
             status = 'completed';
-
 
         }
         paths.set(bus_id, { ...path, nextStop: nextStop, nearNextStop: path.nearNextStop, status: status });//Lưu vào cache trạm tiếp theo 

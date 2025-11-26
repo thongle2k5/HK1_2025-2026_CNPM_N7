@@ -20,21 +20,24 @@ function MapComponent({ busData, selectedBus, setSelectedBus, registerReqBus, so
     const uniqueStops = React.useRef(new Map());
     const [busPos, setBusPos] = React.useState([]);
     const [paths, setPaths] = React.useState([]);
+    const initializedBusPos = React.useRef(false);
 
-    const handleSelectBus = (bus_id, map) => {
+
+    const handleSelectBus = React.useCallback((bus_id, map) => {
         const info = busData.find(bus => bus.bus_id === bus_id);
         const data = busPos.find(b => b.bus_id === bus_id);
         const nextStop = data.next_stop;
         const eta = data.eta;
         const status = data.status;
+
         setSelectedBus({ bus: info, next_stop: nextStop, eta: eta, status: status });
 
         if (!map || map === undefined) {
             console.log("map is not ready");
             return;
         }
-    }
-
+    },[busPos,busData]
+    )
     React.useEffect(() => {
         if (!paths || paths.length === 0)
             return;
@@ -81,7 +84,6 @@ function MapComponent({ busData, selectedBus, setSelectedBus, registerReqBus, so
     React.useEffect(() => {
         if (!busPos || busPos.length === 0)
             return;
-        // console.log("bus pos: ", busPos);
         if (selectedBus !== null) {
             const bus = busPos.find(b => b.bus_id === selectedBus.bus.bus_id);
             if (bus.next_stop !== null) {
@@ -91,7 +93,7 @@ function MapComponent({ busData, selectedBus, setSelectedBus, registerReqBus, so
                     });
             } else {
                 setSelectedBus(prev => {
-                    return { ...prev, status: bus.status };
+                    return { ...prev, status: bus.status, next_stop: bus.next_stop, eta: bus.eta };
                 });
             }
         }
@@ -121,7 +123,17 @@ function MapComponent({ busData, selectedBus, setSelectedBus, registerReqBus, so
                 for (const stop of bus.stops) {
                     uniqueStops.current.set(stop.stop_id, stop);
                 }
+            }
+        }
+        getPathsStops();
 
+        if (initializedBusPos.current)
+            return
+
+        initializedBusPos.current = true;
+
+        const initBusPos = async () => {
+            for (const bus of busData) {
                 const location_track = await api.get(`/buses/${bus.bus_id}/location`);
                 setBusPos(prev => {
                     const idx = prev.findIndex(b => b.bus_id === location_track.data.bus_id);
@@ -132,13 +144,13 @@ function MapComponent({ busData, selectedBus, setSelectedBus, registerReqBus, so
                 });
             }
         }
-        getPathsStops();
+        initBusPos();
 
     }, [busData])
 
     React.useEffect(() => {
         registerReqBus(handleSelectBus);
-    }, [busData, busPos]);
+    }, [handleSelectBus]);
 
     return <div className="w-full h-full relative box-border">
         <MapContainer

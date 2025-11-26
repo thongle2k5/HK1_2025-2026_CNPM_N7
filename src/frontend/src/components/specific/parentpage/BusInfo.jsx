@@ -4,7 +4,7 @@ export const statusColor = {
     "Đang di chuyển": "text-green-600",
     "Đang dừng": "text-yellow-600",
     "Chưa khởi hành": "text-gray-600",
-    "Kết thúc": "text-black-600",
+    "Đã Kết thúc": "text-black-600",
     "Gặp sự cố": "text-red-600"
 }
 

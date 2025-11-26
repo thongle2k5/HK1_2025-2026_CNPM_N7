@@ -1,30 +1,28 @@
+import { get } from 'http';
 import { notificationModel } from '../models/notification.model.js';
 import * as userModel from '../models/user.model.js';
 
-export const notificationService ={
-   getNotificationsByUserId : async (userId) => {
-  return await notificationModel.getByUserId(userId);
-},
-    getAllNotifi: async () =>{
-        const data = await notificationModel.getAllNotifi();
-        return data;
-    },
-    getStartData: async()=>{
-        const data=await notificationModel.startData();
-        return data;
-    },
-    deleteNotifi: async(id)=>{
-        const data=await notificationModel.deleteNotifi(id);
-        return data;
-    },
-    update: async (id, data) => {
-       
-  return await notificationModel.update(id, data);
-},
-
+export const notificationService = {
+  getNotificationsByUserId: async (userId) => {
+    return await notificationModel.getByUserId(userId);
+  },
+  getAllNotifi: async () => {
+    const data = await notificationModel.getAllNotifi();
+    return data;
+  },
+  getStartData: async () => {
+    const data = await notificationModel.startData();
+    return data;
+  },
+  deleteNotifi: async (id) => {
+    const data = await notificationModel.deleteNotifi(id);
+    return data;
+  },
+  update: async (id, data) => {
 
     return await notificationModel.update(id, data);
   },
+
   create: async (notificationData) => {
     const { target_audience } = notificationData;
 
@@ -51,7 +49,13 @@ export const notificationService ={
   createBusNoti: async (bus_id, stop_id, schedule_id, type) => {
     return await notificationModel.createBusNoti(bus_id, stop_id, schedule_id, type);
   },
-  getBusNoti: async (bus_id, stop_id, schedule_id, type) => {
-    return await notificationModel.getBusNoti(bus_id, stop_id, schedule_id, type);
+  getBusNotiByIds: async (bus_id, stop_id, schedule_id, type) => {
+    return await notificationModel.getBusNotiByIds(bus_id, stop_id, schedule_id, type);
   },
+  getBusNotiByUserId: async (userId) => {
+    return await notificationModel.getBusNotiByUserId(userId);
+  }
+
 }
+
+
