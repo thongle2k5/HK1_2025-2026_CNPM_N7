@@ -35,15 +35,16 @@ export default function DriverHeader({ driverId }) {
     });
     setCurrentDate(formatted);
 
-    if (driverId) {
-      fetch(`http://localhost:5000/api/drivers/${driverId}`)
-        .then((res) => res.json())
-        .then((data) => setDriverName(data.name || "Tài xế"))
-        .catch(() => setDriverName("Tài xế"));
-    } else {
-      setDriverName("Nguyễn Văn A");
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      if (user.role === "driver" && user.name) {
+        setDriverName(user.name);
+        return;
+      }
     }
-  }, [driverId]);
+    setDriverName("");
+  }, []);
 
   // Lấy thông báo
   const user = getUserFromToken();
@@ -100,7 +101,7 @@ export default function DriverHeader({ driverId }) {
       <div className="flex items-center gap-6 text-sm text-gray-700">
         <div className="text-right">
           <p>
-            Tài xế: <strong>{driverName}</strong>
+            <strong>{driverName}</strong>
           </p>
           <p className="flex items-center gap-1 text-gray-500">
             <Clock className="w-4 h-4 text-blue-500" />
@@ -148,11 +149,10 @@ export default function DriverHeader({ driverId }) {
                           !notif.is_read && markAsRead(notif.notif_id)
                         }
                         className={`p-4 border-b hover:bg-gray-50 cursor-pointer transition
-                                                    ${
-                                                      !notif.is_read
-                                                        ? "bg-blue-50 font-medium border-l-4 border-l-blue-500"
-                                                        : "bg-white"
-                                                    }`}
+                                                    ${!notif.is_read
+                            ? "bg-blue-50 font-medium border-l-4 border-l-blue-500"
+                            : "bg-white"
+                          }`}
                       >
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
