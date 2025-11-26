@@ -376,6 +376,7 @@ const Notifications = ({ user }) => {
       <div className="close-btn">
         <div className="relative cursor-pointer group" onClick={() => navigate("/parent")}>
 
+
           <p className="red-text">X</p>
         </div>
       </div>

@@ -1,5 +1,7 @@
 import * as  turf from '@turf/turf';
-
+import { notificationService } from '../services/notification.services.js';
+import { ScheduleService } from '../services/schedule.service.js';
+import { UserService } from '../services/user.service.js';
 
 // Hàm trả về quãng đường đã đi của xe
 export function getPassedPath(fullPath, currentPos) {
@@ -24,21 +26,20 @@ const paths = new Map();//  Cache lưu lại các tuyến đường khi client j
 
 export default function parentSocket(io, socket) {
 
-    socket.on("parent:join_bus", ({ bus_id, path, stops }) => {
+    socket.on("parent:join_bus", ({ bus_id, path, stops, schedule_id, status }) => {
         socket.join(`bus_${bus_id}`);
         console.log(`Parent joined bus_${bus_id}`);
-        paths.set(bus_id, { path, stops });
+        paths.set(bus_id, { path: path, stops: stops, nearNextStop: false, schedule_id: schedule_id, status: status });
     });
-    
-    socket.on("parent:join_bus_notification", ({ bus_id}) => {
+
+    socket.on("parent:join_bus_notification", ({ bus_id }) => {
         socket.join(`bus_${bus_id}_notification`);
     });
 
     // Hàm xử lý dữ liệu khi driver gửi vị trí đến server 
-    const handleBusPos = (data) => {
+    const handleBusPos = async (data) => {
         const { bus_id, lat, lng } = data;
         const path = paths.get(bus_id);
-
         if (!paths || paths.length === 0 || path === undefined)
             return;
         const passedPath = getPassedPath(path.path, [lat, lng]);// Quãng đường đã đi được tính từ điểm xuất phát (Trạm 0)
@@ -46,7 +47,7 @@ export default function parentSocket(io, socket) {
         let eta = null;// Thời gian dự kiến xe sẽ đến trạm tiếp theo 
         let nextStop = path.nextStop; //Trạm tiếp theo xe sẽ đến 
         let pathToStop = null; //Quãng đường tính từ trạm 0 đến trạm đang xét 
-
+        let status = path.status;
         if (nextStop === undefined) {// Chạy nếu chưa có trạm tiếp theo trong cache 
             let stop = null;
             path.stops.forEach((st, i) => {
@@ -60,23 +61,33 @@ export default function parentSocket(io, socket) {
             })
             nextStop = stop;
         }
-        else if(nextStop !==null){
+        else if (nextStop !== null) {
+
             pathToStop = getPassedPath(path.path, [nextStop.latitude, nextStop.longitude])
             if (passedPath.length >= pathToStop.length) {
                 const idx = path.stops.indexOf(nextStop);
                 const s = path.stops[idx + 1];
-                if (s !== undefined) {
+                if (s !== undefined) { /// Cập nhật trạm tiếp theo sau khi xe đã đi qua trạm hiện tại
+                    const arrivedBusNoti = await notificationService.getBusNoti(bus_id, nextStop.stop_id, path.schedule_id, "arrived");
+                    if (arrivedBusNoti === undefined) {
+                        console.log("No arrived bus noti found, creating one.");
+                        const createArrivedBusNotiRes = await notificationService.createBusNoti(bus_id, nextStop.stop_id, path.schedule_id, "arrived");
+                    }
                     nextStop = s;
+                    path.nearNextStop = false;
                 } else {
                     nextStop = null;
                 }
 
             }
         }
-        if (nextStop !== null) {// Nếu có trạm tiếp theo thì tính eta (thời gian dự kiến)
 
-            const avrSpeed = 8.3;
+        if (nextStop !== null) {// Nếu có trạm tiếp theo thì tính eta (thời gian dự kiến)
+            pathToStop = getPassedPath(path.path, [nextStop.latitude, nextStop.longitude]);
+
+            const avrSpeed = 200 * 1000 / 3600; // Giả sử tốc độ trung bình 100km/h => m/s
             let dist = 0;
+
             const p = pathToStop.slice(passedPath.length);
             for (let i = 0; i < p.length - 1; i++) {
                 const from = turf.point([p[i][1], p[i][0]]);
@@ -84,22 +95,34 @@ export default function parentSocket(io, socket) {
                 dist += turf.distance(from, to, { units: 'meters' });
 
             }
-            const time = dist/avrSpeed;
-            if(time <=300)
-            {
 
+            const time = dist / avrSpeed;
+            if (time <= 300 && !path.nearNextStop) {
+                const closeToBusNoti = await notificationService.getBusNoti(bus_id, nextStop.stop_id, path.schedule_id, "close to");
+                if (closeToBusNoti === undefined) {
+                    console.log("No bus noti found, creating one.");
+                    const createCloseToBusNotiRes = await notificationService.createBusNoti(bus_id, nextStop.stop_id, path.schedule_id, "close to");
+                    path.nearNextStop = true;
+                }
             }
+
             const now = new Date();
 
-            const etaTime = new Date(now.getTime() + time *1000);
+            const etaTime = new Date(now.getTime() + time * 1000);
 
             const hours = etaTime.getHours().toString().padStart(2, '0');
             const minutes = etaTime.getMinutes().toString().padStart(2, '0');
-            
+
             eta = hours + ":" + minutes;
 
+        } else {
+            console.log("No next stop for bus ", bus_id);
+            await ScheduleService.updateScheduleStatus(path.schedule_id, 'completed');
+            status = 'completed';
+
+
         }
-        paths.set(bus_id, { ...path, nextStop: nextStop });//Lưu vào cache trạm tiếp theo 
+        paths.set(bus_id, { ...path, nextStop: nextStop, nearNextStop: path.nearNextStop, status: status });//Lưu vào cache trạm tiếp theo 
 
         const proccessedData = {// Data gửi đến client (parent)
             bus_id: bus_id,
@@ -107,6 +130,7 @@ export default function parentSocket(io, socket) {
             passed_path: passedPath,
             next_stop: nextStop,
             eta: eta,
+            status: status
         }
         io.to(`bus_${bus_id}`).emit("parent:bus_data", proccessedData);
     }

@@ -1,4 +1,4 @@
-import {UserModel} from "../models/user.model.js";
+import {getUserIdsToSendBusNoti, UserModel} from "../models/user.model.js";
 
 export const UserService ={
 
@@ -7,5 +7,9 @@ export const UserService ={
         return user;
     },getManagers: async () => {
         return await UserModel.findUserByRole('manager');
+    },
+    getUserIdsToSendBusNoti: async (bus_id) => {
+        const userIds = await getUserIdsToSendBusNoti(bus_id);
+        return userIds
     }
 }

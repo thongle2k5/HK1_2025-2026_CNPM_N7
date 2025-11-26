@@ -1,14 +1,14 @@
 
 
-export const statusColor={
-    "Đang di chuyển":"text-green-600",
-    "Đang dừng":"text-yellow-600",
-    "Chưa khởi hành":"text-gray-600",
-    "Kết thúc":"text-black-600",
-    "Gặp sự cố":"text-red-600"
+export const statusColor = {
+    "Đang di chuyển": "text-green-600",
+    "Đang dừng": "text-yellow-600",
+    "Chưa khởi hành": "text-gray-600",
+    "Kết thúc": "text-black-600",
+    "Gặp sự cố": "text-red-600"
 }
 
-const BusInfo = ({driver_name,license_plate,phone,next_stop,eta,status}) => {
+const BusInfo = ({ driver_name, license_plate, phone, next_stop, eta, status }) => {
     return (
         <div className=" absolute left-4 bottom-4 bg-white rounded-xl m-4  w-1/4 z-50 p-4 flex flex-col border border-gray-500 ">
             <span className="text-2xl font-semibold pb-2">Thông tin xe</span>
@@ -19,12 +19,18 @@ const BusInfo = ({driver_name,license_plate,phone,next_stop,eta,status}) => {
                 <span>{driver_name}</span>
                 <span>Số điện thoại</span>
                 <span>{phone}</span>
-                <span>Trạm dừng tiếp theo: </span>
-                <span>{next_stop}</span>
-                <span>Thời gian dự kiến:</span>
-                <span>{eta}</span>
+                {
+                    next_stop !== null && (
+                        <>
+                            <span>Trạm dừng tiếp theo: </span>
+                            <span>{next_stop.address}</span>
+                            <span>Thời gian dự kiến:</span>
+                            <span>{eta}</span>
+                        </>
+                    )
+                }
                 <span>Trạng thái: </span>
-                <span className= {`${statusColor[status]}`} >{status}</span>
+                <span className={`${statusColor[status]}`} >{status}</span>
             </div>
 
         </div>
