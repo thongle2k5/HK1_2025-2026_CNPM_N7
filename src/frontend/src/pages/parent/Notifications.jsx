@@ -114,31 +114,37 @@ const Notifications = ({ user }) => {
     const generateStudentStatus = () => {
       const busNotifs = [];
 
+      const getLocalDate = (d) => {
+        const dt = new Date(d);
+        return dt.getFullYear() + '-' + (dt.getMonth()+1).toString().padStart(2,'0') + '-' + dt.getDate().toString().padStart(2,'0');
+      };      
+        
       studentDetails.forEach((item) => {
         if (!item.status) return;
 
         const studentName = item.student.student_name;
         const status = item.status.status;
         const time = item.status.time;
+        if (getLocalDate(time) !== getLocalDate(new Date())) return;
 
         let message = '';
         let type = '';
 
         switch (status) {
           case 'boarded':
-            message = `H.S "${studentName}" đã lên xe`;
+            message = `H.S ${studentName} đã lên xe`;
             type = 'boarded';
             break;
           case 'picked_up':
-            message = `H.S "${studentName}" đã xuống xe`;
+            message = `H.S ${studentName} đã xuống xe`;
             type = 'picked_up';
             break;
           case 'on_the_way':
-            message = `H.S "${studentName}" đang trên đường`;
+            message = `H.S ${studentName} đang trên đường`;
             type = 'on_the_way';
             break;
           case 'completed':
-            message = `H.S "${studentName}" đã đến trường`;
+            message = `H.S ${studentName} đã đến trường`;
             type = 'completed';
             break;
           default:
@@ -155,7 +161,7 @@ const Notifications = ({ user }) => {
         });
       });
 
-      return busNotifs.sort((a, b) => new Date(b.time) - new Date(a.time));
+      return busNotifs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     };
 
     const newStudenStatus = generateStudentStatus();
@@ -214,8 +220,10 @@ const Notifications = ({ user }) => {
   //Trộn 2 loại thông báo
   useEffect(() => {
     const totalNotifications = [...studentStatus, ...busNotifications];
+    console.log("Student Status Notifications:", studentStatus);
     totalNotifications.sort((a, b) => new Date( b.timestamp) - new Date(a.timestamp));
     setCombinedNotifications(totalNotifications);
+    console.log("Combined Notifications:", totalNotifications);
   }, [studentStatus, busNotifications]);
 
   // Fallback: Nếu không có tripDetails từ API, tạo thông tin mặc định từ student details
@@ -244,18 +252,6 @@ const Notifications = ({ user }) => {
       'completed': 'Hoàn thành'
     };
     return statusMap[status] || status;
-  };
-
-  const getStatusClass = (status) => {
-    const classMap = {
-      'boarded': 'blue',
-      'waiting': 'yellow',
-      'picked_up': 'green',
-      'absent': 'red',
-      'on_the_way': 'blue',
-      'completed': 'green'
-    };
-    return classMap[status] || 'blue';
   };
 
   const formatNotificationTime = (timestamp) => {
@@ -322,13 +318,13 @@ const Notifications = ({ user }) => {
               notification.notifyType === "bus_stop" ? (
                   <div key={notification.timestamp} className="notify-card">
                     <p><strong>{formatNotificationTime(notification.timestamp)}</strong></p>
-                    <p className="font-medium">Điểm dừng+ {notification.address}</p>
+                    <p className="font-medium">Điểm dừng: {notification.address}</p>
                     <p>{notification.message}</p>
                   </div>
                 ) : (
                   <div key={notification.timestamp} className="notify-card">
                     <p><strong>{formatNotificationTime(notification.timestamp)}</strong></p>
-                    <p>{notification.message}</p>
+                    <p className="text-purple-800"><strong>{notification.message}</strong></p>
                   </div>
                 ) 
             ))
@@ -361,13 +357,6 @@ const Notifications = ({ user }) => {
                 <div>
                   <span className="title">{item.student.student_name}</span>
                   <span className="class">{item.student.class}</span>
-                  {item.status ? (
-                    <span className={`status ${getStatusClass(item.status.status)}`}>
-                      {getStatusText(item.status.status)}
-                    </span>
-                  ) : (
-                    <span className="status blue">Chưa cập nhật</span>
-                  )}
                 </div>
               </div>
             ))}
@@ -375,7 +364,7 @@ const Notifications = ({ user }) => {
             {studentDetails.length === 0 && (
               <div className="notify-card purple-bg">
                 <div className="icon purple"><FaChild /></div>
-                <div>
+                <div className="student-info">
                   <span className="title">Không có học sinh</span>
                   <span className="class">--</span>
                 </div>

@@ -2,7 +2,7 @@
 
 import { get } from "http";
 import { NotificationModel } from "../models/notification.model.js";
-// import {notificationService} from '../services/notification.services.js';
+ import {notificationService} from '../services/notification.services.js';
 // // ========== NOTIFICATION CONTROLLERS ==========
 
 // const getNotificationsByUserId = async (req, res) => {

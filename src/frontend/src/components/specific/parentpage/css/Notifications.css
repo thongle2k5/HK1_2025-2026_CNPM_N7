@@ -80,6 +80,7 @@
   background: #f3e9f9 !important;
 }
 
+
 .class {
   font-size: 18px;
   font-weight: bold;
@@ -88,7 +89,7 @@
 
 /* Cột giữa */
 .bus-notify{
-  width: 32%;
+  width: 39%;
   float: left;
   background: white;
   padding: 20px;
@@ -106,7 +107,7 @@
 
 /* Cột phải */
 .student-bus-infor {
-  width: 32%;
+  width: 25%;
   float: left;
   display: block;
   background: white;
@@ -360,7 +361,7 @@
   
   /* Thanh cuộn tablet */
   .scrollable-notifications {
-    max-height: 300px;
+    max-height: 400px;
   }
   
   .scrollable-students {
@@ -447,7 +448,7 @@
   
   /* Thanh cuộn small tablet */
   .scrollable-notifications {
-    max-height: 250px;
+    max-height: 350px;
   }
   
   .scrollable-students {
