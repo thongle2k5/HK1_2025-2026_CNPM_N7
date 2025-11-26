@@ -21,7 +21,6 @@ export const sendMessage = async (req, res) => {
 
     await messageService.sendMessage({ sender_id, receiver_id, content });
     const io = req.app.get('socketio'); 
-
    
     if (io) {
     

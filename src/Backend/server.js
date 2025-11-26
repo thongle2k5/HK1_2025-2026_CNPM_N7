@@ -83,11 +83,9 @@ socket.on("join_room", (data) => { /*...*/ });
   socket.on("join_room", (userId) => {
     socket.join(String(userId)); // Join vào phòng có tên là UserID
     console.log(`User ${userId} đã vào phòng chat riêng`);
+     console.log("Phòng hiện tại của Socket này:", socket.rooms);
   });
- socket.on("send_location", (data) => {
-    console.log(`📍 Xe ${data.bus_license} đang ở: ${data.lat}, ${data.lng}`);
-    socket.broadcast.emit("receive_location", data);
-  });
+ 
   socket.on("disconnect", () => {
     console.log("Client disconnected:", socket.id);
   });

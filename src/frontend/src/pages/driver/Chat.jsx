@@ -18,14 +18,15 @@ export default function DriverChatWidget() {
 
   const driverId = getUserId();
   const ADMIN_ID = 29;
-
   // 1. Kết nối & Lắng nghe (Logic cũ + Cập nhật số chưa đọc)
   useEffect(() => {
     if (!driverId) return;
 
     socket.emit("join_room", driverId);
 
-    fetch(`http://localhost:5000/api/messages?user1=${ADMIN_ID}&user2=27`)
+    fetch(
+      `http://localhost:5000/api/messages?user1=${ADMIN_ID}&user2=${driverId}`
+    )
       .then((res) => res.json())
       .then((data) => setMessages(data))
       .catch((err) => console.error(err));

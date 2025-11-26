@@ -1,6 +1,15 @@
 import { getRoute } from '../services/route.service.js';
 
 export const routeConTroller = {
+    getRouteStops: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const stops = await getRoute.getRouteStops(id); 
+      res.json(stops);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  },
     getRoute: async (req, res) => {
         try {
             const getData = await getRoute.getRoute();

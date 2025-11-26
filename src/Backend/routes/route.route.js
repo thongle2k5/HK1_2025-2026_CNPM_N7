@@ -10,6 +10,6 @@ router.delete('/admin/:routeId', routeConTroller.deleteRouteByIdAdmin);
 router.post('/admin', routeConTroller.createRouteAdmin);
 router.post('/admin/stop', routeConTroller.createStopAdmin);
 router.put('/admin/:routeId', routeConTroller.updateRouteAdmin);
-
+router.get('/:id/stops', routeConTroller.getRouteStops);
 
 export default router;

@@ -1,29 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Clock, User, Bell, Circle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
-const getUserFromToken = () => {
-  const token = localStorage.getItem("authToken");
-  if (!token) return null;
-
-  try {
-    // Giải mã token để lấy payload (userId, role, name...)
-    const decoded = jwtDecode(token);
-    return decoded;
-  } catch (error) {
-    console.error("Token không hợp lệ:", error);
-    return null;
-  }
-};
+import { getUserFromToken } from "../../../utils/auth";
 export default function DriverHeader({ driverId }) {
-  const [driverName, setDriverName] = useState("Tài xế");
   const [currentDate, setCurrentDate] = useState("");
   const [notifications, setNotifications] = useState([]);
   const [openNotif, setOpenNotif] = useState(false);
   const [loadingNotif, setLoadingNotif] = useState(false);
   const token = localStorage.getItem("authToken");
   const navigate = useNavigate();
-
+  const driver = getUserFromToken();
   // Cập nhật ngày + tên tài xế
   useEffect(() => {
     const now = new Date();
@@ -34,16 +20,7 @@ export default function DriverHeader({ driverId }) {
       year: "numeric",
     });
     setCurrentDate(formatted);
-
-    if (driverId) {
-      fetch(`http://localhost:5000/api/drivers/${driverId}`)
-        .then((res) => res.json())
-        .then((data) => setDriverName(data.name || "Tài xế"))
-        .catch(() => setDriverName("Tài xế"));
-    } else {
-      setDriverName("Nguyễn Văn A");
-    }
-  }, [driverId]);
+  }, [driver.driverId]);
 
   // Lấy thông báo
   const user = getUserFromToken();
@@ -100,7 +77,7 @@ export default function DriverHeader({ driverId }) {
       <div className="flex items-center gap-6 text-sm text-gray-700">
         <div className="text-right">
           <p>
-            Tài xế: <strong>{driverName}</strong>
+            Tài xế: <strong>{driver.name}</strong>
           </p>
           <p className="flex items-center gap-1 text-gray-500">
             <Clock className="w-4 h-4 text-blue-500" />
