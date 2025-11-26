@@ -14,8 +14,15 @@ export const getUserFromToken = () => {
     return null;
   }
 };
-
-export const getUserId = () => {
+ const getDriverId = () => {
+  const userStr = getUserFromToken();
+  return userStr ? userStr.driverId : null;
+}
+ const getUserId = () => {
   const user = getUserFromToken();
   return user ? user.userId : null;
 };
+export {
+  getDriverId,
+  getUserId
+}
