@@ -7,7 +7,8 @@ export const ParentModel = {
                 p.parent_id,
                 u.name,
                 u.phone,
-                u.email
+                u.email,
+                u.user_id
             FROM parent p
             JOIN user u ON p.user_id = u.user_id
             WHERE p.is_deleted = 0

@@ -4,12 +4,16 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { FaBus, FaPlus, FaPen, FaTrash, FaSearch, FaSchool, FaChartPie, FaChartBar, FaUsers, FaCircle, FaRegEye, FaBell } from "react-icons/fa"; // Giả sử dùng React Icons
 import { IoIosSchool, IoIosWarning } from "react-icons/io";
+import { IoChatbox } from "react-icons/io5";
 import { PiStudentFill } from "react-icons/pi";
 import { FiRefreshCcw } from "react-icons/fi";
+
 import ModalCreateParent from "./ModalCreateParent";
 import ModalViewDetail from "./ModalViewDetail";
 import ModalUpdateParent from "./ModalUpdateParent";
 import ModalDelete from "./ModalDelete";
+import ChatBox from "./ChatBox";
+
 import { getParentsAdmin } from '../../../api/parentApi';
 import ReactPaginate from "react-paginate";
 
@@ -87,6 +91,11 @@ function ManageParent() {
     fetchListParentsWithPaginate(1, "");
   };
 
+  const [chatParent, setChatParent] = useState(null);
+
+  const handleOpenChat = (parent) => {
+    setChatParent(parent);
+  };
 
 
   return (
@@ -208,7 +217,7 @@ function ManageParent() {
                         <FaRegEye className="cursor-pointer text-[#007BFF] text-lg" onClick={() => handleView(+parent.parent_id)} />
                         {/* <FaPen className="cursor-pointer text-[#EAB308] text-lg" onClick={() => setIsOpenModalUpdate(true)} /> */}
                         <FaTrash className="cursor-pointer text-[#dc3545] text-lg" onClick={() => handleDelete(+parent.parent_id)} />
-                        {/* <FaBell className="cursor-pointer text-[#007BFF] text-lg" /> */}
+                        <IoChatbox className="cursor-pointer text-green-600 text-lg" onClick={() => handleOpenChat(parent)} />
                       </div>
                     </td>
                   </tr>
@@ -248,6 +257,9 @@ function ManageParent() {
       <ModalUpdateParent isOpen={isOpenModalUpdate} setIsOpen={setIsOpenModalUpdate} />
       <ModalDelete isOpen={isOpenModalDelete} setIsOpen={setIsOpenModalDelete} parentId={parentIdDelete} refresh={refreshParents} />
 
+      {chatParent && (
+        <ChatBox parent={chatParent} onClose={() => setChatParent(null)} />
+      )}
     </div>
   );
 }
