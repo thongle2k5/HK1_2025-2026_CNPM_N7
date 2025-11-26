@@ -20,9 +20,7 @@ const Header = ({ unreadCount = 0, onBellClick }) => {
         {/* Bell Icon */}
         <div
           className="relative cursor-pointer group"
-          onClick={() => {
-            navigate("/parent/notifications");
-          }}
+          onClick={() => { BellClicked(); }}
         >
           <Bell
             className="

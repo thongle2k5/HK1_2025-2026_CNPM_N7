@@ -273,7 +273,7 @@
 
 /* Container có thanh cuộn cho thông báo */
 .scrollable-notifications {
-  max-height: 550px;
+  max-height: 610px;
   overflow-y: auto;
   padding-right: 10px;
 }
