@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import "../../components/specific/parentpage/css/Notifications.css";
 import { FaBell, FaBus, FaMapMarkerAlt, FaChild, FaUser, FaCar, FaFile } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,9 @@ const Notifications = ({ user }) => {
   const [students, setStudents] = useState([]);
   const [studentDetails, setStudentDetails] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [studentStatus, setStudentStatus] = useState([]);
   const [busNotifications, setBusNotifications] = useState([]);
+  const [combinedNotifications, setCombinedNotifications] = useState([]);
   const [tripDetails, setTripDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   
@@ -109,7 +111,7 @@ const Notifications = ({ user }) => {
   useEffect(() => {
     if (studentDetails.length === 0) return;
 
-    const generateBusNotifications = () => {
+    const generateStudentStatus = () => {
       const busNotifs = [];
 
       studentDetails.forEach((item) => {
@@ -146,18 +148,75 @@ const Notifications = ({ user }) => {
         busNotifs.push({
           id: `${type}-${item.student.student_id}-${time}`,
           type: type,
-          time: time,
+          timestamp: time,
           message: message,
-          studentName: studentName
+          studentName: studentName,
+          notifyType: "student_status"
         });
       });
 
       return busNotifs.sort((a, b) => new Date(b.time) - new Date(a.time));
     };
 
-    const newBusNotifications = generateBusNotifications();
-    setBusNotifications(newBusNotifications);
+    const newStudenStatus = generateStudentStatus();
+    setStudentStatus(newStudenStatus);
   }, [studentDetails]);
+
+  //Thông báo đến về việc đến điểm dừng của xe
+  useEffect(() => {
+    if (!user || !user.user_id ) return;
+    
+    const getBusNotification = async () => {
+      try {
+          const res = await fetch(`${baseURL}/notifications/${user.user_id}/busNoti`);
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          const data = await res.json();
+          console.log(data);
+          setBusNotifications(data);
+        } catch (err) {
+          console.error('Error fetching bus notification:', err);
+        }
+    };
+
+    getBusNotification(); 
+  },[user]),
+
+  //Phân loại thông báo xe với điểm dừng
+  useEffect(() => {
+    if(busNotifications.length === 0) return;
+
+    const typedBusNoti = () =>{
+      busNotifications.forEach((notification) => {
+        let busMessage='';
+    
+        if(notification.type == "arrived"){
+          busMessage = `Xe buýt đã đến điểm dừng!`;
+        }
+
+        if(notification.type == "close to"){
+          busMessage = `Xe buýt sẽ đến điểm dừng trong vòng 5 phút nữa!`;
+        }
+
+        notification.message = busMessage;
+        notification.notifyType = "bus_stop";
+      });
+      return busNotifications;
+    }
+    
+    const newTypedBusNoti = typedBusNoti();
+    newTypedBusNoti.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+    setBusNotifications(newTypedBusNoti);
+    console.log(newTypedBusNoti);
+  }, [busNotifications]);
+
+  //Trộn 2 loại thông báo
+  useEffect(() => {
+    const totalNotifications = [...studentStatus, ...busNotifications];
+    totalNotifications.sort((a, b) => new Date( b.timestamp) - new Date(a.timestamp));
+    setCombinedNotifications(totalNotifications);
+  }, [studentStatus, busNotifications]);
 
   // Fallback: Nếu không có tripDetails từ API, tạo thông tin mặc định từ student details
   useEffect(() => {
@@ -257,12 +316,21 @@ const Notifications = ({ user }) => {
         </div>
 
         <div className="scrollable-notifications">
-          {busNotifications.length > 0 ? (
-            busNotifications.map((notification) => (
-              <div key={notification.id} className="notify-card">
-                <p><strong>{formatNotificationTime(notification.time)}</strong></p>
-                <p>{notification.message}</p>
-              </div>
+           
+          {combinedNotifications.length > 0 ? (
+            combinedNotifications.map((notification) => (
+              notification.notifyType === "bus_stop" ? (
+                  <div key={notification.timestamp} className="notify-card">
+                    <p><strong>{formatNotificationTime(notification.timestamp)}</strong></p>
+                    <p className="font-medium">Điểm dừng+ {notification.address}</p>
+                    <p>{notification.message}</p>
+                  </div>
+                ) : (
+                  <div key={notification.timestamp} className="notify-card">
+                    <p><strong>{formatNotificationTime(notification.timestamp)}</strong></p>
+                    <p>{notification.message}</p>
+                  </div>
+                ) 
             ))
           ) : (
             <div className="notify-card">
@@ -270,6 +338,7 @@ const Notifications = ({ user }) => {
               <p>Chưa có thông báo mới từ xe buýt</p>
             </div>
           )}
+
         </div>
       </div>
         
