@@ -21,14 +21,14 @@ function DetailInfo({ studentData ,onTrackBus}) {
                     <div className="font-semibold">Đã xuống xe vào lúc: </div>
                 ) : (<></>)
             }
-            <div>
+            {/* <div>
                 {studentData.pickup_status.time
                     ? (() => {
                         const d = new Date(studentData.pickup_status.time);
                         return `${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}`;
                     })()
                     : "N/A"}
-            </div>
+            </div> */}
             <div className="font-semibold">Trạm dừng:</div>
             <div>{studentData.stop.address}</div>
             <button className="bg-blue-600 text-white rounded-lg p-2 mt-4 self-center hover:bg-blue-700"

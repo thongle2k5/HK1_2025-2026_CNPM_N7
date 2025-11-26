@@ -11,10 +11,12 @@ export default function MapEvents({ selectedBus, setSelectedBus }) {
 
         map.on("dragstart", stopFollow);
         map.on("zoomstart", stopFollow);
+        map.on("click", stopFollow);
 
         return () => {
             map.off("dragstart", stopFollow);
             map.off("zoomstart", stopFollow);
+            map.off("click", stopFollow);
         };
     }, [map, selectedBus]);
 

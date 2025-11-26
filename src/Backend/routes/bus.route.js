@@ -5,7 +5,7 @@ const router = express.Router();
 router.get('/', busController.getAllBuses);
 router.get('/:busId/location', BusTrackingController.getCurrentLocationByBusId);
 router.post('/schedule/detail',busController.getBusDataByScheduleIds);
-//router.get('/:busId/location', BusTrackingController.getLocationByBusId);
+router.get('/:busId/location', BusTrackingController.getCurrentLocationByBusId);
 router.post('/location',BusTrackingController.addLocation);
 router.get('/',BusTrackingController.getAllBuses);
 router.put('/:id', BusTrackingController.updateBus);

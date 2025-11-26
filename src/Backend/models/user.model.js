@@ -1,14 +1,14 @@
 import db from '../db/Connect_dtb.js';
 
-export const UserModel ={
+export const UserModel = {
 
-    getUserById: async (id) =>{
-        const [row] = await db.query('select * from user where user_id = ?',[id]);
-        return row[0];
-    }, findUserByRole: async(role)=>{
+  getUserById: async (id) => {
+    const [row] = await db.query('select * from user where user_id = ?', [id]);
+    return row[0];
+  }, findUserByRole: async (role) => {
     const [rows] = await db.query("SELECT * FROM user WHERE role = ?", [role]);
     return rows;
-}
+  }
 
 }
 export const findUserIdsByRole = async (role) => {
@@ -20,3 +20,12 @@ export const findAllUserIds = async () => {
   const [rows] = await db.query("SELECT user_id FROM user");
   return rows.map(row => row.user_id);
 };
+
+export const getUserIdsToSendBusNoti = async (bus_id) => {
+  const [rows] = await db.query("select user_id " +
+    "from pickup_status join student_parent on pickup_status.student_id = student_parent.student_id " +
+    "join parent on student_parent.parent_id = parent.parent_id " +
+    "join schedule on pickup_status.schedule_id = schedule.schedule_id " +
+    "where bus_id = ? and schedule.status = 'in progress'",[bus_id])
+    return rows;
+}
