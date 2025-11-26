@@ -285,14 +285,14 @@ const getStartData = async (req, res) => {
 };
 
 const getBusNotiByUserId = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const notifications = await NotificationModel.getBusNotiByUserId(userId);
-    res.status(200).json(notifications);
-  } catch (error) {
-    console.error("Error getting bus notifications:", error);
-    res.status(500).json({ error: error.message });
-  }
+    try {
+        const { userId } = req.params;
+        const notifications = await NotificationModel.getBusNotiByUserId(userId);
+        res.status(200).json(notifications);
+    } catch (error) {
+        console.error("Error getting bus notifications:", error);
+        res.status(500).json({ error: error.message });
+    }
 };
 
 
