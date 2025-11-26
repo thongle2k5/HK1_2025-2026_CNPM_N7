@@ -56,18 +56,25 @@ router.post('/', async (req, res) => {
             role: user.role,
             name: user.name
         };
-
-        // Nên dùng process.env.JWT_SECRET thay vì hardcode string
+        if (user.role === 'driver') {
+    // Query bảng driver để tìm driver_id dựa trên user_id
+    const [driverRows] = await pool.query('SELECT driver_id FROM driver WHERE user_id = ?', [user.user_id]);
+    if (driverRows.length > 0) {
+        payload.driverId = driverRows[0].driver_id; // Thêm driverId vào payload
+    }
+}
+        // Nên dùng proc  ess.env.JWT_SECRET thay vì hardcode string
         const secretKey = process.env.JWT_SECRET || 'you_secret_key_safe_fallback';
 
         const token = jwt.sign(payload, secretKey, { expiresIn: '12h' });
-
+     
         // 7. Trả về kết quả
         return res.json({
             message: 'Đăng nhập thành công',
             token: token,
             user: payload
         });
+
 
     } catch (error) {
         console.error("!!! LỖI ĐĂNG NHẬP:", error);

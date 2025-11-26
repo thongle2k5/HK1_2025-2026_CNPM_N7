@@ -20,8 +20,8 @@ socket.on("connect", () => {
 const stops = await StopService.getStopsByRouteId(1);
 const path = await fetchRoutePath(stops);
 
-await runBusAlongPath(path, 30, 5, (lat, lng) => {
-    console.log("Sending pos");
+await runBusAlongPath(path, 300, 5, (lat, lng) => {
+    console.log("Sending pos: ", lat, lng);
     socket.emit("bus_location_update", {
         bus_id: 1,
         lat,

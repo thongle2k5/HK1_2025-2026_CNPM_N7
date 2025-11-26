@@ -23,4 +23,15 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
+try {
+  const connection = await pool.getConnection();
+  console.log(' Kết nối database thành công!');
+  console.log(' Database:', process.env.DB_NAME);
+  console.log(' Host:', process.env.DB_HOST);
+  console.log(' Port:', process.env.DB_PORT);
+  connection.release();
+} catch (error) {
+  console.error(' Lỗi kết nối database:', error.message);
+}
+
 export default pool;
