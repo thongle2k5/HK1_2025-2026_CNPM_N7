@@ -34,6 +34,7 @@ export default function App() {
     </>
   );
 }
+
 // import { Routes, Route } from "react-router-dom";
 // import { useState, useEffect } from "react"; // Thêm useEffect import
 // import Header from "./components/specific/parentpage/Header.jsx";
@@ -100,34 +101,6 @@ export default function App() {
 // }
 
 // export default ParentApp;
-
-// import { Routes, Route } from "react-router-dom";
-// import Header from "./components/specific/parentpage/Header.jsx";
-// import ChildTracking from "./pages/parent/ChildTracking.jsx";
-// import Notifications from "./pages/parent/Notifications.jsx";
-// import { SocketProvider } from "./components/specific/parentpage/ParentSocketProvider.jsx";
-
-// export default function App() {
-//   const user = { user_id: 1 };
-
-//   return (
-//     <div className="w-screen h-screen flex flex-col relative">
-//       <Header />   {/* tuỳ bạn đặt ở đâu */}
-//       <SocketProvider>
-//         <Routes>
-//           <Route path="/" element={<ChildTracking user={user} />} />
-//           <Route path="/parent" element={<ChildTracking user={user} />} />
-//           <Route path="/parent/notifications" element={<Notifications user={user} />} />
-//         </Routes>
-//       </SocketProvider>
-//     </div>
-//   );
-// }
-
-// import AppRoutes from "./routes/index.jsx";
-// export default function App() {
-//   return <AppRoutes />;
-// }
 
 // import AppRoutes from "./routes/index.jsx";
 // export default function App() {

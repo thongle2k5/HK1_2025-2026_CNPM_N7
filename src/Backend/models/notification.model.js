@@ -446,7 +446,7 @@ const getMessagesByUserId = async (userId) => {
              FROM messages m
              JOIN user sender ON m.sender_id = sender.user_id
              JOIN user receiver ON m.receiver_id = receiver.user_id
-             WHERE m.sender_id = ? OR m.receiver_id = ?
+             WHERE m.receiver_id = ?
              ORDER BY m.created_at DESC`,
             [userId, userId]
         );

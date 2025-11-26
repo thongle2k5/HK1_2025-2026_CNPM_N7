@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../../components/specific/parentpage/css/ChatBubble.css";
-import { FaComment, FaTimes, FaPaperPlane, FaBell } from "react-icons/fa";
+import { FaComment, FaTimes, FaBell } from "react-icons/fa";
 
 const ChatBubble = ({ user }) => {
   const baseURL = "http://localhost:5000/api";
@@ -19,7 +19,13 @@ const ChatBubble = ({ user }) => {
       const response = await fetch(`${baseURL}/notifications/messages/${user.user_id}`);
       if (response.ok) {
         const data = await response.json();
-        setMessages(data);
+        
+        // SẮP XẾP TIN NHẮN: CŨ -> MỚI (theo thời gian tăng dần)
+        const sortedMessages = data.sort((a, b) => 
+          new Date(a.created_at) - new Date(b.created_at)
+        );
+        
+        setMessages(sortedMessages);
         
         // Đếm tin nhắn chưa đọc
         const unread = data.filter(msg => !msg.is_read && msg.receiver_id === user.user_id).length;
@@ -41,22 +47,36 @@ const ChatBubble = ({ user }) => {
     return () => clearInterval(interval);
   }, [user]);
 
-  // Scroll xuống tin nhắn mới nhất
   useEffect(() => {
-    if (isOpen) {
-      scrollToBottom();
+    if (isOpen && messages.length > 0) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
     }
   }, [messages, isOpen]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ 
+        behavior: "smooth",
+        block: "end"
+      });
+    }
   };
 
   // Mở/đóng chat
   const toggleChat = () => {
-    setIsOpen(!isOpen);
-    if (!isOpen && unreadCount > 0) {
+    const newIsOpen = !isOpen;
+    setIsOpen(newIsOpen);
+    
+    if (newIsOpen && unreadCount > 0) {
       markMessagesAsRead();
+    }
+    
+    if (newIsOpen) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 200);
     }
   };
 
@@ -103,7 +123,7 @@ const ChatBubble = ({ user }) => {
       {/* Bong bóng chat */}
       <div className={`chat-bubble ${isOpen ? 'hidden' : ''}`} onClick={toggleChat}>
         <FaComment className="chat-icon" />
-        {unreadCount >=0 && (
+        {unreadCount > 0 && (
           <span className="unread-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
         )}
       </div>
@@ -129,7 +149,6 @@ const ChatBubble = ({ user }) => {
             ) : messages.length > 0 ? (
               <>
                 {messages.map((message, index) => {
-                  const isOwnMessage = message.sender_id === user.user_id;
                   const showDate = index === 0 || 
                     formatDate(messages[index-1].created_at) !== formatDate(message.created_at);
 
@@ -142,29 +161,26 @@ const ChatBubble = ({ user }) => {
                         </div>
                       )}
                       
-                      {/* Tin nhắn */}
-                      <div className={`message ${isOwnMessage ? 'own-message' : 'other-message'}`}>
+                      <div className="message notification-message">
                         <div className="message-content">
-                          {!isOwnMessage && (
-                            <div className="sender-name">
-                              {message.sender_name || `User ${message.sender_id}`}
-                            </div>
-                          )}
-                          <div className="message-text">{message.content}</div>
-                          <div className="message-time">
-                            {formatTime(message.created_at)}
-                            {isOwnMessage && (
-                              <span className="read-status">
-                                {message.is_read ? ' ✓✓' : ' ✓'}
-                              </span>
-                            )}
+                          <div className="sender-info">
+                            <span className="sender-name">
+                              {message.sender_name || `Người gửi ${message.sender_id}`}
+                            </span>
+                            <span className="message-time">
+                              {formatTime(message.created_at)}
+                            </span>
                           </div>
+                          <div className="message-text">{message.content}</div>
                         </div>
                       </div>
                     </div>
                   );
                 })}
-                <div ref={messagesEndRef} />
+                <div 
+                  ref={messagesEndRef} 
+                  style={{ height: '1px', width: '100%' }}
+                />
               </>
             ) : (
               <div className="no-messages">
