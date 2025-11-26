@@ -2,7 +2,7 @@
 
 import { get } from "http";
 import { NotificationModel } from "../models/notification.model.js";
-import {notificationService} from '../services/notification.services.js';
+import { notificationService } from '../services/notification.services.js';
 // // ========== NOTIFICATION CONTROLLERS ==========
 
 // const getNotificationsByUserId = async (req, res) => {
@@ -118,7 +118,7 @@ import {notificationService} from '../services/notification.services.js';
 //         };
 
 //         const userIds = req.body.userIds || [];
-        
+
 //         await notificationService.create(notificationData, userIds);
 //         res.status(201).json({ message: "Tạo thông báo thành công" });
 //     } catch (error) {
@@ -205,7 +205,7 @@ import {notificationService} from '../services/notification.services.js';
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-import { notificationService } from '../services/notification.services.js';
+// import { notificationService } from '../services/notification.services.js';
 
 // ========== NOTIFICATION CONTROLLERS ==========
 
@@ -258,8 +258,8 @@ const markAllAsRead = async (req, res) => {
     try {
         const { userId } = req.params;
         const result = await notificationService.markAllNotificationsAsRead(userId);
-        res.status(200).json({ 
-            message: `Marked ${result.affectedRows} notifications as read` 
+        res.status(200).json({
+            message: `Marked ${result.affectedRows} notifications as read`
         });
     } catch (error) {
         console.error("Error in markAllAsRead controller:", error);
@@ -288,17 +288,17 @@ const getStartData = async (req, res) => {
 };
 
 const getBusNotiByUserId = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const notifications = await NotificationModel.getBusNotiByUserId(userId);
-    res.json(notifications);
-  } catch (error) {
-    console.error("Error getting bus notifications:", error);
-    res.status(500).json({ error: error.message });
-  }
+    try {
+        const { userId } = req.params;
+        const notifications = await NotificationModel.getBusNotiByUserId(userId);
+        res.json(notifications);
+    } catch (error) {
+        console.error("Error getting bus notifications:", error);
+        res.status(500).json({ error: error.message });
+    }
 };
 
-  
+
 
 const deleteNotifi = async (req, res) => {
     const { id } = req.params;
@@ -384,17 +384,17 @@ const getUnreadMessageCount = async (req, res) => {
 // ========== EXPORT ==========
 // Chỉ export các hàm đã định nghĩa ở trên, KHÔNG viết lại logic ở đây để tránh lỗi
 export const NotificationController = {
-  getNotificationsByUserId,
-  getUnreadCount,
-  markAsRead,
-  markAllAsRead,
-  getAllNotifi,
-  getStartData,
-  deleteNotifi,
-  editNotifi,
-  create,
-  getBusNotiByUserId,
-  getMessagesByUserId,
-  markMessageAsRead,
-  getUnreadMessageCount
+    getNotificationsByUserId,
+    getUnreadCount,
+    markAsRead,
+    markAllAsRead,
+    getAllNotifi,
+    getStartData,
+    deleteNotifi,
+    editNotifi,
+    create,
+    getBusNotiByUserId,
+    getMessagesByUserId,
+    markMessageAsRead,
+    getUnreadMessageCount
 };

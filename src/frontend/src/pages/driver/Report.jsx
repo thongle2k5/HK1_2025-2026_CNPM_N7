@@ -121,11 +121,10 @@ export default function Report() {
                     key={item}
                     type="button"
                     onClick={() => setType(item)}
-                    className={`p-2 border rounded-md transition ${
-                      type === item
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-50 hover:bg-blue-100"
-                    }`}
+                    className={`p-2 border rounded-md transition ${type === item
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-50 hover:bg-blue-100"
+                      }`}
                   >
                     {item}
                   </button>
@@ -144,13 +143,12 @@ export default function Report() {
                     key={lvl}
                     type="button"
                     onClick={() => setPriority(lvl)}
-                    className={`px-4 py-2 border rounded-full ${
-                      priority === lvl
-                        ? lvl === "Cao"
-                          ? "bg-red-500 text-white"
-                          : "bg-blue-600 text-white"
-                        : "bg-white hover:bg-gray-100"
-                    }`}
+                    className={`px-4 py-2 border rounded-full ${priority === lvl
+                      ? lvl === "Cao"
+                        ? "bg-red-500 text-white"
+                        : "bg-blue-600 text-white"
+                      : "bg-white hover:bg-gray-100"
+                      }`}
                   >
                     {lvl}
                   </button>
@@ -212,3 +210,4 @@ export default function Report() {
     </div>
   );
 }
+

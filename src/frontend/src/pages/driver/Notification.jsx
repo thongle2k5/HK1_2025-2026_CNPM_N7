@@ -3,6 +3,8 @@ import { io } from "socket.io-client";
 
 export default function Notifications({ driverId }) {
     const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+
 
     useEffect(() => {
         const socket = io("http://localhost:5000");
@@ -33,3 +35,7 @@ export default function Notifications({ driverId }) {
         </div>
     );
 }
+
+
+
+

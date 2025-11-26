@@ -20,7 +20,7 @@
 //       year: "numeric",
 //     });
 //     setCurrentDate(formatted);
-// <<<<<<< HEAD
+
 
 //     const storedUser = localStorage.getItem("user");
 //     if (storedUser) {
@@ -32,9 +32,9 @@
 //     }
 //     setDriverName("");
 //   }, []);
-// =======
-//   }, [driver.driverId]);
-// >>>>>>> 1e2d482b548ab68447f4b5602206faede8e81a9b
+
+//   // }, [driver.driverId]);
+
 
 //   // Lấy thông báo
 //   const user = getUserFromToken();
@@ -91,11 +91,11 @@
 //       <div className="flex items-center gap-6 text-sm text-gray-700">
 //         <div className="text-right">
 //           <p>
-// <<<<<<< HEAD
-//             <strong>{driverName}</strong>
-// =======
+
+//             {/* <strong>{driverName}</strong> */}
+
 //             Tài xế: <strong>{driver.name}</strong>
-// >>>>>>> 1e2d482b548ab68447f4b5602206faede8e81a9b
+
 //           </p>
 //           <p className="flex items-center gap-1 text-gray-500">
 //             <Clock className="w-4 h-4 text-blue-500" />
@@ -194,7 +194,6 @@
 //     </header>
 //   );
 // }
-
 
 
 
