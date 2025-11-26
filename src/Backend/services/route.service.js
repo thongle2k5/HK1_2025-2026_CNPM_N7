@@ -2,7 +2,10 @@ import { getAllRoute } from '../models/route.model.js';
 import db from '../db/Connect_dtb.js';
 
 export const getRoute = {
-
+getRouteStops: async (id) => {
+        const stops = await getAllRoute.getRouteStops(id);
+        return stops;
+    },
     getRoute: async () => {
         const stops = await getAllRoute.getRoute();
         return stops;
