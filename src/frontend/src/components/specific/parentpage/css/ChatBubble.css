@@ -1,0 +1,269 @@
+/* Bong bóng chat */
+.chat-bubble {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  transition: all 0.3s ease;
+  animation: pulse 2s infinite;
+}
+
+.chat-bubble:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+}
+
+.chat-bubble.hidden {
+  display: none;
+}
+
+.chat-icon {
+  color: white;
+  font-size: 24px;
+}
+
+/* Badge tin nhắn chưa đọc */
+.unread-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff4757;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: bounce 1s infinite;
+}
+
+/* Khung chat */
+.chat-window {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 400px;
+  height: 550px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header chat */
+.chat-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-header-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.header-icon {
+  font-size: 18px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Container tin nhắn */
+.messages-container {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background: #f8f9fa;
+}
+
+.messages-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+/* Loading và no messages */
+.loading-messages,
+.no-messages {
+  text-align: center;
+  color: #6c757d;
+  padding: 40px 20px;
+}
+
+.no-messages-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+  color: #dee2e6;
+}
+
+/* Phân cách ngày */
+.date-divider {
+  text-align: center;
+  margin: 15px 0;
+}
+
+.date-divider span {
+  background: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #6c757d;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Tin nhắn thông báo */
+.message {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.message-content {
+  background: white;
+  color: #333;
+  border-radius: 12px;
+  padding: 12px 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 90%;
+  border-left: 4px solid #667eea;
+}
+
+/* Thông tin người gửi và thời gian */
+.sender-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  padding-bottom:6px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.sender-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.message-time {
+  font-size: 14px;
+  color: #888;
+  margin-left: 10px;
+}
+
+/* Nội dung tin nhắn */
+.message-text {
+  word-wrap: break-word;
+  line-height: 1.4;
+  color: #333;
+  font-size: 16px;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(102, 126, 234, 0.6);
+  }
+  100% {
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .chat-window {
+    width: 330px;
+    height: 480px;
+    bottom: 0;
+    right: 0;
+    border-radius: 10px;
+  }
+  
+  .chat-bubble {
+    bottom: 15px;
+    right: 15px;
+    width: 55px;
+    height: 55px;
+  }
+  
+  .chat-icon {
+    font-size: 22px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .chat-window {
+    width: 300px;
+    height: 450px;
+  }
+  
+  .chat-bubble {
+    bottom: 10px;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+  }
+  
+  .chat-icon {
+    font-size: 20px;
+  }
+  
+  .unread-badge {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+  }
+}
