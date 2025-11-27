@@ -262,22 +262,24 @@ const getByUserId = async (userId) => {
 
 const getBusNotiByUserId = async (userId) => {
   const query = `
-SELECT bus_notification.* FROM parent
-join student_parent on parent.parent_id = student_parent.parent_id 
-join (
-    SELECT ps.*,
-           ROW_NUMBER() OVER (
-               PARTITION BY ps.schedule_id 
-               ORDER BY ps.time DESC
-           ) AS rn
-    FROM pickup_status ps
-    JOIN student_parent sp ON ps.student_id = sp.student_id
-    JOIN parent p ON sp.parent_id = p.parent_id
-) ups on ups.student_id = student_parent.student_id and ups.rn=1
-right join bus_notification on ups.schedule_id = bus_notification.schedule_id
-where parent.user_id = ?
-order by timestamp desc ,type desc
-limit 30 `
+    SELECT bus_notification.*, stop.address FROM parent
+    join student_parent on parent.parent_id = student_parent.parent_id 
+    join (
+        SELECT ps.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY ps.schedule_id 
+                ORDER BY ps.time DESC
+            ) AS rn
+        FROM pickup_status ps
+        JOIN student_parent sp ON ps.student_id = sp.student_id
+        JOIN parent p ON sp.parent_id = p.parent_id
+    ) ups on ups.student_id = student_parent.student_id and ups.rn=1
+    right join bus_notification on ups.schedule_id = bus_notification.schedule_id
+    join stop on bus_notification.stop_id = stop.stop_id
+    where parent.user_id = ? and DATE(bus_notification.timestamp) = CURRENT_DATE()
+    group by bus_notification.stop_id, bus_notification.type
+    order by timestamp desc ,type desc
+    limit 30 `
   const [data] = await pool.query(query, [userId]);
   return data;
 }

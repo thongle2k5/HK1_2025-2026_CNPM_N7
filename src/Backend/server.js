@@ -33,6 +33,7 @@ import locationRouter from './routes/location.route.js';
 import MessageRoutter from './routes/message.route.js';
 import schedule from "./routes/driver.schedule.route.js";
 import scheduleDetail from "./routes/driver.scheduleDetail.route.js";
+import profileDriverRouter from './routes/profileDriver.route.js';
 
 
 
@@ -74,18 +75,18 @@ export const io = new Server(server, {
 
 io.on("connection", async (socket) => {
   console.log("Client connected:", socket.id);
-socket.on("join_room", (data) => { /*...*/ });
+  socket.on("join_room", (data) => { /*...*/ });
   socket.on("send_message", (data) => { /*...*/ });
 
   parentSocket(io, socket);
   driverSocket(io, socket);
-  
+
   socket.on("join_room", (userId) => {
     socket.join(String(userId)); // Join vào phòng có tên là UserID
     console.log(`User ${userId} đã vào phòng chat riêng`);
-     console.log("Phòng hiện tại của Socket này:", socket.rooms);
+    console.log("Phòng hiện tại của Socket này:", socket.rooms);
   });
- 
+
   socket.on("disconnect", () => {
     console.log("Client disconnected:", socket.id);
   });
@@ -99,6 +100,7 @@ app.use('/api/locations', locationRouter);
 
 app.use('/api/driverschedule', schedule);
 app.use('/api/scheduleDetail', scheduleDetail);
+app.use('/api/profileDriver', profileDriverRouter);
 
 
 

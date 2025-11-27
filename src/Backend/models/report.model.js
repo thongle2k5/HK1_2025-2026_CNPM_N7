@@ -20,14 +20,23 @@ const findAll = async () => {
 };
 const findByDriverId = async (driverId) => {
   const sql = `
-    SELECT * FROM incident_reports 
-    WHERE driver_id = ? 
-    ORDER BY created_at DESC 
+    SELECT 
+      report_id,
+      title AS type,
+      priority,
+      description,
+      address,
+      status,
+      created_at
+    FROM incident_reports
+    WHERE driver_id = ?
+    ORDER BY created_at DESC
     LIMIT 10
   `;
   const [rows] = await pool.query(sql, [driverId]);
   return rows;
 };
+
 // 2. Đếm số lượng pending
 const countPending = async () => {
   const [rows] = await pool.query(
@@ -46,25 +55,25 @@ const updateStatus = async (id, status) => {
 };
 const create = async (data) => {
   const { driver_id, type, priority, description, location } = data;
-  
+
   const sql = `
     INSERT INTO incident_reports 
     (driver_id, title, priority, description, address, status) 
     VALUES (?, ?, ?, ?, ?, 'pending')
   `;
-  
+
   const [result] = await pool.query(sql, [
-    driver_id, 
+    driver_id,
     type,       // title bên DB
-    priority, 
-    description, 
+    priority,
+    description,
     location    // address bên DB
   ]);
 
   // Trả về ID vừa tạo và data để frontend hiển thị ngay
-  return { 
+  return {
     notif_id: result.insertId, // Frontend bạn đang dùng key 'notif_id' để hiển thị
-    ...data 
+    ...data
   };
 };
 

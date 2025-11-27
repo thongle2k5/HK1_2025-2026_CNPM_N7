@@ -1,24 +1,69 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { User, Phone, Mail, Shield, Camera } from "lucide-react";
 
 export default function Profile() {
-    // Dữ liệu tạm thời mock
-    const [user] = useState({
-        name: "Nguyễn Văn A",
-        username: "nguyenvana",
-        phone: "0987654321",
-        email: "nguyenvana@example.com",
-        role: "driver",
+    const [user, setUser] = useState({
+        name: "",
+        username: "",
+        phone: "",
+        email: "",
+        role: "",
         avatarUrl: "",
-        licenseNumber: "123456789",
-
+        licenseNumber: "",
     });
+
+    // useEffect(() => {
+    //     // Lấy thông tin người dùng từ localStorage
+    //     const storedUser = localStorage.getItem("user");
+    //     if (storedUser) {
+    //         const parsedUser = JSON.parse(storedUser);
+    //         setUser({
+    //             name: parsedUser.name || "",
+    //             username: parsedUser.username || "",
+    //             phone: parsedUser.phone || "",
+    //             email: parsedUser.email || "",
+    //             role: parsedUser.role || "",
+    //             avatarUrl: parsedUser.avatarUrl || "",
+    //             licenseNumber: parsedUser.licenseNumber || "",
+    //         });
+    //     }
+    // }, []);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                // Lấy userId từ localStorage token hoặc userId bạn lưu khi login
+                const storedUser = localStorage.getItem("user");
+                const userId = storedUser ? JSON.parse(storedUser).userId : null;
+                if (!userId) return;
+
+                const res = await fetch(`http://localhost:5000/api/profileDriver?userId=${userId}`);
+                if (!res.ok) throw new Error("Không lấy được dữ liệu tài xế");
+
+                const data = await res.json();
+                setUser({
+                    name: data.name || "",
+                    username: data.username || "",
+                    phone: data.phone || "",
+                    email: data.email || "",
+                    role: data.role || "",
+                    avatarUrl: data.avatarUrl || "", // nếu BE có avatar
+                    licenseNumber: data.license_number || "",
+                });
+            } catch (err) {
+                console.error("Lỗi lấy profile tài xế:", err);
+            }
+        };
+
+        fetchProfile();
+    }, []);
+
 
     return (
         <div className="max-w-3xl mx-auto p-8 bg-white rounded-2xl shadow-md border border-gray-100">
             {/* Header */}
             <h2 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-                <User size={24} className="text-blue-600" /> Thông tin tài xế
+                <User size={24} className="text-blue-600" /> Thông tin {user.role === "driver" ? "tài xế" : user.role}
             </h2>
 
             {/* Avatar */}
@@ -87,12 +132,12 @@ export default function Profile() {
                 </div>
 
                 {/* Role */}
-                <div className="space-y-2 ">
+                <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Vai trò</label>
                     <div className="relative">
                         <Shield size={18} className="absolute left-3 top-3 text-gray-400" />
                         <input
-                            value="Tài xế"
+                            value={user.role ? (user.role === "driver" ? "Tài xế" : user.role) : ""}
                             disabled
                             className="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-500 cursor-not-allowed"
                         />
@@ -100,16 +145,16 @@ export default function Profile() {
                 </div>
 
                 {/* License */}
-                <div className="space-y-2 md:col-span-2">
-                    <label className="text-sm font-medium text-gray-700">Số GPLX</label>
-                    <input
-                        value={user.licenseNumber}
-                        disabled
-                        className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-500 cursor-not-allowed"
-                    />
-                </div>
-
-
+                {user.role === "driver" && (
+                    <div className="space-y-2 md:col-span-2">
+                        <label className="text-sm font-medium text-gray-700">Số GPLX</label>
+                        <input
+                            value={user.licenseNumber || ""}
+                            disabled
+                            className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-500 cursor-not-allowed"
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

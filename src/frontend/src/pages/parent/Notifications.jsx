@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import "../../components/specific/parentpage/css/Notifications.css";
 import { FaBell, FaBus, FaMapMarkerAlt, FaChild, FaUser, FaCar, FaFile } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,9 @@ const Notifications = ({ user }) => {
   const [students, setStudents] = useState([]);
   const [studentDetails, setStudentDetails] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [studentStatus, setStudentStatus] = useState([]);
   const [busNotifications, setBusNotifications] = useState([]);
+  const [combinedNotifications, setCombinedNotifications] = useState([]);
   const [tripDetails, setTripDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const newNotis = React.useContext(ParentContext).notifications;
@@ -109,34 +111,40 @@ const Notifications = ({ user }) => {
   useEffect(() => {
     if (!studentDetails || studentDetails.length === 0) return;
 
-    const generateBusNotifications = () => {
+    const generateStudentStatus = () => {
       const busNotifs = [];
 
+      const getLocalDate = (d) => {
+        const dt = new Date(d);
+        return dt.getFullYear() + '-' + (dt.getMonth()+1).toString().padStart(2,'0') + '-' + dt.getDate().toString().padStart(2,'0');
+      };      
+        
       studentDetails.forEach((item) => {
         if (!item.status) return;
 
         const studentName = item.student.student_name;
         const status = item.status.status;
         const time = item.status.time;
+        if (getLocalDate(time) !== getLocalDate(new Date())) return;
 
         let message = '';
         let type = '';
 
         switch (status) {
           case 'boarded':
-            message = `H.S "${studentName}" đã lên xe`;
+            message = `H.S ${studentName} đã lên xe`;
             type = 'boarded';
             break;
           case 'picked_up':
-            message = `H.S "${studentName}" đã xuống xe`;
+            message = `H.S ${studentName} đã xuống xe`;
             type = 'picked_up';
             break;
           case 'on_the_way':
-            message = `H.S "${studentName}" đang trên đường`;
+            message = `H.S ${studentName} đang trên đường`;
             type = 'on_the_way';
             break;
           case 'completed':
-            message = `H.S "${studentName}" đã đến trường`;
+            message = `H.S ${studentName} đã đến trường`;
             type = 'completed';
             break;
           default:
@@ -146,19 +154,78 @@ const Notifications = ({ user }) => {
         busNotifs.push({
           id: `${type}-${item.student.student_id}-${time}`,
           type: type,
-          time: time,
+          timestamp: time,
           message: message,
-          studentName: studentName
+          studentName: studentName,
+          notifyType: "student_status"
         });
       });
 
-      return busNotifs.sort((a, b) => new Date(b.time) - new Date(a.time));
+      return busNotifs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     };
 
-    const newBusNotifications = generateBusNotifications();
-    setBusNotifications(newBusNotifications);
 
+    const newStudenStatus = generateStudentStatus();
+    setStudentStatus(newStudenStatus);
   }, [studentDetails]);
+
+  //Thông báo đến về việc đến điểm dừng của xe
+  useEffect(() => {
+    if (!user || !user.user_id ) return;
+    
+    const getBusNotification = async () => {
+      try {
+          const res = await fetch(`${baseURL}/notifications/${user.user_id}/busNoti`);
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          const data = await res.json();
+          console.log(data);
+          setBusNotifications(data);
+        } catch (err) {
+          console.error('Error fetching bus notification:', err);
+        }
+    };
+
+    getBusNotification(); 
+  },[user]),
+
+  //Phân loại thông báo xe với điểm dừng
+  useEffect(() => {
+    if(busNotifications.length === 0) return;
+
+    const typedBusNoti = () =>{
+      busNotifications.forEach((notification) => {
+        let busMessage='';
+    
+        if(notification.type == "arrived"){
+          busMessage = `Xe buýt đã đến điểm dừng!`;
+        }
+
+        if(notification.type == "close to"){
+          busMessage = `Xe buýt sẽ đến điểm dừng trong vòng 5 phút nữa!`;
+        }
+
+        notification.message = busMessage;
+        notification.notifyType = "bus_stop";
+      });
+      return busNotifications;
+    }
+    
+    const newTypedBusNoti = typedBusNoti();
+    newTypedBusNoti.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+    setBusNotifications(newTypedBusNoti);
+    console.log(newTypedBusNoti);
+  }, [busNotifications]);
+
+  //Trộn 2 loại thông báo
+  useEffect(() => {
+    const totalNotifications = [...studentStatus, ...busNotifications];
+    console.log("Student Status Notifications:", studentStatus);
+    totalNotifications.sort((a, b) => new Date( b.timestamp) - new Date(a.timestamp));
+    setCombinedNotifications(totalNotifications);
+    console.log("Combined Notifications:", totalNotifications);
+  }, [studentStatus, busNotifications]);
 
   // Fallback: Nếu không có tripDetails từ API, tạo thông tin mặc định từ student details
   useEffect(() => {
@@ -186,18 +253,6 @@ const Notifications = ({ user }) => {
       'completed': 'Hoàn thành'
     };
     return statusMap[status] || status;
-  };
-
-  const getStatusClass = (status) => {
-    const classMap = {
-      'boarded': 'blue',
-      'waiting': 'yellow',
-      'picked_up': 'green',
-      'absent': 'red',
-      'on_the_way': 'blue',
-      'completed': 'green'
-    };
-    return classMap[status] || 'blue';
   };
 
   const formatNotificationTime = (timestamp) => {
@@ -258,12 +313,21 @@ const Notifications = ({ user }) => {
         </div>
 
         <div className="scrollable-notifications">
-          {busNotifications.length > 0 ? (
-            busNotifications.map((notification) => (
-              <div key={notification.id} className="notify-card">
-                <p><strong>{formatNotificationTime(notification.time)}</strong></p>
-                <p>{notification.message}</p>
-              </div>
+           
+          {combinedNotifications.length > 0 ? (
+            combinedNotifications.map((notification) => (
+              notification.notifyType === "bus_stop" ? (
+                  <div key={notification.timestamp} className="notify-card">
+                    <p><strong>{formatNotificationTime(notification.timestamp)}</strong></p>
+                    <p className="font-medium">Điểm dừng: {notification.address}</p>
+                    <p>{notification.message}</p>
+                  </div>
+                ) : (
+                  <div key={notification.timestamp} className="notify-card">
+                    <p><strong>{formatNotificationTime(notification.timestamp)}</strong></p>
+                    <p className="text-purple-800"><strong>{notification.message}</strong></p>
+                  </div>
+                ) 
             ))
           ) : (
             <div className="notify-card">
@@ -271,6 +335,7 @@ const Notifications = ({ user }) => {
               <p>Chưa có thông báo mới từ xe buýt</p>
             </div>
           )}
+
         </div>
       </div>
 
@@ -293,13 +358,6 @@ const Notifications = ({ user }) => {
                 <div>
                   <span className="title">{item.student.student_name}</span>
                   <span className="class">{item.student.class}</span>
-                  {item.status ? (
-                    <span className={`status ${getStatusClass(item.status.status)}`}>
-                      {getStatusText(item.status.status)}
-                    </span>
-                  ) : (
-                    <span className="status blue">Chưa cập nhật</span>
-                  )}
                 </div>
               </div>
             ))}
@@ -307,7 +365,7 @@ const Notifications = ({ user }) => {
             {studentDetails.length === 0 && (
               <div className="notify-card purple-bg">
                 <div className="icon purple"><FaChild /></div>
-                <div>
+                <div className="student-info">
                   <span className="title">Không có học sinh</span>
                   <span className="class">--</span>
                 </div>
