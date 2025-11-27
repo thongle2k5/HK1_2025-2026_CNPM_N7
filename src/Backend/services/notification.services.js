@@ -56,7 +56,8 @@ const getUnreadMessageCount = async (userId) => {
   return await notificationModel.getUnreadMessageCount(userId);
 };
 const createBusNoti= async (bus_id, stop_id, schedule_id, type) => {
-  return await notificationModel.createBusNoti(bus_id, stop_id, schedule_id, type);
+  const createRes =  await notificationModel.createBusNoti(bus_id, stop_id, schedule_id, type);
+  return await notificationModel.getBusNotiByIds(bus_id, stop_id, schedule_id, type);
 };
 const getBusNotiByIds= async (bus_id, stop_id, schedule_id, type) => {
   return await notificationModel.getBusNotiByIds(bus_id, stop_id, schedule_id, type);

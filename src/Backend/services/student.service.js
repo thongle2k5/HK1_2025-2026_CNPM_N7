@@ -51,7 +51,6 @@ export const StudentService = {
     },
     getStudentDetailInfoByStudentId: async (studentId) => {
         const studentDetailInfo = await StudentModel.getStudentDetailInfoByStudentId(studentId);
-        console.log("student detail info: ", studentDetailInfo);
         return studentDetailInfo;
 
 

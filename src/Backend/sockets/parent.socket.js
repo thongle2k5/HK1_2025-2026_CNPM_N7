@@ -33,7 +33,11 @@ export default function parentSocket(io, socket) {
     });
 
     socket.on("parent:join_bus_notification", ({ bus_id }) => {
+        if (socket.rooms.has(`bus_${bus_id}_notification`))
+            return;
         socket.join(`bus_${bus_id}_notification`);
+        console.log(`Parent joined bus_${bus_id}_notification`);
+
     });
 
     // Hàm xử lý dữ liệu khi driver gửi vị trí đến server 
@@ -69,6 +73,7 @@ export default function parentSocket(io, socket) {
                 if (arrivedBusNoti === undefined) {
                     console.log("No arrived bus noti found, creating one.");
                     const createArrivedBusNotiRes = await notificationService.createBusNoti(bus_id, nextStop.stop_id, path.schedule_id, "arrived");
+                    io.to(`bus_${bus_id}_notification`).emit("parent:bus_notification", createArrivedBusNotiRes);
                 }
                 const idx = path.stops.indexOf(nextStop);
                 const s = path.stops[idx + 1];
@@ -105,6 +110,7 @@ export default function parentSocket(io, socket) {
                 if (closeToBusNoti === undefined) {
                     console.log("No close to bus noti found, creating one.");
                     const createCloseToBusNotiRes = await notificationService.createBusNoti(bus_id, nextStop.stop_id, path.schedule_id, "close to");
+                    io.to(`bus_${bus_id}_notification`).emit("parent:bus_notification", createCloseToBusNotiRes);
                     path.nearNextStop = true;
                 }
             }
