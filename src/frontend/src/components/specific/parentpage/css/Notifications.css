@@ -146,6 +146,11 @@
   text-decoration: none;
 }
 
+.notifyTime{
+    font-size: 16px;
+    margin-bottom: 3px;
+}
+
 .close-btn {
   position: absolute;
   top: 20px;

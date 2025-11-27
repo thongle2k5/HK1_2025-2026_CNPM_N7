@@ -287,7 +287,7 @@ const Notifications = ({ user }) => {
           {notifications.length > 0 ? (
             notifications.map((notification) => (
               <div key={notification.notif_id} className="notify-card">
-                <p><strong>{formatNotificationTime(notification.created_at)}</strong></p>
+                <p className="notifyTime"><strong>{formatNotificationTime(notification.created_at)}</strong></p>
                 <p>{notification.message}</p>
                 {notification.title && (
                   <p style={{ fontWeight: 'bold', color: '#eb4040ff' }}>{notification.title}</p>
@@ -315,13 +315,13 @@ const Notifications = ({ user }) => {
             combinedNotifications.map((notification) => (
               notification.notifyType === "bus_stop" ? (
                   <div key={`${notification.timestamp}-${notification.notifyType}`} className="notify-card">
-                    <p><strong>{formatNotificationTime(notification.timestamp)}</strong></p>
+                    <p className="notifyTime"><strong>{formatNotificationTime(notification.timestamp)}</strong></p>
                     <p className="font-medium">Điểm dừng: {notification.address}</p>
                     <p>{notification.message}</p>
                   </div>
                 ) : (
                   <div key={`${notification.timestamp}-${notification.notifyType}`} className="notify-card">
-                    <p><strong>{formatNotificationTime(notification.timestamp)}</strong></p>
+                    <p className="notifyTime"><strong>{formatNotificationTime(notification.timestamp)}</strong></p>
                     <p className="text-purple-800"><strong>{notification.message}</strong></p>
                   </div>
                 ) 
