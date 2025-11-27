@@ -13,7 +13,7 @@ function ParentApp() {
     const [busIds, setBusIds] = useState([]);
     return (
         <div className="w-screen h-screen flex flex-col relative">
-            <ParentSocketProvider busIds={busIds}>
+            <ParentSocketProvider busIds={busIds} user= {user}>
                 <Header />
                 <Routes>
                     <Route path="/" element={<ChildTracking user={user} setBusIds={setBusIds} />} />

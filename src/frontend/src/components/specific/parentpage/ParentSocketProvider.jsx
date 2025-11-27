@@ -5,14 +5,15 @@ export const ParentContext = createContext();
 
 export function ParentSocketProvider({ user, children, busIds }) {
   const [socket, setSocket] = useState(null);
-  const [notifications, setNotifications] = useState([]);
+  const [hasNewBusNoti,setHasNewBusNoti] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const baseURL = "http://localhost:5000/api";
 
   useEffect(() => {
     const s = io("http://localhost:5000");
     setSocket(s);
     s.on("parent:bus_notification", (notification) => {
-      setNotifications((prevNotifications) => [notification, ...prevNotifications]);
+      setHasNewBusNoti(true);
       setUnreadCount((prevCount) => prevCount + 1);
       console.log("Received bus notification: ", notification);
     });
@@ -61,7 +62,7 @@ export function ParentSocketProvider({ user, children, busIds }) {
   };
 
   return (
-    <ParentContext.Provider value={{ socket, notifications, unreadCount,setUnreadCount }}>
+    <ParentContext.Provider value={{ socket,hasNewBusNoti,setHasNewBusNoti, unreadCount, markAllAsRead }}>
       {children}
     </ParentContext.Provider>
   );

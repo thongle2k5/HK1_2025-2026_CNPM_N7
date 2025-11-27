@@ -276,8 +276,7 @@ const getBusNotiByUserId = async (userId) => {
     ) ups on ups.student_id = student_parent.student_id and ups.rn=1
     right join bus_notification on ups.schedule_id = bus_notification.schedule_id
     join stop on bus_notification.stop_id = stop.stop_id
-    where parent.user_id = ? and DATE(bus_notification.timestamp) = CURRENT_DATE()
-    group by bus_notification.stop_id, bus_notification.type
+    where parent.user_id = ?
     order by timestamp desc ,type desc
     limit 30 `
   const [data] = await pool.query(query, [userId]);

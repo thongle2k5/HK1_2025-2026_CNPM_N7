@@ -5,13 +5,11 @@ import {ParentContext} from "./ParentSocketProvider.jsx";
 
 const Header = () => {
   const navigate = useNavigate();
-  const {unreadCount,setUnreadcount} = React.useContext(ParentContext);
+  const {unreadCount,markAllAsRead} = React.useContext(ParentContext);
 
   const BellClicked = async () => {
-    if (setUnreadcount) {
-      setUnreadcount(0)
+      await markAllAsRead();
       navigate("/parent/notifications");
-    }
   };
 
   return (
