@@ -50,6 +50,7 @@ const Notifications = ({ user }) => {
         }
 
         const data = await response.json();
+        data.slice(0, 20); //  chỉ lấy 20 thông báo mới nhất
         setNotifications(data);
       } catch (error) {
         console.log("Error fetching notifications:", error);
@@ -181,6 +182,7 @@ const Notifications = ({ user }) => {
       console.error('Error fetching bus notification:', err);
     }
   };
+
   //Thông báo đến về việc đến điểm dừng của xe
   useEffect(() => {
     if (!user || !user.user_id) return;
@@ -226,6 +228,7 @@ const Notifications = ({ user }) => {
     // console.log("Student Status Notifications:", studentStatus);
     // console.log("Bus Notifications:", busNotifications);
     totalNotifications.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    totalNotifications.slice(0, 20); // Giới hạn chỉ lấy 20 thông báo mới nhất
     setCombinedNotifications(totalNotifications);
     // console.log("Combined Notifications:", totalNotifications);
   }, [studentStatus, busNotifications]);
@@ -246,27 +249,18 @@ const Notifications = ({ user }) => {
     }
   }, [studentDetails, tripDetails]);
 
-  const getStatusText = (status) => {
-    const statusMap = {
-      'boarded': 'Đã lên xe',
-      'waiting': 'Chưa lên xe',
-      'picked_up': 'Đã xuống xe',
-      'absent': 'Vắng mặt',
-      'on_the_way': 'Đang trên đường',
-      'completed': 'Hoàn thành'
-    };
-    return statusMap[status] || status;
-  };
 
-  const formatNotificationTime = (timestamp) => {
-    if (!timestamp) return '--:--';
+  function formatNotificationTime(ts) {
+    const date = new Date(ts);
 
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString('vi-VN', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+    const hours = date.getHours().toString().padStart(1, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+
+    return `${day}/${month} ${hours}:${minutes}`;
+  }
 
   const formatUpdateTime = () => {
     return new Date().toLocaleTimeString('vi-VN', {
