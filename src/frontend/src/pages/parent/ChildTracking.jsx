@@ -1,15 +1,15 @@
-import { useState, useEffect, memo, useRef } from "react";
+import { useState, useEffect, memo, useRef, useContext} from "react";
 import StudentInfo from "../../components/specific/parentpage/StudentInfo.jsx";
 import MapComponent from "../../components/specific/parentpage/MapComponent.jsx";
 import api from '../../api/sql.api.js';
-import { useSocket } from "../../components/specific/parentpage/ParentSocketProvider.jsx";
+import { ParentContext } from "../../components/specific/parentpage/ParentSocketProvider.jsx";
 
-function ChildTracking({ user }) {
+function ChildTracking({ user , setBusIds}) {
   const [studentsData, setStudentsData] = useState([]);
   const [busData, setBusData] = useState([]);
   const [selectedBus, setSelectedBus] = useState(null);
 
-  const socket = useSocket();
+  const {socket} = useContext(ParentContext);
   const reqSelectBus = useRef(null)
 
   useEffect(() => {
@@ -39,6 +39,10 @@ function ChildTracking({ user }) {
         { scheduleIds: scheduleIds }
       )
       setBusData(busDataRes.data);
+      if(setBusIds)
+      {
+        setBusIds(busDataRes.data.map(b=>b.bus_id));
+      }
     }
     fetchBusData();
 

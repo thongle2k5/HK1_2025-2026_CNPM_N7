@@ -1,13 +1,15 @@
 import React from "react";
 import { Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import {ParentContext} from "./ParentSocketProvider.jsx";
 
-const Header = ({ unreadCount = 0, onBellClick }) => {
+const Header = () => {
   const navigate = useNavigate();
+  const {unreadCount,setUnreadcount} = React.useContext(ParentContext);
 
-  const BellClicked = () => {
-    if (onBellClick) {
-      onBellClick();
+  const BellClicked = async () => {
+    if (setUnreadcount) {
+      setUnreadcount(0)
       navigate("/parent/notifications");
     }
   };
@@ -21,7 +23,7 @@ const Header = ({ unreadCount = 0, onBellClick }) => {
         <div
           className="relative cursor-pointer group"
           onClick={() => {
-            navigate("/parent/notifications");
+            BellClicked();
           }}
         >
           <Bell
