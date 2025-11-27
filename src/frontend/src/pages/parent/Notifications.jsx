@@ -316,13 +316,13 @@ const Notifications = ({ user }) => {
           {combinedNotifications.length > 0 ? (
             combinedNotifications.map((notification) => (
               notification.notifyType === "bus_stop" ? (
-                  <div key={notification.timestamp} className="notify-card">
+                  <div key={`${notification.timestamp}-${notification.notifyType}`} className="notify-card">
                     <p><strong>{formatNotificationTime(notification.timestamp)}</strong></p>
                     <p className="font-medium">Điểm dừng: {notification.address}</p>
                     <p>{notification.message}</p>
                   </div>
                 ) : (
-                  <div key={notification.timestamp} className="notify-card">
+                  <div key={`${notification.timestamp}-${notification.notifyType}`} className="notify-card">
                     <p><strong>{formatNotificationTime(notification.timestamp)}</strong></p>
                     <p className="text-purple-800"><strong>{notification.message}</strong></p>
                   </div>
