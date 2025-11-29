@@ -1,25 +1,19 @@
 import { useState, useEffect } from "react";
 import { MapPin, Send, AlertTriangle, Clock } from "lucide-react";
 import DriverHeader from "./components/Header";
+
 export default function Report() {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  const driverId = user.driverId || user.id || user.userId || user.user_id;
+  const driverName = user.name || user.username || "Tài xế";
+
   const [type, setType] = useState("");
   const [priority, setPriority] = useState("");
   const [description, setDescription] = useState("");
-  const [reports, setReports] = useState([
-    {
-      id: 1,
-      type: "Kẹt xe nhẹ",
-      time: "06:50",
-      location: "Chưa xác định",
-      status: "Đã gửi",
-    },
-  ]);
+  const [reports, setReports] = useState([]);
 
-  // const [position, setPosition] = useState({ lat: null, lng: null, address: "Chưa xác định" });
-
-  const driverName = "Nguyễn Văn T";
-
-  const [position, setPosition] = useState({
+  const [position] = useState({
     lat: 10.762622,
     lng: 106.68266,
     address: "Đại học Sài Gòn, TP. Hồ Chí Minh",
@@ -28,7 +22,7 @@ export default function Report() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/report/driver/2`);
+        const res = await fetch(`http://localhost:5000/api/report/driver/${driverId}`);
         if (res.ok) {
           const data = await res.json();
           setReports(data);
@@ -38,20 +32,21 @@ export default function Report() {
       }
     };
     fetchHistory();
-  }, [2]);
+  }, [driverId]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!type || !priority) {
-      alert("⚠️ Vui lòng chọn loại cảnh báo và mức độ ưu tiên!");
+      alert("Vui lòng chọn loại cảnh báo và mức độ ưu tiên!");
       return;
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/report/post/2", {
+      const res = await fetch(`http://localhost:5000/api/report/post/${driverId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          driver_id: 2,
+          driver_id: driverId,
           type,
           priority,
           description,
@@ -62,14 +57,15 @@ export default function Report() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Lỗi server");
 
+      // Thêm báo cáo mới vào đầu danh sách
       const newReport = {
-        report_id: data.notif_id,
-        title: type,
-        priority: priority,
-        created_at: new Date().toISOString(),
-        address: position.address,
-        status: "pending",
+        id: data.notif_id || Date.now(),
+        type: type,
+        time: new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }),
+        location: position.address,
+        status: "Đã gửi",
       };
+
       setReports([newReport, ...reports]);
       setType("");
       setPriority("");
@@ -82,7 +78,6 @@ export default function Report() {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen space-y-6">
-      {/* Header dùng chung */}
       <DriverHeader driverName={driverName} />
 
       <div className="p-6 space-y-6">
@@ -90,13 +85,9 @@ export default function Report() {
           <AlertTriangle className="w-6 h-6 text-red-500" /> Báo cáo sự cố
         </h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-3 gap-6 items-start"
-        >
-          {/* Khối bên trái */}
+        <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-6 items-start">
+          {/* Form bên trái */}
           <div className="col-span-2 bg-white p-5 rounded-lg shadow space-y-5">
-            {/* Vị trí hiện tại */}
             <div className="bg-blue-50 border p-3 rounded-md flex items-center gap-2">
               <MapPin className="text-green-600" />
               <p className="text-sm text-gray-700">
@@ -104,28 +95,18 @@ export default function Report() {
               </p>
             </div>
 
-            {/* Loại cảnh báo */}
             <div>
-              <h2 className="font-semibold mb-2 text-gray-700">
-                Chọn loại cảnh báo
-              </h2>
+              <h2 className="font-semibold mb-2 text-gray-700">Chọn loại cảnh báo</h2>
               <div className="grid grid-cols-2 gap-3">
-                {[
-                  "Kẹt xe",
-                  "Xe bị hỏng",
-                  "Trễ giờ",
-                  "Sự cố học sinh",
-                  "Khác",
-                ].map((item) => (
+                {["Kẹt xe", "Xe bị hỏng", "Trễ giờ", "Sự cố học sinh", "Khác"].map((item) => (
                   <button
                     key={item}
                     type="button"
                     onClick={() => setType(item)}
-                    className={`p-2 border rounded-md transition ${
-                      type === item
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-50 hover:bg-blue-100"
-                    }`}
+                    className={`p-2 border rounded-md transition ${type === item
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-50 hover:bg-blue-100"
+                      }`}
                   >
                     {item}
                   </button>
@@ -133,24 +114,20 @@ export default function Report() {
               </div>
             </div>
 
-            {/* Mức độ ưu tiên */}
             <div>
-              <h2 className="font-semibold mb-2 text-gray-700">
-                Mức độ ưu tiên
-              </h2>
+              <h2 className="font-semibold mb-2 text-gray-700">Mức độ ưu tiên</h2>
               <div className="flex gap-3">
                 {["Cao", "Trung bình", "Thấp"].map((lvl) => (
                   <button
                     key={lvl}
                     type="button"
                     onClick={() => setPriority(lvl)}
-                    className={`px-4 py-2 border rounded-full ${
-                      priority === lvl
-                        ? lvl === "Cao"
-                          ? "bg-red-500 text-white"
-                          : "bg-blue-600 text-white"
-                        : "bg-white hover:bg-gray-100"
-                    }`}
+                    className={`px-4 py-2 border rounded-full ${priority === lvl
+                      ? lvl === "Cao"
+                        ? "bg-red-500 text-white"
+                        : "bg-blue-600 text-white"
+                      : "bg-white hover:bg-gray-100"
+                      }`}
                   >
                     {lvl}
                   </button>
@@ -158,11 +135,8 @@ export default function Report() {
               </div>
             </div>
 
-            {/* Mô tả */}
             <div>
-              <h2 className="font-semibold mb-2 text-gray-700">
-                Mô tả chi tiết
-              </h2>
+              <h2 className="font-semibold mb-2 text-gray-700">Mô tả chi tiết</h2>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -171,7 +145,6 @@ export default function Report() {
               />
             </div>
 
-            {/* Nút gửi */}
             <button
               type="submit"
               className="w-full bg-red-600 text-white py-2 rounded-md flex items-center justify-center gap-2 hover:bg-red-700"
@@ -180,7 +153,7 @@ export default function Report() {
             </button>
           </div>
 
-          {/* Khối bên phải - Lịch sử báo cáo */}
+          {/* Lịch sử bên phải */}
           <div className="bg-white p-5 rounded-lg shadow">
             <h2 className="font-semibold text-gray-800 mb-4">
               Lịch sử báo cáo gần đây
@@ -189,22 +162,22 @@ export default function Report() {
               <ul className="space-y-3">
                 {reports.map((r) => (
                   <li
-                    key={r.id}
+                    key={r.id || r.report_id}
                     className="border-l-4 border-red-500 bg-red-50 p-3 rounded shadow-sm"
                   >
                     <p className="font-medium text-red-700 flex items-center gap-2">
-                      <AlertTriangle className="w-4 h-4" /> {r.type}
+                      <AlertTriangle className="w-4 h-4" /> {r.type || r.title}
                     </p>
                     <p className="text-sm text-gray-600 flex items-center gap-1">
-                      <Clock className="w-4 h-4" /> {r.time} | {r.location}
+                      <Clock className="w-4 h-4" />{" "}
+                      {r.time || (r.created_at ? new Date(r.created_at).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }) : "N/A")} |{" "}
+                      {r.location || r.address || "Chưa xác định"}
                     </p>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-gray-500">
-                Chưa có báo cáo nào được gửi.
-              </p>
+              <p className="text-sm text-gray-500">Chưa có báo cáo nào được gửi.</p>
             )}
           </div>
         </form>

@@ -32,12 +32,6 @@ const BusMarker = ({ bus_id, latitude, longitude, onClick, selectedBus }) => {
                 offset: [0, -36],
 
             });
-
-            marker.on('click', (e) => {
-                L.DomEvent.stopPropagation(e); // Ngăn click lan lên map
-                if (onClick)
-                    onClick(bus_id, map);
-            })
             markerRef.current = marker;
         } else {
             // 🔹 Cập nhật vị trí marker (popup vẫn giữ nguyên)
@@ -45,6 +39,19 @@ const BusMarker = ({ bus_id, latitude, longitude, onClick, selectedBus }) => {
         }
 
     }, [latitude, longitude, bus_id, map]);
+    React.useEffect(() => {
+        if (!markerRef.current) return;
+
+        // Gỡ event cũ
+        markerRef.current.off('click');
+
+        // Gắn event mới
+        markerRef.current.on('click', (e) => {
+            L.DomEvent.stopPropagation(e);
+            onClick(bus_id, map);
+        });
+
+    }, [onClick, bus_id, map]);
 
     React.useEffect(() => {
         if (selectedBus !== null) {

@@ -63,7 +63,7 @@ function StudentInfo({ studentsData,onTrackBus }) {
                 <td>{student.student.class || "N/A"}</td>
                 <td>
                   <div className="flex items-center gap-2">
-                    <span className={`text-white px-2 py-1 rounded-md text-lg min-w-24 text-center ${statusColor[student.pickup_status.status || "N/A"]}`}>
+                    <span className={`text-white px-2 py-1 rounded-md text-lg min-w-24 text-center bg-green-400 ${statusColor[student.pickup_status.status || "N/A"]}`}>
                       {student.pickup_status.status || "N/A"}
                     </span>
                   </div>

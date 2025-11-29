@@ -80,6 +80,7 @@
   background: #f3e9f9 !important;
 }
 
+
 .class {
   font-size: 18px;
   font-weight: bold;
@@ -88,7 +89,7 @@
 
 /* Cột giữa */
 .bus-notify{
-  width: 32%;
+  width: 39%;
   float: left;
   background: white;
   padding: 20px;
@@ -106,7 +107,7 @@
 
 /* Cột phải */
 .student-bus-infor {
-  width: 32%;
+  width: 25%;
   float: left;
   display: block;
   background: white;
@@ -143,6 +144,11 @@
 .trip-detail a {
   color: #4a6cf7;
   text-decoration: none;
+}
+
+.notifyTime{
+    font-size: 16px;
+    margin-bottom: 3px;
 }
 
 .close-btn {
@@ -273,7 +279,7 @@
 
 /* Container có thanh cuộn cho thông báo */
 .scrollable-notifications {
-  max-height: 550px;
+  max-height: 610px;
   overflow-y: auto;
   padding-right: 10px;
 }
@@ -360,7 +366,7 @@
   
   /* Thanh cuộn tablet */
   .scrollable-notifications {
-    max-height: 300px;
+    max-height: 400px;
   }
   
   .scrollable-students {
@@ -447,7 +453,7 @@
   
   /* Thanh cuộn small tablet */
   .scrollable-notifications {
-    max-height: 250px;
+    max-height: 350px;
   }
   
   .scrollable-students {

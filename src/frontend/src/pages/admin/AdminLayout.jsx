@@ -365,11 +365,11 @@ const MENU_ITEMS = [
     label: "Phân công",
     icon: <CheckSquare size={20} />,
   },
-  {
-    path: "/admin/AdminLayout/ManageLocation",
-    label: "Cập nhật vị trí",
-    icon: <MapPin size={20} />,
-  },
+  // {
+  //   path: "/admin/AdminLayout/ManageLocation",
+  //   label: "Cập nhật vị trí",
+  //   icon: <MapPin size={20} />,
+  // },
 ];
 
 function AdminLayout() {
@@ -471,20 +471,18 @@ function AdminLayout() {
                 <Link
                   to={item.path}
                   className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 group
-                    ${
-                      isActiveLink(item.path) ||
+                    ${isActiveLink(item.path) ||
                       (location.pathname === "/" &&
                         item.path === "/admin/AdminLayout/Dashboard")
-                        ? "bg-blue-50 text-blue-700 font-bold shadow-sm border-l-4 border-blue-600"
-                        : "text-gray-500 hover:bg-gray-100 hover:text-blue-600"
+                      ? "bg-blue-50 text-blue-700 font-bold shadow-sm border-l-4 border-blue-600"
+                      : "text-gray-500 hover:bg-gray-100 hover:text-blue-600"
                     }`}
                 >
                   <span
-                    className={`mr-3 transition-colors duration-200 ${
-                      isActiveLink(item.path)
+                    className={`mr-3 transition-colors duration-200 ${isActiveLink(item.path)
                         ? "text-blue-600"
                         : "text-gray-400 group-hover:text-blue-500"
-                    }`}
+                      }`}
                   >
                     {item.icon}
                   </span>
