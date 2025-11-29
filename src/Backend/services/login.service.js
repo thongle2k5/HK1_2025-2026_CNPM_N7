@@ -39,12 +39,14 @@ router.post('/', async (req, res) => {
             isValidRole = true;
         } else if (role === 'driver' && user.role === 'driver') {
             isValidRole = true;
-        } else if (role === 'student' && user.role === 'student') {
+        } else if (role === 'parent' && user.role === 'parent') {
             isValidRole = true;
         }
 
         if (!isValidRole) {
+           console.log('role:',role,'\nuser.role',user.role)
             return res.status(403).json({ 
+                
                 message: 'Bạn không có quyền truy cập vào vai trò này!' 
             });
         }
