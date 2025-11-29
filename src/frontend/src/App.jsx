@@ -41,7 +41,6 @@ const user = { user_id: 1 };
 export default function App() {
   return <ParentApp user={user} />;
 }
-
 // import AppRoutes from "./routes/index.jsx";
 // export default function App() {
 //   return <AppRoutes />;
