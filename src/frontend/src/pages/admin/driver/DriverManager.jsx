@@ -123,6 +123,21 @@ function DriverManager() {
   const handleOpenChat = (driver) => {
     setChatDriver(driver);
   };
+  // --- STATE CHO PHÂN TRANG ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10; // Giới hạn 10 người/trang
+  // --- LOGIC CẮT DỮ LIỆU THEO TRANG ---
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredDriver.slice(startIndex, endIndex);
+  }, [filteredDriver, currentPage]);
+  const totalPages = Math.ceil(filteredDriver.length / ITEMS_PER_PAGE);
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
   return (
     <div>
       <div className="flex items-center justify-between text-left py-6 mx-4  font-bold text-2xl text-black">
@@ -157,11 +172,36 @@ function DriverManager() {
           />
         </div>
         <DriverTable
-          data={filteredDriver}
+          data={paginatedData}
           onDelete={handleDelete}
           onEdit={handleEdit}
           onOpenChat={handleOpenChat}
         />
+        {/* --- FOOTER PHÂN TRANG --- */}
+        {totalPages > 1 && (
+          <div className="flex justify-between items-center p-4 border-t bg-gray-50">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-1 border rounded bg-white hover:bg-gray-100 disabled:opacity-50 text-sm text-gray-700"
+            >
+              Trước
+            </button>
+
+            <span className="text-sm text-gray-600">
+              Trang <strong>{currentPage}</strong> / {totalPages}
+              (Tổng: {filteredDriver.length} tài xế)
+            </span>
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 border rounded bg-white hover:bg-gray-100 disabled:opacity-50 text-sm text-gray-700"
+            >
+              Sau
+            </button>
+          </div>
+        )}
       </div>
       <DriverEditModal
         isOpen={isEditModalOpen}

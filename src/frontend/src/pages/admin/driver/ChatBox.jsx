@@ -11,26 +11,25 @@ export default function ChatBox({ driver, onClose }) {
   const adminId = JSON.parse(localStorage.getItem("user"))?.userId || 1;
 
   // 1. Hàm tải lịch sử chat
-  const fetchMessages = async () => {
-    if (!driver) return;
+  const fetchMessages = async (driverId, adminId) => {
+    if (!driverId) return;
     try {
       const res = await fetch(
-        `http://localhost:5000/api/messages?user1=${adminId}&user2=${driver.user_id}`
+        `http://localhost:5000/api/messages?user1=${adminId}&user2=${driverId}`
       );
       const data = await res.json();
       setMessages(data);
     } catch (err) {
-      console.error("Lỗi tải tin nhắn:", err);
+      console.error("Lỗi tải lịch sử tin nhắn:", err);
     }
   };
 
-  // Tải tin nhắn khi mở hộp chat hoặc đổi tài xế
   useEffect(() => {
-    fetchMessages();
+    if (!driver?.user_id) return; // Bảo vệ: Đảm bảo driver object có ID
 
-    // (Tùy chọn) Polling: Tự động cập nhật mỗi 5 giây để xem có tin mới không
-    const interval = setInterval(fetchMessages, 5000);
-    return () => clearInterval(interval);
+    const driverUserId = driver.user_id;
+
+    fetchMessages(driverUserId, adminId);
   }, [driver]);
 
   // Tự động cuộn xuống dưới cùng
@@ -38,10 +37,23 @@ export default function ChatBox({ driver, onClose }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 2. Hàm gửi tin nhắn
   const handleSend = async (e) => {
     e.preventDefault();
     if (!inputMsg.trim()) return;
+
+    const messageToSend = inputMsg;
+    const optimisticMessage = {
+      // Tin nhắn hiển thị ngay
+      sender_id: adminId,
+      receiver_id: driver.user_id,
+      content: messageToSend,
+      created_at: new Date().toISOString(),
+      // message_id: Date.now() // ID tạm
+    };
+
+    // 1. Hiển thị tin nhắn ngay lập tức (Optimistic UI)
+    setMessages((prev) => [...prev, optimisticMessage]);
+    setInputMsg(""); // 2. Xóa nội dung nhập liệu (FIX LỖI UI)
 
     try {
       const res = await fetch("http://localhost:5000/api/messages", {
@@ -49,20 +61,19 @@ export default function ChatBox({ driver, onClose }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sender_id: adminId,
-          receiver_id: driver.user_id, // Lưu ý: dùng user_id của tài xế
-          content: inputMsg,
+          receiver_id: driver.user_id,
+          content: messageToSend,
         }),
       });
 
-      if (res.ok) {
-        setInputMsg("");
-        fetchMessages(); // Tải lại để hiện tin vừa gửi
+      if (!res.ok) {
+        fetchMessages(driver.user_id, adminId);
       }
     } catch (err) {
-      console.error("Lỗi gửi tin:", err);
+      alert("Lỗi gửi tin: " + err.message);
+      fetchMessages(driver.user_id, adminId);
     }
   };
-
   return (
     <div className="fixed bottom-4 right-4 w-80 bg-white shadow-2xl rounded-lg border border-gray-300 z-50 flex flex-col h-[400px]">
       {/* Header */}

@@ -77,7 +77,22 @@ export const ScheduleController = {
       console.error('Lỗi update trạng thái:', error);
       res.status(500).json({ error: 'Lỗi server khi cập nhật trạng thái' });
     }
+  },
+  getCurrentSchedule: async (req, res) => {
+  try {
+    const { driverId } = req.params;
+    
+   
+    
+    const schedule = await ScheduleService.getCurrentSchedule(driverId);
+
+    if (!schedule) {
+      return res.json({ found: false, message: "Không có lịch chạy vào lúc này" });
+    }
+
+    res.json({ found: true, schedule });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-
-
+},
 }

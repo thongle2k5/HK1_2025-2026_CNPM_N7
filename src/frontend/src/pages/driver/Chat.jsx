@@ -7,22 +7,18 @@ import { createPortal } from "react-dom";
 const socket = io.connect("http://localhost:5000");
 
 export default function DriverChatWidget() {
-  // --- PHẦN LOGIC (Giữ nguyên + Thêm state đóng mở) ---
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
-
-  // THÊM MỚI: State để bật/tắt khung chat
   const [isOpen, setIsOpen] = useState(false);
-  // THÊM MỚI: State đếm tin chưa đọc (để hiện chấm đỏ)
   const [unreadCount, setUnreadCount] = useState(0);
-
   const driverId = getUserId();
   const ADMIN_ID = 29;
-  // 1. Kết nối & Lắng nghe (Logic cũ + Cập nhật số chưa đọc)
+
   useEffect(() => {
     if (!driverId) return;
 
-    socket.emit("join_room", driverId);
+    console.log("🔌 Đang yêu cầu vào phòng chat với ID:", driverId);
+    socket.emit("join_chat", driverId);
 
     fetch(
       `http://localhost:5000/api/messages?user1=${ADMIN_ID}&user2=${driverId}`
@@ -31,14 +27,21 @@ export default function DriverChatWidget() {
       .then((data) => setMessages(data))
       .catch((err) => console.error(err));
 
-    const handleNewMessage = (data) => {
-      setMessages((prev) => [...prev, data]);
+    const handleNewMessage = (newMessage) => {
+      console.log("📩 Nhận tin mới:", newMessage);
 
-      // Logic mới: Nếu đang đóng thì tăng số chưa đọc
+      // Cập nhật danh sách tin nhắn ngay lập tức
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
       if (!isOpen) {
         setUnreadCount((prev) => prev + 1);
       }
     };
+    setIsOpen((currentIsOpen) => {
+      if (!currentIsOpen) {
+        setUnreadCount((prev) => prev + 1);
+      }
+      return currentIsOpen;
+    });
 
     socket.on("receive_message", handleNewMessage);
 

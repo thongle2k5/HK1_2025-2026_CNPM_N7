@@ -35,7 +35,11 @@ export const ScheduleService = {
   },
   updateScheduleStatus: async (id, status) => {
     return await ScheduleModel.updateScheduleStatus(id, status);
-  }
+  },
+  getCurrentSchedule: async (id) =>{
+    return await ScheduleModel.getCurrentSchedule(id);
+  },
+
 
 
 }

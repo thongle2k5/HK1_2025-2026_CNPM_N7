@@ -17,8 +17,16 @@ const create = async ({ sender_id, receiver_id, content }) => {
     INSERT INTO messages (sender_id, receiver_id, content) 
     VALUES (?, ?, ?)
   `;
-  await pool.query(sql, [sender_id, receiver_id, content]);
-  return true;
+  try {
+    await pool.query(sql, [sender_id, receiver_id, content]);
+    return true;
+  } catch (error) {
+    
+    if (error.code === 'ER_NO_REFERENCED_ROW_2' || error.errno === 1452) {
+        throw new Error('Người gửi hoặc người nhận không tồn tại trong hệ thống người dùng (user).');
+    }
+    throw error; 
+  }
 };
 
 export const messageModel = { getConversation, create };

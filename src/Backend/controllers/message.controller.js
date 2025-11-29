@@ -20,25 +20,20 @@ export const sendMessage = async (req, res) => {
     if (!content) return res.status(400).json({ message: "Nội dung trống" });
 
     await messageService.sendMessage({ sender_id, receiver_id, content });
-    const io = req.app.get('socketio'); 
-   
-    if (io) {
-    
-        io.to(String(receiver_id)).emit("receive_message", {
-            sender_id,
-            receiver_id,
-            content,
-            created_at: new Date().toISOString() 
-        });
-        
+    const io = req.app.get("socketio");
+    const targetRoom = `user_${receiver_id}`; // Phải khớp tên phòng ở server.js
 
-        io.to(String(sender_id)).emit("receive_message", {
-            sender_id,
-            receiver_id,
-            content,
-            created_at: new Date().toISOString()
-        });
-    }
+    // Tạo gói tin đầy đủ để Frontend hiển thị ngay
+    const messagePayload = {
+      message_id: Date.now(), // ID tạm
+      sender_id,
+      receiver_id,
+      content,
+      created_at: new Date().toISOString()
+    };
+
+    console.log(`🚀 Đang bắn tin tới phòng: ${targetRoom}`);
+    io.to(targetRoom).emit("receive_message", messagePayload);
     res.status(201).json({ message: "Đã gửi và thông báo Real-time" });
   } catch (err) {
     res.status(500).json({ error: err.message });

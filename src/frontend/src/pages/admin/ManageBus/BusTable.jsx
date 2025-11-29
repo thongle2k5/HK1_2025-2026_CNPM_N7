@@ -1,7 +1,9 @@
 // src/pages/admin/ManageBus/BusTable.jsx
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
+import io from "socket.io-client";
 // Dữ liệu mẫu - Sau này bạn sẽ fetch API
+const socket = io.connect("http://localhost:5000");
 const getStatusBus = (data) => {
   switch (data) {
     case "active":
@@ -22,34 +24,99 @@ export default function BusTable({
   ondelete,
   selectedBusId,
 }) {
-  // Lọc dữ liệu dựa trên searchTerm (từ component cha)
-  const filteredData = useMemo(
-    () => {
-      if (!searchTerm) return dataBus;
+  const filteredData = useMemo(() => {
+    if (!searchTerm) return dataBus;
 
-      const searchTermLower = searchTerm.toLowerCase();
-      return dataBus.filter((bus) => {
-        const idString = String(bus.bus_id);
-        return (
-          idString.includes(searchTermLower) ||
-          bus.license_plate.toLowerCase().includes(searchTermLower)
-        );
-      });
-    },
-    [searchTerm, dataBus] // Dữ liệu sẽ update khi dataBus (paginated) hoặc searchTerm thay đổi
-  );
+    const searchTermLower = searchTerm.toLowerCase();
+    return dataBus.filter((bus) => {
+      const idString = String(bus.bus_id);
+      return (
+        idString.includes(searchTermLower) ||
+        bus.license_plate.toLowerCase().includes(searchTermLower)
+      );
+    });
+  }, [searchTerm, dataBus]);
 
-  // Hàm xử lý class cho status
+  // xử lý realtime trên table
+  const [liveData, setLiveData] = useState({}); // State lưu dữ liệu động
+  const liveDataRef = useRef({});
+  useEffect(() => {
+    // A. Lắng nghe vị trí mới
+    const handleLocation = (data) => {
+      liveDataRef.current = {
+        ...liveDataRef.current,
+        [data.bus_license]: {
+          ...data,
+          isLive: true,
+          last_update: new Date().toISOString(),
+        },
+      };
+    };
+
+    // B. Lắng nghe xe offline
+    const handleOffline = (data) => {
+      if (liveDataRef.current[data.bus_license]) {
+        liveDataRef.current = {
+          ...liveDataRef.current,
+          [data.bus_license]: {
+            ...liveDataRef.current[data.bus_license],
+            isLive: false,
+            status: "idle",
+          },
+        };
+      }
+    };
+
+    socket.on("receive_location", handleLocation);
+    socket.on("bus_offline", handleOffline);
+
+    const interval = setInterval(() => {
+      if (Object.keys(liveDataRef.current).length > 0) {
+        setLiveData({ ...liveDataRef.current });
+      }
+    }, 1000);
+    return () => {
+      socket.off("receive_location", handleLocation);
+      socket.off("bus_offline", handleOffline);
+      clearInterval(interval);
+    };
+  }, []);
+  //hàm lấy hiển thị
+  const getDisplayStatus = (bus) => {
+    const live = liveData[bus.license_plate];
+    if (live && live.isLive) return "active"; // Nếu có tín hiệu -> Active
+    if (live && !live.isLive) return "idle";
+    return bus.status; // Nếu không -> Dùng status cũ từ DB
+  };
+
+  const getDisplayTime = (bus) => {
+    const live = liveData[bus.license_plate];
+
+    // Nếu có tín hiệu Live -> Lấy thời gian hiện tại (hoặc time từ socket)
+    if (live) {
+      return format(new Date(), "dd/MM HH:mm");
+    }
+
+    // Nếu không -> Lấy thời gian cũ trong DB
+    return bus.last_update
+      ? format(new Date(bus.last_update), "dd/MM HH:mm")
+      : "—";
+  };
+
+  // Hàm tô màu trạng thái
   const getStatusClass = (status) => {
-    if (status === "active") {
-      return "bg-green-100 text-green-700";
-    }
-    if (status === "maintenance") {
-      return "bg-yellow-100 text-yellow-700";
-    }
+    if (status === "active") return "bg-green-100 text-green-700";
+    if (status === "idle") return "bg-blue-100 text-blue-700";
+    if (status === "maintenance") return "bg-yellow-100 text-yellow-700";
     return "bg-gray-100 text-gray-700";
   };
 
+  const getStatusLabel = (status) => {
+    if (status === "active") return "Đang chạy";
+    if (status === "idle") return "Sẵn sàng";
+    if (status === "maintenance") return "Bảo trì";
+    return status;
+  };
   return (
     <div className="bg-white shadow-md rounded-lg overflow-x-auto">
       <table className="min-w-full">
@@ -88,6 +155,8 @@ export default function BusTable({
         <tbody>
           {filteredData.map((bus, index) => {
             const isSelected = selectedBusId === bus.bus_id;
+            const displayStatus = getDisplayStatus(bus);
+            const displayTime = getDisplayTime(bus);
             return (
               <tr key={bus.bus_id} className="border-b hover:bg-gray-50 ">
                 <td className="p-3 text-sm text-gray-700">{index + 1}</td>
@@ -100,10 +169,10 @@ export default function BusTable({
                 <td className="p-3 text-sm">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
-                      bus.status
+                      displayStatus
                     )}`}
                   >
-                    {getStatusBus(bus.status)}
+                    {getStatusLabel(displayStatus)}
                   </span>
                 </td>
                 <td className="p-3 text-sm text-gray-700">
@@ -124,11 +193,7 @@ export default function BusTable({
                   </button>
                 </td>
 
-                <td className="p-3 text-sm text-gray-700">
-                  {bus.last_update
-                    ? format(new Date(bus.last_update), "dd/MM/yyyy HH:mm")
-                    : "—"}
-                </td>
+                <td className="p-3 text-sm text-gray-700">{displayTime}</td>
                 <td className="p-3 text-sm">
                   <button
                     className="text-blue-600 hover:text-blue-800 mr-3"

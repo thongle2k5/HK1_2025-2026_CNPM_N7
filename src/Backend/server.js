@@ -74,18 +74,13 @@ export const io = new Server(server, {
 
 io.on("connection", async (socket) => {
   console.log("Client connected:", socket.id);
-socket.on("join_room", (data) => { /*...*/ });
-  socket.on("send_message", (data) => { /*...*/ });
-
   parentSocket(io, socket);
   driverSocket(io, socket);
-  
-  socket.on("join_room", (userId) => {
-    socket.join(String(userId)); // Join vào phòng có tên là UserID
-    console.log(`User ${userId} đã vào phòng chat riêng`);
-     console.log("Phòng hiện tại của Socket này:", socket.rooms);
+ socket.on("join_chat", (userId) => {
+    const roomName = `user_${userId}`; // Đặt tên phòng có tiền tố để tránh trùng
+    socket.join(roomName);
+    console.log(` User ${userId} đã vào phòng chat: ${roomName}`);
   });
- 
   socket.on("disconnect", () => {
     console.log("Client disconnected:", socket.id);
   });

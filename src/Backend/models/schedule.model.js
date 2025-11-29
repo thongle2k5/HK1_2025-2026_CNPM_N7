@@ -32,6 +32,37 @@ export const ScheduleModel = {
     const [rows] = await db.query('select * from schedule where schedule_id = ?', [scheduleId]);
     return rows[0];
   },
+  getCurrentSchedule : async(id)=>{
+    const [row]= await db.query(`SELECT
+    c.schedule_id,
+    c.route_id,   
+    c.bus_id,     
+    c.driver_id, 
+    c.end_time,
+    
+    a.name AS tuyen_duong,
+    
+    -- Lấy thông tin chi tiết xe buýt
+    b.license_plate AS license_plate,   -- Biển số xe
+    b.model AS model,           -- Loại xe
+    b.capacity AS capacity,       -- Sức chứa
+    
+    u.name AS name,
+    c.date,
+    c.start_time,
+    c.status
+
+FROM schedule AS c
+INNER JOIN route AS a ON a.route_id = c.route_id
+INNER JOIN bus AS b ON b.bus_id = c.bus_id
+INNER JOIN driver AS d ON c.driver_id = d.driver_id
+INNER JOIN user AS u ON d.user_id = u.user_id
+
+WHERE c.driver_id = ?
+  AND c.date = CURDATE()
+  AND c.status IN ('pending', 'in progress');`,[id]);
+    return row[0];
+  },
   getScheduleByStudentId: async (studentId) => {
     const data = await db.promise().query('select * from pickup_status left join schedule  on pickup_status.schedule_id = schedule.schedule_id where pickup_status.student_id =?', [studentId]);
     return data[0];
@@ -98,6 +129,7 @@ export const ScheduleModel = {
     const query = "update schedule set status = ? where schedule_id = ?";
     await db.query(query, [status, id]);
     return { schedule_id: id, status };
-  }
+  },
+
 
 }
