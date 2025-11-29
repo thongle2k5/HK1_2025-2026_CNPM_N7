@@ -1,94 +1,14 @@
-// import React, { useState } from "react";
-// import { useNavigate, Navigate } from "react-router-dom";
-// export default function Login() {
-//   const navigate = useNavigate();
-//   const [username, SetUserName] = useState("");
-//   const [password, SetPassword] = useState("");
-//   const [error, SetError] = useState("");
-//   const token = localStorage.getItem("authToken");
-//   if (token) {
-//     return <Navigate to="/admin/AdminLayout" replace />;
-//   }
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     SetError("");
-
-//     try {
-//       const reponse = await fetch("http://localhost:5000/api/login", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ username, password }),
-//       });
-//       const data = await reponse.json();
-//       if (!reponse.ok) {
-//         throw new Error(data.message || "Có lỗi xảy ra");
-//       }
-
-//       console.log("Login success:", data.token);
-//       localStorage.setItem("authToken", data.token);
-//       localStorage.setItem("user", JSON.stringify(data.user));
-//       navigate("/admin/AdminLayout", { replace: true });
-//     } catch (err) {
-//       SetError(err.message);
-//     }
-//   };
-//   return (
-//     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-600 to-blue-200 ">
-//       <div className="w-[500px] h-[400px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-400 shadow-lg ">
-//         <h1 className="flex justify-center pt-4 font-bold text-2xl">
-//           Smart School Bus Tracking
-//         </h1>
-//         <form onSubmit={handleSubmit}>
-//           <div className="w-[400px] h-[150px] m-auto mt-10">
-//             <input
-//               type="text"
-//               value={username}
-//               placeholder="Nhập tài khoản"
-//               onChange={(e) => SetUserName(e.target.value)}
-//               className="w-full px-4 py-4  border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-//             />
-
-//             <input
-//               type="password"
-//               value={password}
-//               placeholder="Nhập mật khẩu"
-//               onChange={(e) => SetPassword(e.target.value)}
-//               className="w-full border px-4 py-4 my-4 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-//             />
-//             {error && <p style={{ color: "red" }}>{error}</p>}
-//             <button
-//               type="submit"
-//               className="w-full py-4 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-200 "
-//             >
-//               Đăng nhập
-//             </button>
-
-//             <div className="flex py-2 justify-between  ">
-//               <div className="hover:underline text-blue-500 cursor-pointer">
-//                 Quên mật khẩu ?
-//               </div>
-//               <div className="hover:underline text-blue-500 cursor-pointer">
-//                 Đăng ký
-//               </div>
-//             </div>
-//           </div>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// }
-
 import React, { useState } from "react";
 import { User, Bus, ShieldCheck, Eye, EyeOff, LogIn } from "lucide-react";
 import { useNavigate, Navigate } from "react-router-dom";
 const Login = () => {
   const navigate = useNavigate();
-  const [role, setRole] = useState("student"); // 'student', 'driver', 'admin'
+  const [role, setRole] = useState("parent");
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, SetError] = useState("");
   const roleConfig = {
-    student: {
+    parent: {
       title: "Phụ huynh / Học sinh",
       icon: <User className="w-12 h-12 text-blue-600 mb-2" />,
       color: "bg-blue-600 hover:bg-blue-700",
@@ -153,8 +73,8 @@ const Login = () => {
         case "driver":
           navigate("/driver", { replace: true });
           break;
-        case "student":
-          navigate("/student/Home", { replace: true });
+        case "parent":
+          navigate("/parentApp", { replace: true });
           break;
         default:
           navigate("/", { replace: true });
@@ -178,9 +98,9 @@ const Login = () => {
         {/* Role Switcher (Tabs) */}
         <div className="flex justify-center mb-8 bg-gray-100 p-1 rounded-lg">
           <button
-            onClick={() => setRole("student")}
+            onClick={() => setRole("parent")}
             className={`flex-1 py-2 text-sm font-medium rounded-md transition-all duration-300 ${
-              role === "student"
+              role === "parent"
                 ? "bg-white text-blue-600 shadow-sm"
                 : "text-gray-500 hover:text-gray-700"
             }`}
@@ -255,7 +175,7 @@ const Login = () => {
                     : "#2563eb",
               }}
               onChange={handleInputChange}
-            />
+            />{" "}
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -283,7 +203,7 @@ const Login = () => {
             Quên mật khẩu?
           </a>
           {/* Chỉ hiện Đăng ký cho Phụ huynh, Admin/Driver thường do hệ thống cấp */}
-          {role === "student" && (
+          {role === "parent" && (
             <a
               href="#"
               className={`font-medium hover:underline`}
