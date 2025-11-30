@@ -7,6 +7,10 @@ export function ParentSocketProvider({ user, children, busIds }) {
   const [socket, setSocket] = useState(null);
   const [hasNewBusNoti,setHasNewBusNoti] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [messages, setMessages] = useState([]);
+  const [unreadMessageCount, setUnreadMessageCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  
   const baseURL = "http://localhost:5000/api";
 
   useEffect(() => {
@@ -61,8 +65,65 @@ export function ParentSocketProvider({ user, children, busIds }) {
     }
   };
 
+  const fetchMessages = async () => {
+    if (!user?.user_id) return;
+    
+    try {
+      setLoading(true);
+      const response = await fetch(`${baseURL}/notifications/messages/${user.user_id}`);
+      if (response.ok) {
+        const data = await response.json();
+        
+        const sortedMessages = data.sort((a, b) => 
+          new Date(a.created_at) - new Date(b.created_at)
+        );
+        
+        setMessages(sortedMessages);
+        
+        const unread = data.filter(msg => !msg.is_read && msg.receiver_id === user.user_id).length;
+        setUnreadMessageCount(unread);
+      }
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!user || !user.user_id) {
+      console.log("No user found");
+      return;
+    }
+    fetchMessages();
+  }, []);
+  
+  const markMessagesAsRead = async () => {
+    try {
+      const unreadMessages = messages.filter(msg => !msg.is_read && msg.receiver_id === user.user_id);
+      
+      for (const msg of unreadMessages) {
+        await fetch(`${baseURL}/notifications/messages/mark-read/${msg.message_id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: user.user_id })
+        });
+      }
+      
+      setUnreadCount(0);
+      fetchMessages(); 
+    } catch (error) {
+      console.error("Error marking messages as read:", error);
+    }
+  };
+
   return (
-    <ParentContext.Provider value={{ socket,hasNewBusNoti,setHasNewBusNoti, unreadCount, markAllAsRead }}>
+    <ParentContext.Provider value={{ 
+      socket, 
+      hasNewBusNoti, setHasNewBusNoti,unreadCount, markAllAsRead,
+      messages, unreadMessageCount , markMessagesAsRead, loading }}>
       {children}
     </ParentContext.Provider>
   );

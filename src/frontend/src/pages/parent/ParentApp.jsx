@@ -28,9 +28,8 @@ function ParentApp() {
             element={<Notifications user={user} />}
           />
         </Routes>
+        <ChatBubble user={user} />
       </ParentSocketProvider>
-
-      <ChatBubble user={user} />
     </div>
   );
 }
