@@ -74,7 +74,7 @@ const Login = () => {
           navigate("/driver", { replace: true });
           break;
         case "parent":
-          navigate("/parentApp", { replace: true });
+          navigate("/parent", { replace: true });
           break;
         default:
           navigate("/", { replace: true });

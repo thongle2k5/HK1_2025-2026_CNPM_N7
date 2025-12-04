@@ -1,15 +1,25 @@
-import React from "react";
-import { Bell } from "lucide-react";
+import React, { useEffect } from "react"; 
+import { Bell, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {ParentContext} from "./ParentSocketProvider.jsx";
+import "./css/Header.css";
 
 const Header = () => {
   const navigate = useNavigate();
   const {unreadCount,markAllAsRead} = React.useContext(ParentContext);
 
+  useEffect(() => {
+    sessionStorage.removeItem("wasLoggedOut");
+  }, []);
+
   const BellClicked = async () => {
-      await markAllAsRead();
-      navigate("/parent/notifications");
+    await markAllAsRead();
+    navigate("/parent/notifications");
+  };
+
+  const logOut = () => {
+    sessionStorage.setItem("wasLoggedOut", "true");
+    window.location.replace("/login");
   };
 
   return (
@@ -57,8 +67,20 @@ const Header = () => {
         </div>
 
         {/* User Letter */}
-        <div className="bg-blue-800 text-white rounded-md w-8 h-8 flex items-center justify-center font-bold">
+        <div className="bg-blue-800 text-white rounded-md w-8 h-8 flex items-center justify-center font-bold relative">
           U
+          <div 
+            className="logout-btn" 
+            onClick={() => {
+              logOut();
+             }}>
+
+              <div className="inside-logout-btn"> 
+                <LogOut className="w-4 h-4 mr-[10px]" /> 
+                <span>Đăng xuất</span>
+              </div>
+          
+          </div>
         </div>
       </div>
     </header>
