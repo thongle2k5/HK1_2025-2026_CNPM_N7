@@ -13,7 +13,7 @@ const stopIcon = L.ExtraMarkers.icon({
 });
 
 
-const StopMarker = ({ stop_id, latitude, longitude }) => {
+const StopMarker = ({ stop_id, latitude, longitude, address }) => {
     const map = useMap();
     const markerRef = React.useRef();
     React.useEffect(() => {
@@ -29,7 +29,11 @@ const StopMarker = ({ stop_id, latitude, longitude }) => {
                 direction: 'top',
                 offset: [0, -36],
             });
+            marker.bindPopup(`<b>Trạm ${stop_id}</b><br/>${address}`);
 
+            marker.on("click", () => {
+                marker.openPopup();
+            });
 
             markerRef.current = marker;
         } else {

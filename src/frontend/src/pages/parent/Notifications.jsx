@@ -3,7 +3,7 @@ import "../../components/specific/parentpage/css/Notifications.css";
 import { FaBell, FaBus, FaMapMarkerAlt, FaChild, FaUser, FaCar, FaFile } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { ParentContext } from "../../components/specific/parentpage/ParentSocketProvider";
-const Notifications = ({ user }) => {
+const Notifications = ({user}) => {
   const baseURL = "http://localhost:5000/api";
   const [students, setStudents] = useState([]);
   const [studentDetails, setStudentDetails] = useState([]);
@@ -13,20 +13,19 @@ const Notifications = ({ user }) => {
   const [combinedNotifications, setCombinedNotifications] = useState([]);
   const [tripDetails, setTripDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { hasNewBusNoti, setHasNewBusNoti } = React.useContext(ParentContext);
-
+  const { hasNewBusNoti, setHasNewBusNoti} = React.useContext(ParentContext);
   const navigate = useNavigate();
 
 
   // Lấy danh sách học sinh theo parent ID
   useEffect(() => {
-    if (!user || !user.user_id) {
+    if (!user || !user.userId) {
       console.log("No user found");
       return;
     }
     const fetchStudents = async () => {
       try {
-        const response = await fetch(`${baseURL}/students/parent/${user.user_id}`);
+        const response = await fetch(`${baseURL}/students/parent/${user.userId}`);
         const data = await response.json();
         setStudents(data);
       } catch (error) {
@@ -39,11 +38,11 @@ const Notifications = ({ user }) => {
 
   // Lấy thông báo từ bảng notification
   useEffect(() => {
-    if (!user || !user.user_id) return;
+    if (!user || !user.userId) return;
 
     const fetchNotifications = async () => {
       try {
-        const response = await fetch(`${baseURL}/notifications/user/${user.user_id}`);
+        const response = await fetch(`${baseURL}/notifications/user/${user.userId}`);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -170,7 +169,7 @@ const Notifications = ({ user }) => {
 
   const fetchBusNotification = async () => {
     try {
-      const res = await fetch(`${baseURL}/notifications/${user.user_id}/busNoti`);
+      const res = await fetch(`${baseURL}/notifications/${user.userId}/busNoti`);
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
@@ -185,13 +184,13 @@ const Notifications = ({ user }) => {
 
   //Thông báo đến về việc đến điểm dừng của xe
   useEffect(() => {
-    if (!user || !user.user_id) return;
+    if (!user || !user.userId) return;
     if (hasNewBusNoti)
       fetchBusNotification();
   }, [hasNewBusNoti]),
 
     useEffect(() => {
-      if (!user || !user.user_id) return;
+      if (!user || !user.userId) return;
       fetchBusNotification();
     }, [user]),
 
@@ -314,7 +313,7 @@ const Notifications = ({ user }) => {
           {combinedNotifications.length > 0 ? (
             combinedNotifications.map((notification) => (
               notification.notifyType === "bus_stop" ? (
-                  <div key={`${notification.timestamp}-${notification.notifyType}`} className="notify-card">
+                  <div key={`${notification.timestamp}-${notification.notifyType}-${notification.stop_id}`} className="notify-card">
                     <p className="notifyTime"><strong>{formatNotificationTime(notification.timestamp)}</strong></p>
                     <p className="font-medium">Điểm dừng: {notification.address}</p>
                     <p>{notification.message}</p>
@@ -430,7 +429,7 @@ const Notifications = ({ user }) => {
       </div>
 
       <div className="close-btn">
-        <div className="relative cursor-pointer group" onClick={() => navigate("/parent")}>
+        <div className="relative cursor-pointer group" onClick={() => navigate("/parent", { state: { user: user },relative: true})}>
 
 
           <p className="red-text">X</p>

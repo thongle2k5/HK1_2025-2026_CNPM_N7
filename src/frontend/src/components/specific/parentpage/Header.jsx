@@ -1,12 +1,12 @@
 import React, { useEffect } from "react"; 
 import { Bell, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import {ParentContext} from "./ParentSocketProvider.jsx";
 import "./css/Header.css";
-
+import { ParentContext } from "./ParentSocketProvider.jsx";
 const Header = () => {
   const navigate = useNavigate();
   const {unreadCount,markAllAsRead} = React.useContext(ParentContext);
+  const {user} = React.useContext(ParentContext);
 
   useEffect(() => {
     sessionStorage.removeItem("wasLoggedOut");
@@ -14,7 +14,7 @@ const Header = () => {
 
   const BellClicked = async () => {
     await markAllAsRead();
-    navigate("/parent/notifications");
+    navigate("/parent/notifications", {state: {user: user}});
   };
 
   const logOut = () => {

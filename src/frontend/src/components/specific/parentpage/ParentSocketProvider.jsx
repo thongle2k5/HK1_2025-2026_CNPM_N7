@@ -34,16 +34,14 @@ export function ParentSocketProvider({ user, children, busIds }) {
   }, [busIds, socket]);
 
   useEffect(() => {
-    if (!user || !user.user_id) {
+    if (!user || !user.userId) {
       console.log("No user found");
       return;
     }
-
-
     const fetchUnreadCount = async () => {
       try {
         const response = await fetch(
-          `${baseURL}/notifications/unread-count/${user.user_id}`
+          `${baseURL}/notifications/unread-count/${user.userId}`
         );
         const data = await response.json();
         setUnreadCount(data.unreadCount);
@@ -56,7 +54,7 @@ export function ParentSocketProvider({ user, children, busIds }) {
 
   const markAllAsRead = async () => {
     try {
-      await fetch(`${baseURL}/notifications/mark-all-read/${user.user_id}`, {
+      await fetch(`${baseURL}/notifications/mark-all-read/${user.userId}`, {
         method: "POST",
       });
       setUnreadCount(0);
@@ -66,11 +64,11 @@ export function ParentSocketProvider({ user, children, busIds }) {
   };
 
   const fetchMessages = async () => {
-    if (!user?.user_id) return;
+    if (!user?.userId) return;
     
     try {
       setLoading(true);
-      const response = await fetch(`${baseURL}/notifications/messages/${user.user_id}`);
+      const response = await fetch(`${baseURL}/notifications/messages/${user.userId}`);
       if (response.ok) {
         const data = await response.json();
         
@@ -80,7 +78,7 @@ export function ParentSocketProvider({ user, children, busIds }) {
         
         setMessages(sortedMessages);
         
-        const unread = data.filter(msg => !msg.is_read && msg.receiver_id === user.user_id).length;
+        const unread = data.filter(msg => !msg.is_read && msg.receiver_id === user.userId).length;
         setUnreadMessageCount(unread);
       }
     } catch (error) {
@@ -91,7 +89,7 @@ export function ParentSocketProvider({ user, children, busIds }) {
   };
 
   useEffect(() => {
-    if (!user || !user.user_id) {
+    if (!user || !user.userId) {
       console.log("No user found");
       return;
     }
@@ -100,7 +98,7 @@ export function ParentSocketProvider({ user, children, busIds }) {
   
   const markMessagesAsRead = async () => {
     try {
-      const unreadMessages = messages.filter(msg => !msg.is_read && msg.receiver_id === user.user_id);
+      const unreadMessages = messages.filter(msg => !msg.is_read && msg.receiver_id === user.userId);
       
       for (const msg of unreadMessages) {
         await fetch(`${baseURL}/notifications/messages/mark-read/${msg.message_id}`, {
@@ -108,7 +106,7 @@ export function ParentSocketProvider({ user, children, busIds }) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ userId: user.user_id })
+          body: JSON.stringify({ userId: user.userId })
         });
       }
       
@@ -123,7 +121,7 @@ export function ParentSocketProvider({ user, children, busIds }) {
     <ParentContext.Provider value={{ 
       socket, 
       hasNewBusNoti, setHasNewBusNoti,unreadCount, markAllAsRead,
-      messages, unreadMessageCount , markMessagesAsRead, loading }}>
+      messages, unreadMessageCount , markMessagesAsRead, loading ,user}}>
       {children}
     </ParentContext.Provider>
   );

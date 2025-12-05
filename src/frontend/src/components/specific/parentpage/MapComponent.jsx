@@ -165,7 +165,7 @@ function MapComponent({ busData, selectedBus, setSelectedBus, registerReqBus, so
             {
                 uniqueStops.current.size > 0 && (
                     Array.from(uniqueStops.current.values()).map(stop => (
-                        <StopMarker key={stop.stop_id} stop_id={stop.stop_id} latitude={stop.latitude} longitude={stop.longitude} />
+                        <StopMarker key={stop.stop_id} stop_id={stop.stop_id} latitude={stop.latitude} longitude={stop.longitude} address={stop.address}/>
                     ))
 
                 )
