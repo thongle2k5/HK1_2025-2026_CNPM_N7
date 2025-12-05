@@ -20,11 +20,11 @@ function ParentApp() {
             element={<ChildTracking user={user} setBusIds={setBusIds} />}
           />
           <Route
-            path="/parent"
+            path="/"
             element={<ChildTracking user={user} setBusIds={setBusIds} />}
           />
           <Route
-            path="/parent/notifications"
+            path="/notifications"
             element={<Notifications user={user} />}
           />
         </Routes>

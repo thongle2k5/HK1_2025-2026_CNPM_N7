@@ -74,7 +74,7 @@ const Login = () => {
           navigate("/driver", { replace: true });
           break;
         case "parent":
-          navigate("/parentApp", { replace: true });
+          navigate("/parent", { replace: true });
           break;
         default:
           navigate("/", { replace: true });
@@ -196,12 +196,6 @@ const Login = () => {
 
         {/* Footer Links */}
         <div className="flex justify-between items-center mt-6 text-sm">
-          <a
-            href="#"
-            className="text-gray-500 hover:text-gray-800 transition-colors"
-          >
-            Quên mật khẩu?
-          </a>
           {/* Chỉ hiện Đăng ký cho Phụ huynh, Admin/Driver thường do hệ thống cấp */}
           {role === "parent" && (
             <a

@@ -1,0 +1,23 @@
+.logout-btn{
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #d4dbf2;
+    color: #000000;
+    padding: 5px 10px;
+    border: 1px solid #b0acac;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.bg-blue-800:hover .logout-btn {
+    display: block;
+}
+
+.inside-logout-btn{
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}

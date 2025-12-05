@@ -55,7 +55,7 @@ app.use('/api/notifications', notificationRouter);
 app.use('/api/drivers', driverRouter);
 app.use('/api/login', login)
 app.use('/api/dashboardata', dashboardRouter)
-app.use('/api/students', studentRoutes);
+app.use('/api/studentsList', studentRoutes);
 app.use('/api/report', reportRouter);
 // ----------------------
 app.use('/api/schedules', ScheduleRouter)

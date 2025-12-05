@@ -15,8 +15,8 @@ export default function App() {
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin/AdminLayout/*" element={<AdminLayout />} />
-        <Route path="/*" element={<AppRoutes />} />
-        <Route path="/parentApp" element={<ParentApp />} />
+        <Route path="/driver/*" element={<AppRoutes />} />
+        <Route path="/parent/*" element={<ParentApp />} />
       </Routes>
 
       <ToastContainer

@@ -101,7 +101,6 @@ export default function Home() {
     const newStatus = action === "start" ? "in progress" : "completed";
 
     try {
-      // Gọi API Backend mới tạo
       const res = await fetch(
         `http://localhost:5000/api/schedules/${currentSchedule.schedule_id}/status`,
         {
@@ -114,16 +113,12 @@ export default function Home() {
       if (!res.ok) throw new Error("Lỗi cập nhật trạng thái");
 
       if (action === "start") {
-        // Bắt đầu chạy
         setIsTracking(true);
         setCurrentSchedule((prev) => ({ ...prev, status: "in progress" }));
-        // (Có thể bắn socket 'start_trip' ở đây nếu muốn thông báo cho phụ huynh ngay)
       } else {
-        // Kết thúc chuyến
         setIsTracking(false);
-        setCurrentSchedule(null); // Ẩn lịch trình đi vì đã xong
+        setCurrentSchedule(null);
         alert("🎉 Chuyến đi đã hoàn thành! Cảm ơn tài xế.");
-        // (Có thể reload trang hoặc fetch lại lịch mới)
       }
     } catch (err) {
       alert("Lỗi: " + err.message);
@@ -209,10 +204,10 @@ export default function Home() {
         <h2 className="text-lg font-semibold mb-3 flex items-center gap-2 text-gray-800">
           <MapPin className="w-5 h-5 text-blue-500" /> Vị trí xe hiện tại
         </h2>
-        <div className="rounded-lg overflow-hidden border border-gray-200">
+        <div className="h-[500px] rounded-lg overflow-hidden border border-gray-200">
           {currentPos ? (
             <MapView
-              position={currentPos || { lat: 10.762622, lng: 106.660172 }}
+              position={currentPos}
               routeId={currentSchedule?.route_id}
             />
           ) : (

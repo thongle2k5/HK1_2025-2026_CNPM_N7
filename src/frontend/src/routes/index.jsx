@@ -14,7 +14,7 @@ import DriverChat from "../pages/driver/Chat";
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/driver" element={<DriverLayout />}>
+      <Route  element={<DriverLayout />}>
         <Route index element={<DriverHome />} />
 
         <Route path="home" element={<DriverHome />} />
