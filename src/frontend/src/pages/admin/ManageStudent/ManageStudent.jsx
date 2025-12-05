@@ -90,6 +90,11 @@ function ManageStudent() {
     fetchListStudentsWithPaginate(1, statusFilter, "");
   };
 
+  const handleUpdate = (studentId) => {
+    setIsOpenModalUpdate(true)
+    setStudentId(studentId);
+  }
+
   return (
     // Component này chỉ tập trung vào nội dung trang Học sinh
     <div className="p-4 bg-white">
@@ -249,10 +254,10 @@ function ManageStudent() {
                           className="cursor-pointer text-[#007BFF] text-lg"
                           onClick={() => handleView(+student.student_id)}
                         />
-                        {/* <FaPen
+                        <FaPen
                           className="cursor-pointer text-[#EAB308] text-lg"
-                          onClick={() => setIsOpenModalUpdate(true)}
-                        /> */}
+                          onClick={() => handleUpdate(+student.student_id)}
+                        />
                         <FaTrash
                           className="cursor-pointer text-[#dc3545] text-lg"
                           onClick={() => handleDelete(+student.student_id)}
@@ -294,7 +299,7 @@ function ManageStudent() {
       </div>
 
       <ModalViewDetail isOpen={isOpenModalView} setIsOpen={setIsOpenModalView} studentId={studentId} />
-      <ModalUpdateStudent isOpen={isOpenModalUpdate} setIsOpen={setIsOpenModalUpdate} />
+      <ModalUpdateStudent isOpen={isOpenModalUpdate} setIsOpen={setIsOpenModalUpdate} studentId={studentId} refresh={refreshStudents} />
       {/* <ModalCreateStudent isOpen={isOpenModalCreate} setIsOpen={setIsOpenModalCreate} /> */}
       <ModalDelete isOpen={isOpenModalDelete} setIsOpen={setIsOpenModalDelete} studentId={studentIdDelete} refresh={refreshStudents} />
 

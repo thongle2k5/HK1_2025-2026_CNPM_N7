@@ -185,6 +185,25 @@ export const StudentModel = {
         const [result] = await db.query(sql, [studentId]);
         return result;
 
-    }
+    },
+    updateStudent: async (studentId, studentName, studentClass, stopId) => {
+        const sql = `
+            UPDATE student
+            SET student_name = ?, class = ?, stop_id = ?
+            WHERE student_id = ?;
+        `;
+        const [result] = await db.query(sql, [studentName, studentClass, stopId, studentId]);
+        return result;
+    },
+    checkStopExists: async (stopId) => {
+        const sql = `
+        SELECT stop_id
+        FROM stop
+        WHERE stop_id = ?
+        LIMIT 1;
+    `;
+        const [rows] = await db.query(sql, [stopId]);
+        return rows.length > 0;
+    },
 
 }

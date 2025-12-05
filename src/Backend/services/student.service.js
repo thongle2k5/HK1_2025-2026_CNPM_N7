@@ -100,5 +100,28 @@ export const StudentService = {
     deleteStudentByIdAdmin: async (studentId) => {
         const result = await StudentModel.deleteStudentByIdAdmin(+studentId);
         return result;
+    },
+    updateStudent: async (studentId, studentName, studentClass, stopId) => {
+        const stopExists = await StudentModel.checkStopExists(stopId);
+
+        if (!stopExists) {
+            return {
+                success: false,
+                message: `Stop ID ${stopId} không tồn tại`
+            };
+        }
+
+        const result = await StudentModel.updateStudent(
+            studentId,
+            studentName,
+            studentClass,
+            stopId
+        );
+
+        return {
+            success: true,
+            message: "Cập nhật thành công",
+            result
+        };
     }
 }

@@ -84,6 +84,36 @@ export const StudentController = {
         } catch (error) {
             res.status(404).json({ message: error.message });
         }
+    },
+    updateStudent: async (req, res) => {
+        try {
+            const studentId = req.params.id;
+            const { studentName, studentClass, stopId } = req.body;
+
+            const result = await StudentService.updateStudent(
+                studentId,
+                studentName,
+                studentClass,
+                stopId
+            );
+
+            if (!result.success) {
+                return res.status(400).json({
+                    success: false,
+                    message: result.message
+                });
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: result.message,
+                data: result.result
+            });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Lỗi server" });
+        }
     }
 
 }

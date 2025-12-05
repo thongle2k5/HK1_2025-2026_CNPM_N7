@@ -12,8 +12,18 @@ const deleteStudentByIdAdmin = (studentId) => {
     return axios.delete(`/api/students/admin/${studentId}`);
 }
 
+const getStudentById = (studentId) => {
+    return axios.get(`/api/students/${studentId}`);
+}
+
+const updateStudent = (studentId, data) => {
+    return axios.put(`/api/students/${studentId}`, data);
+}
+
 export {
     getStudentsAdmin,
     getStudentByIdAdmin,
-    deleteStudentByIdAdmin
+    deleteStudentByIdAdmin,
+    getStudentById,
+    updateStudent
 }
