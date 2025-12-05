@@ -55,12 +55,12 @@ function ModalCreateAssignment(props) {
             )}
 
             <div
-                className={`fixed left-1/2 transform -translate-x-1/2
-          transition-all duration-500 ease-out p-12 
+                className={`fixed left-[65%] transform -translate-x-[65%]
+          transition-all duration-500 ease-out p-12     
           ${props.isOpen
                         ? "top-2/3 -translate-y-2/3 opacity-100 pointer-events-auto"
                         : "top-0 opacity-0 pointer-events-none"}
-          bg-white rounded-lg shadow-2xl w-[50%]`}
+          bg-white rounded-lg shadow-2xl w-[50%] max-h-[80vh] overflow-y-auto`}
             >
                 <p className="text-black text-3xl text-center mb-10">
                     Tạo phân công mới

@@ -81,10 +81,10 @@ function ModalCreateStop(props) {
             )}
 
             <div
-                className={`fixed left-1/2 transform -translate-x-1/2
+                className={`fixed left-[65%] transform -translate-x-[65%]
                     transition-all duration-500 ease-out p-12 
                     ${props.isOpen
-                        ? "top-[40%] -translate-y-1/2 opacity-100 pointer-events-auto"
+                        ? "top-[70%] -translate-y-[70%] opacity-100 pointer-events-auto"
                         : "top-0 opacity-0 pointer-events-none"
                     }
                     bg-white rounded-lg shadow-2xl w-[50%]`}
