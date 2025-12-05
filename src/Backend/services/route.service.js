@@ -2,6 +2,17 @@ import { getAllRoute } from '../models/route.model.js';
 import db from '../db/Connect_dtb.js';
 
 export const getRoute = {
+    getAllRoutes: async () => {
+    const routes = await getAllRoute.findAll();
+    return routes;
+  },
+  getStopsByRoute: async (routeId) => {
+    if (!routeId) {
+      throw new Error("Mã tuyến đường (Route ID) là bắt buộc.");
+    }
+    const stops = await getAllRoute.findStopsByRouteId(routeId);
+    return stops;
+  },
 getRouteStops: async (id) => {
         const stops = await getAllRoute.getRouteStops(id);
         return stops;

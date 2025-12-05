@@ -56,7 +56,7 @@ export default function StudentList() {
     try {
       // Gọi API update Backend
       const res = await fetch(
-        `http://localhost:5000/api/schedules/${currentSchedule.schedule_id}/students/${studentId}`,
+        `http://localhost:5000/api/studentsList/${currentSchedule.schedule_id}/students/${studentId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

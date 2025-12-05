@@ -1,7 +1,24 @@
 import db from '../db/Connect_dtb.js';
 
 export const UserModel = {
-
+  findByUsername: async (username) => {
+    const query = "SELECT * FROM user WHERE username = ?";
+    const [rows] = await db.query(query, [username]);
+    return rows[0];
+  },createUser: async (userData) => {
+    const { username, password, fullName, role } = userData;
+    const query = `
+      INSERT INTO user (username, password, name, role) 
+      VALUES (?, ?, ?, ?)
+    `;
+    const [result] = await db.query(query, [username, password, fullName, role]);
+    return result.insertId;
+  },
+  createParent: async (userId) => {
+   
+    const query = "INSERT INTO parent (user_id, relationship_info) VALUES (?, ?)";
+    await db.query(query, [userId, 'cha']);
+  },
   getUserById: async (id) => {
     const [row] = await db.query('select * from user where user_id = ?', [id]);
     return row[0];

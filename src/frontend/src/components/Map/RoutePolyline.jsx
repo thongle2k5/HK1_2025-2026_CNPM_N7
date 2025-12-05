@@ -18,7 +18,7 @@ export default function RoutePolyline({ routeId }) {
       try {
         // 1. Lấy danh sách trạm từ Backend của bạn
         const res = await fetch(
-          `http://localhost:5000/api/route/${routeId}/stops`
+          `http://localhost:5000/api/route/${routeId}/stops/admin`
         );
         const stopData = await res.json();
 

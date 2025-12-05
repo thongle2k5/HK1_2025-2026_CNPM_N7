@@ -1,6 +1,26 @@
 import db from '../db/Connect_dtb.js';
 import pool from '../models/Connect_dtb.js'
 export const getAllRoute = {
+    findAll: async () => {
+    const query = "SELECT route_id, name FROM route";
+    const [rows] = await db.query(query);
+    return rows;
+  },
+  findStopsByRouteId: async (routeId) => {
+   
+    const query = `
+      SELECT 
+        s.stop_id, 
+        s.address,
+        sr.order
+      FROM stop s
+      JOIN stop_route sr ON s.stop_id = sr.stop_id
+      WHERE sr.route_id = ?
+      ORDER BY sr.order ASC
+    `;
+    const [rows] = await db.query(query, [routeId]);
+    return rows;
+  },
      getRouteStops : async (routeId) => {
   const sql = `
     SELECT s.latitude, s.longitude, s.address, sr.\`order\`

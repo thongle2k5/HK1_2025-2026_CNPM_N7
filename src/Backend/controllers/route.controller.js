@@ -1,6 +1,25 @@
 import { getRoute } from '../services/route.service.js';
 
 export const routeConTroller = {
+    getRoutes: async (req, res) => {
+    try {
+      const routes = await getRoute.getAllRoutes();
+      return res.status(200).json(routes);
+    } catch (error) {
+      console.error("Lỗi lấy danh sách tuyến:", error);
+      return res.status(500).json({ message: "Lỗi server khi lấy tuyến đường." });
+    }
+  },
+  getStops: async (req, res) => {
+    try {
+      const { routeId } = req.params;
+      const stops = await getRoute.getStopsByRoute(routeId);
+      return res.status(200).json(stops);
+    } catch (error) {
+      console.error("Lỗi lấy danh sách trạm:", error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
     getRouteStops: async (req, res) => {
     try {
       const { id } = req.params;

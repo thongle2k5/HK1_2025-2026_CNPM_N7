@@ -69,22 +69,61 @@ WHERE c.driver_id = ?
   },
   getScheduleByManager,
   createSchedule: async (data) => {
-
-    const { route_id, bus_id, driver_id, date, start_time, manager_id, end_time } = data;
-    const sql = `
-      INSERT INTO schedule
-      (route_id, bus_id, driver_id, date, start_time, manager_id, end_time, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')
+    const { route_id, bus_id, driver_id, date, start_time, end_time } = data;
+    
+    // BƯỚC 1: Tạo Lịch trình (Schedule)
+    const querySchedule = `
+      INSERT INTO schedule (route_id, bus_id, driver_id, date, start_time, end_time, status)
+      VALUES (?, ?, ?, ?, ?, ?, 'pending')
     `;
-    const values = [route_id, bus_id, driver_id, date, start_time, manager_id, end_time];
+    
+    // Dùng Transaction để đảm bảo cả 2 việc cùng thành công hoặc cùng thất bại
+    const connection = await db.getConnection();
+    await connection.beginTransaction();
 
     try {
-      const [result] = await db.query(sql, values);
-      return { schedule_id: result.insertId, ...data, status: 'pending' };
+      const [resSchedule] = await connection.query(querySchedule, [
+        route_id, bus_id, driver_id, date, start_time, end_time
+      ]);
+      
+      const newScheduleId = resSchedule.insertId;
+
+      // BƯỚC 2: Tìm học sinh thuộc tuyến này
+      // Logic: Học sinh -> Stop -> Stop_Route -> Route
+      const queryStudents = `
+        SELECT s.student_id, s.stop_id
+        FROM student s
+        JOIN stop_route sr ON s.stop_id = sr.stop_id
+        WHERE sr.route_id = ?
+      `;
+      const [students] = await connection.query(queryStudents, [route_id]);
+
+      // BƯỚC 3: Tạo danh sách điểm danh (Pickup Status)
+      if (students.length > 0) {
+        const pickupValues = students.map(st => [
+            newScheduleId, // ID chuyến vừa tạo
+            st.student_id,
+            st.stop_id,
+            'waiting',     // Mặc định là chưa đón
+            new Date()     // Thời gian tạo
+        ]);
+
+        const queryPickup = `
+          INSERT INTO pickup_status (schedule_id, student_id, stop_id, status, time)
+          VALUES ?
+        `;
+        // insert dạng Bulk (nhiều dòng 1 lúc)
+        await connection.query(queryPickup, [pickupValues]);
+      }
+
+      await connection.commit(); // Lưu tất cả
+      return newScheduleId;
 
     } catch (error) {
-      console.error("Lỗi khi INSERT schedule:", error);
+      await connection.rollback(); // Nếu lỗi thì hoàn tác
       throw error;
+    } finally {
+      connection.release(); // Trả kết nối
     }
   }, findConflict: async (driver_id, bus_id, date, start_time) => {
     const sql = `

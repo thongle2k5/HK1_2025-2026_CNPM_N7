@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { CalendarDays, Clock, MapPin, Bus } from "lucide-react";
 import DriverHeader from "./components/Header";
 import { useNavigate } from "react-router-dom";
+import { getUserFromToken } from "../../utils/auth";
 //const viWeekdays = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
 const viWeekdays = {
   0: "Chủ nhật",
@@ -19,7 +20,8 @@ export default function Schedule() {
   const [selectedDay, setSelectedDay] = useState(todayLabel);
   const [weekSchedules, setWeekSchedules] = useState({});
   const [loading, setLoading] = useState(true);
-  const driverId = 1;
+  const user = getUserFromToken();
+  const driverId = user ? user.driverId : null;
 
   function getWeekRange(reference = new Date()) {
     const day = reference.getDay();
@@ -126,10 +128,11 @@ export default function Schedule() {
             <button
               key={day}
               onClick={() => setSelectedDay(day)}
-              className={`px-4 py-2 rounded-md text-sm font-medium border ${selectedDay === day
+              className={`px-4 py-2 rounded-md text-sm font-medium border ${
+                selectedDay === day
                   ? "bg-blue-600 text-white border-blue-600"
                   : "bg-white text-gray-700 hover:bg-gray-100"
-                }`}
+              }`}
             >
               {day}
             </button>
@@ -143,7 +146,7 @@ export default function Schedule() {
         ) : (
           <>
             {weekSchedules[selectedDay] &&
-              weekSchedules[selectedDay].length === 0 ? (
+            weekSchedules[selectedDay].length === 0 ? (
               <div className="bg-white p-6 rounded-lg shadow text-center text-gray-500">
                 Không có lịch làm việc trong ngày này.
               </div>
