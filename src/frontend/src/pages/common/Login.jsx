@@ -56,13 +56,10 @@ const Login = () => {
           role: role, // Gửi thêm role lên để backend biết đường check
         }),
       });
-
-      const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.message || "Đăng nhập thất bại");
       }
-
+      const data = await response.json();
       localStorage.setItem("authToken", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
@@ -74,14 +71,13 @@ const Login = () => {
           navigate("/driver", { replace: true });
           break;
         case "parent":
-          navigate("/parent", { replace: true });
+          navigate("/parent", { state: { user: data.user }, replace: true });
           break;
         default:
           navigate("/", { replace: true });
       }
     } catch (err) {
       console.error("Lỗi đăng nhập:", err);
-
       alert(err.message);
     }
   };
@@ -99,31 +95,28 @@ const Login = () => {
         <div className="flex justify-center mb-8 bg-gray-100 p-1 rounded-lg">
           <button
             onClick={() => setRole("parent")}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all duration-300 ${
-              role === "parent"
-                ? "bg-white text-blue-600 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
+            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all duration-300 ${role === "parent"
+              ? "bg-white text-blue-600 shadow-sm"
+              : "text-gray-500 hover:text-gray-700"
+              }`}
           >
             Phụ huynh
           </button>
           <button
             onClick={() => setRole("driver")}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all duration-300 ${
-              role === "driver"
-                ? "bg-white text-emerald-600 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
+            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all duration-300 ${role === "driver"
+              ? "bg-white text-emerald-600 shadow-sm"
+              : "text-gray-500 hover:text-gray-700"
+              }`}
           >
             Tài xế
           </button>
           <button
             onClick={() => setRole("admin")}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all duration-300 ${
-              role === "admin"
-                ? "bg-white text-indigo-600 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
+            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all duration-300 ${role === "admin"
+              ? "bg-white text-indigo-600 shadow-sm"
+              : "text-gray-500 hover:text-gray-700"
+              }`}
           >
             Admin
           </button>
@@ -153,8 +146,8 @@ const Login = () => {
                   role === "driver"
                     ? "#10b981"
                     : role === "admin"
-                    ? "#4f46e5"
-                    : "#2563eb",
+                      ? "#4f46e5"
+                      : "#2563eb",
               }}
               onChange={handleInputChange}
             />
@@ -171,8 +164,8 @@ const Login = () => {
                   role === "driver"
                     ? "#10b981"
                     : role === "admin"
-                    ? "#4f46e5"
-                    : "#2563eb",
+                      ? "#4f46e5"
+                      : "#2563eb",
               }}
               onChange={handleInputChange}
             />{" "}

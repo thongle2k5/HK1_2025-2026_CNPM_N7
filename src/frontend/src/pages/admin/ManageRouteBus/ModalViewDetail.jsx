@@ -23,8 +23,8 @@ function ModalViewDetail({ isOpen, setIsOpen, routeId }) {
             {isOpen && <div className="fixed inset-0 bg-black bg-opacity-50"></div>}
 
             <div
-                className={`fixed left-1/2 transform -translate-x-1/2 transition-all duration-500 ease-out 
-                p-8 ${isOpen ? "top-1/2 -translate-y-1/2 opacity-100 pointer-events-auto"
+                className={`fixed left-[65%] transform -translate-x-[65%] transition-all duration-500 ease-out 
+                p-8 ${isOpen ? "top-2/3 -translate-y-2/3 opacity-100 pointer-events-auto"
                         : "top-0 opacity-0 pointer-events-none"}
                 bg-white rounded-lg shadow-lg w-[50%] max-h-[80vh] flex flex-col`}
             >

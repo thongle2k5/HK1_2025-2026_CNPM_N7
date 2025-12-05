@@ -6,7 +6,6 @@ export default function driverSocket(io, socket) {
   socket.on("send_location", async (data) => {
   
     
-
     try {
       
       const updateQuery = `

@@ -3,8 +3,9 @@ import StudentInfo from "../../components/specific/parentpage/StudentInfo.jsx";
 import MapComponent from "../../components/specific/parentpage/MapComponent.jsx";
 import api from '../../api/sql.api.js';
 import { ParentContext } from "../../components/specific/parentpage/ParentSocketProvider.jsx";
+import { useLocation } from "react-router-dom";
 
-function ChildTracking({ user , setBusIds}) {
+function ChildTracking({setBusIds,user}) {
   const [studentsData, setStudentsData] = useState([]);
   const [busData, setBusData] = useState([]);
   const [selectedBus, setSelectedBus] = useState(null);
@@ -13,13 +14,13 @@ function ChildTracking({ user , setBusIds}) {
   const reqSelectBus = useRef(null)
 
   useEffect(() => {
-    if (!user || !user.user_id) {
+    if (!user || !user.userId) {
       console.log("No user found");
       return;
     }
     const fetchStudentData = async () => {
       try {
-        const studentsDataRes = await api.get(`/students/user/${user.user_id}/detail`);
+        const studentsDataRes = await api.get(`/students/user/${user.userId}/detail`);
         setStudentsData(studentsDataRes.data);
         console.log("student data: ", studentsDataRes.data);
       } catch (error) {

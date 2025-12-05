@@ -191,7 +191,7 @@ function ManageAssignment() {
                                                 <FaPen className="cursor-pointer text-[#007BFF] text-lg" onClick={() => handleUpdate(+assignment.schedule_id)} />
                                                 <FaTrash className="cursor-pointer text-[#dc3545] text-lg" onClick={() => handleDelete(+assignment.schedule_id)} />
                                                 {/* <FaClock className="cursor-pointer text-[#EAB308] text-lg" /> */}
-                                                <FaTelegramPlane className="cursor-pointer text-[#16A34A] text-lg" />
+                                                {/* <FaTelegramPlane className="cursor-pointer text-[#16A34A] text-lg" /> */}
                                             </div>
                                         </td>
                                     </tr>

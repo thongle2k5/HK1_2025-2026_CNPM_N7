@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route ,useLocation} from "react-router-dom";
 import { useState, useEffect } from "react";
 import Header from "../../components/specific/parentpage/Header.jsx";
 import ChildTracking from "./ChildTracking.jsx";
@@ -6,9 +6,9 @@ import Notifications from "./Notifications.jsx";
 import ChatBubble from "./ChatBubble.jsx";
 import { ParentSocketProvider } from "../../components/specific/parentpage/ParentSocketProvider.jsx";
 
-const user = { user_id: 1 };
-
 function ParentApp() {
+    const location = useLocation();
+    const user = location.state?.user;
   const [busIds, setBusIds] = useState([]);
   return (
     <div className="w-screen h-screen flex flex-col relative">
@@ -17,15 +17,11 @@ function ParentApp() {
         <Routes>
           <Route
             path="/"
-            element={<ChildTracking user={user} setBusIds={setBusIds} />}
-          />
-          <Route
-            path="/"
-            element={<ChildTracking user={user} setBusIds={setBusIds} />}
+            element={<ChildTracking setBusIds={setBusIds} user={user}/>}
           />
           <Route
             path="/notifications"
-            element={<Notifications user={user} />}
+            element={<Notifications user ={user}/>}
           />
         </Routes>
         <ChatBubble user={user} />

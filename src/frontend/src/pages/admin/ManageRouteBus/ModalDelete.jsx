@@ -25,7 +25,7 @@ function ModalDelete(props) {
             )}
 
             <div
-                className={`fixed left-1/2 transform -translate-x-1/2
+                className={`fixed left-[55%] transform -translate-x-[55%]
           transition-all duration-500 ease-out 
           ${props.isOpen
                         ? "top-[20%] -translate-y-[20%] opacity-100 pointer-events-auto"

@@ -126,10 +126,10 @@ function ModalUpdateAssignment(props) {
 
             <div
                 className={`
-          fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
+          fixed left-[65%] top-2/3 transform -translate-x-[65%] -translate-y-2/3
           transition-all duration-300 ease-out p-10
           ${isOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"}
-          bg-white rounded-lg shadow-lg w-[60%] max-h-[90vh] overflow-y-auto
+          bg-white rounded-lg shadow-lg w-[50%] max-h-[80vh] overflow-y-auto
         `}
             >
                 <p className="text-black text-3xl text-center mb-8">
